@@ -1,0 +1,225 @@
+package com.simbest.cores.admin.authority.web;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Maps;
+import com.simbest.cores.admin.authority.model.SysRole;
+import com.simbest.cores.admin.authority.service.ISysRoleAdvanceService;
+import com.simbest.cores.exceptions.Exceptions;
+import com.simbest.cores.utils.Constants;
+import com.simbest.cores.utils.annotations.LogAudit;
+import com.simbest.cores.web.BaseController;
+
+@Controller
+@RequestMapping(value = {"/action/sso/admin/authority/sysrole", //SSO跳转，Shrio不拦截
+"/action/admin/authority/sysrole"}) //后台管理跳转，Shrio拦截校验权限
+public class SysRoleController extends BaseController<SysRole, Integer>{
+	public final Log log = LogFactory.getLog(SysRoleController.class);
+
+	@Autowired
+	private ISysRoleAdvanceService sysRoleAdvanceService;
+	
+	public SysRoleController() {
+		super(SysRole.class, "/action/admin/authority/sysrole/sysRoleList", "/action/admin/authority/sysrole/sysRoleForm");
+	}
+	
+	@PostConstruct
+	private void initService() {
+		setService(sysRoleAdvanceService);
+	}
+	
+	@RequiresPermissions("admin:authority:sysrole:query")
+	@RequestMapping(value = "/sysRoleList", method = RequestMethod.GET)
+	public ModelAndView openListView(Date ssDate, Date eeDate) throws Exception {
+		return super.openListView(ssDate, eeDate);
+	}
+
+	@RequiresPermissions(value={"admin:authority:sysrole:create","admin:authority:sysrole:update"},logical=Logical.OR)
+	@RequestMapping(value = "/sysRoleForm", method = RequestMethod.GET)
+	public ModelAndView openFormView(Date ssDate, Date eeDate) throws Exception {
+		return super.openFormView(ssDate, eeDate);
+	}
+	
+	@RequiresPermissions("admin:authority:sysrole:query")
+	@RequestMapping(value = "/get", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	@ResponseBody
+	@LogAudit
+	public Map<String, Object> get(@RequestBody SysRole o) throws Exception {
+		return super.get(o.getId());
+	}
+	
+	@RequiresPermissions("admin:authority:sysrole:query")
+	@RequestMapping(value = "/query", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	@ResponseBody
+	@LogAudit
+	@Override
+	public Map<String, Object> query(@RequestBody SysRole o) throws Exception {
+		Map<String, Object> result = Maps.newHashMap();		
+		Collection<SysRole> list = sysRoleAdvanceService.getValues();
+		Map<String, Object> dataMap = super.wrapQueryResult((List<SysRole>) list);
+		result.put("data", dataMap);
+		result.put("message", "");
+		result.put("responseid", 1);
+		return result;
+	}
+	
+	@RequiresPermissions("admin:authority:sysrole:create")
+	@RequiresRoles(value={"Administrator","Supervisor"},logical=Logical.OR)
+	@RequestMapping(value = "/create", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	@ResponseBody
+	@LogAudit
+	@Override
+	public Map<String, Object> create(@RequestBody SysRole o) throws Exception {
+		return super.create(o);		
+	}
+
+	@RequiresPermissions("admin:authority:sysrole:update")
+	@RequiresRoles(value={"Administrator","Supervisor"},logical=Logical.OR)
+	@RequestMapping(value = "/update", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	@ResponseBody
+	@LogAudit
+	@Override
+	public Map<String, Object> update(@RequestBody SysRole o) throws Exception {
+		return super.update(o);
+	}
+
+	@RequiresPermissions("admin:authority:sysrole:delete")
+	@RequiresRoles(value={"Administrator","Supervisor"},logical=Logical.OR)
+	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	@ResponseBody
+	@LogAudit
+	public Map<String, Object> delete(@RequestBody SysRole o) throws Exception {
+		return super.delete(o.getId());
+	}
+	
+	@RequiresPermissions("admin:authority:sysrole:delete")
+	@RequiresRoles(value={"Administrator","Supervisor"},logical=Logical.OR)
+	@RequestMapping(value = "/deletes", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	@ResponseBody
+	@LogAudit
+	@Override
+	public Map<String, Object> deletes(@RequestBody Integer[] ids) throws Exception {
+		return super.deletes(ids);
+	}
+	
+	/**
+	 * 加载角色列表(按角色分别对人员和权限资源关联，从而完成授权。没有考虑人员直接对权限资源授权)
+	 * @return
+	 */
+	@RequiresPermissions("admin:authority:sysrole:query")
+	@RequestMapping(value = "/rolePermission/querySysRole")
+	@ResponseBody
+	@LogAudit	
+	public Map<Integer, String> querySysRole() {
+		Map<Integer, String> maps = Maps.newLinkedHashMap();
+		Collection<SysRole> rolelists = sysRoleAdvanceService.getValues();
+		for (SysRole role : rolelists) {
+			maps.put(role.getId(), role.getDescription());
+		}
+		return maps;
+	}
+
+	/**
+	 * 角色资源授权
+	 * @return
+	 * @throws Exception
+	 */
+	@RequiresPermissions(value={"admin:authority:sysrole:create","admin:authority:sysrole:update"},logical=Logical.OR)
+	@RequestMapping(value = "/rolePermissionView", method = RequestMethod.GET)
+	public ModelAndView rolePermissionView() throws Exception {
+		return new ModelAndView("/action/admin/authority/sysrole/rolePermissionView");
+	}
+	
+	@RequiresPermissions("admin:authority:sysrole:query")
+	@RequestMapping(value = "/querySysRoleByUser", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> querySysRoleByUser(@RequestParam("id") Integer userId) throws Exception {
+		Map<String, String> map = Maps.newHashMap();
+		StringBuffer sb = new StringBuffer();
+		List<SysRole> list = sysRoleAdvanceService.getByUser(userId);
+		for(SysRole p: list){
+			sb.append(p.getId()+Constants.SPACE);
+		}
+		map.put("ids", sb.toString());
+		return map;
+	}
+	
+	/**
+	 * 构造权限树(按角色对人员和权限授权，没有考虑人员直接对权限授权)
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	@RequiresPermissions("admin:authority:sysrole:query")
+	@RequestMapping(value = "/rolePermission/getPermissionsTreeData/{roleId}")
+	@ResponseBody
+	public Map<String, Object> getPermissionsTreeData(@PathVariable("roleId") Integer roleId) throws Exception {
+		return sysRoleAdvanceService.getPermissionsTreeData(roleId);
+	}
+
+	/**
+	 * 提交保存权限树
+	 * @param roleId 角色Id
+	 * @param permissionIds 资源权限Id
+	 * @return
+	 */
+	@RequiresPermissions("admin:authority:sysuser:userRole:update")
+	@RequiresRoles(value={"Administrator","Supervisor"},logical=Logical.OR)
+	@RequestMapping(value = "/rolePermission/submit")
+	@ResponseBody
+	public Map<String, Object> submit(@RequestParam("roleId") Integer roleId, @RequestParam("permissionIds") String permissionIds) {
+		Map<String, Object> map = Maps.newHashMap();
+		try {
+			if (roleId == null) { // 删除角色所有权限
+				map.put("responseid", 0);
+				map.put("message", "请选择有效角色!");
+			} else {
+				if(StringUtils.isEmpty(permissionIds)){
+					sysRoleAdvanceService.deleteSysRolePermissionByRoleId(roleId); // 根据roleId删除该角色下面的所有权限
+				}else{
+					String[] permissionStrings = permissionIds.split(Constants.SPACE);
+					if (permissionStrings != null && permissionStrings.length > 0) {
+						Set<String> permissionSet = new HashSet<String>();
+						sysRoleAdvanceService.deleteSysRolePermissionByRoleId(roleId); //根据角色删除所有权限
+						for (String add : permissionStrings) {
+							permissionSet.add(add); //使用Set接口过滤去重权限
+						}
+						for (String permission : permissionSet) {
+							sysRoleAdvanceService.createSysRolePermission(roleId, Integer.parseInt(permission));
+						}
+					}
+				}
+			}
+			map.put("responseid", 1);
+			map.put("message", "保存角色权限成功!");
+		} catch (Exception e) {
+			map.put("responseid", 0);
+			map.put("message", "保存角色权限失败!");
+			log.error(Exceptions.getStackTraceAsString(e));
+		}
+		return map;
+	}
+
+}

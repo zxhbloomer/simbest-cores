@@ -49,7 +49,7 @@
 <repositories>
 	<repository>
 		<id>simbest-cores-mvn-repo</id>
-		<url>https://raw.github.com/kyne0116/simbest-cores/mvn-repo/</url>
+		<url>https://raw.github.com/simbest/simbest-cores/mvn-repo/</url>
 		<snapshots>
 			<enabled>true</enabled>
 			<updatePolicy>always</updatePolicy>

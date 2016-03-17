@@ -42,7 +42,7 @@
 <dependency>
 	<groupId>com.simbest</groupId>
 	<artifactId>simbest-cores</artifactId>
-	<version>0.3</version>
+	<version>0.4</version>
 </dependency>
 		
 		

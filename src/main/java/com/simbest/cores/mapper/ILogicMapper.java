@@ -47,10 +47,15 @@ public interface ILogicMapper<T extends LogicModel<T>, PK extends Serializable>
 	 * @param id
 	 * @return
 	 */
-	int delete(@Param("updateUserId") Integer updateUserId,
-			@Param("updateUserCode") String updateUserCode,
-			@Param("updateUserName") String updateUserName,
-			@Param("updateDate") Date updateDate, @Param("id") PK id);
+//	int delete(@Param("updateUserId") Integer updateUserId,
+//			@Param("updateUserCode") String updateUserCode,
+//			@Param("updateUserName") String updateUserName,
+//			@Param("updateDate") Date updateDate, @Param("id") PK id);
+
+    int delete(@Param("updateUserId") Integer updateUserId,
+               @Param("updateUserCode") String updateUserCode,
+               @Param("updateUserName") String updateUserName,
+               @Param("updateDate") Date updateDate, PK id);
 
 	/**
 	 * 用户 逻辑删除(实现依赖mapper.xml)

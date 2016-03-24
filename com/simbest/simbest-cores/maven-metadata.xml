@@ -3,10 +3,10 @@
   <groupId>com.simbest</groupId>
   <artifactId>simbest-cores</artifactId>
   <versioning>
-    <release>0.4</release>
+    <release>0.5</release>
     <versions>
-      <version>0.4</version>
+      <version>0.5</version>
     </versions>
-    <lastUpdated>20160317163016</lastUpdated>
+    <lastUpdated>20160324031856</lastUpdated>
   </versioning>
 </metadata>

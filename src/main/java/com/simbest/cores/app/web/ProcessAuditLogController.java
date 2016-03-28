@@ -89,7 +89,7 @@ public class ProcessAuditLogController extends BaseController<ProcessAuditLog, L
 		List<ProcessAuditLog> lastList = Lists.newArrayList();
 		ProcessStep startStep = processStepAdvanceService.getStartStep(o.getHeaderId());
         ProcessStep firstStep = processStepAdvanceService.getFirstStep(o.getHeaderId());
-        Collection<String> lastStepCodes = Sets.newHashSet();
+        Collection<String> lastStepIds = Sets.newHashSet();
         for(ProcessAuditLog l : list){
 //			int compare = l.getStepId().compareTo(startStep.getStepId());
 //			//审批日志记录倒序从数据库查询出来，因此只去最后一次日志循环需要与启动环节进行比较
@@ -107,7 +107,7 @@ public class ProcessAuditLogController extends BaseController<ProcessAuditLog, L
 //			}
 
 
-            
+
             //审批日志记录倒序从数据库查询出来，因此只取最后一次日志轨迹，就需要与启动环节进行比较
             if(l.getStepId().equals(firstStep.getStepId())){
                 //驳回变成firstStep，退出循环，重头开始
@@ -115,8 +115,10 @@ public class ProcessAuditLogController extends BaseController<ProcessAuditLog, L
 				break;
             }else {
                 if (!l.getStepId().equals(startStep.getStepId())) {  //凡是不等于启动环节的环节都予以保留
-                    lastList.add(l);
-                    continue;
+                    if(!lastStepIds.contains(l.getStepId())) {
+                        lastList.add(l);
+                        continue;
+                    }
                 } else {
                     //审批日志记录指针到达上次审批链条被驳回的启动日志记录位置，跳出循环，返回最后一次审批轨迹
                     lastList.add(l);

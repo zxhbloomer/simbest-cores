@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,21 +88,41 @@ public class ProcessAuditLogController extends BaseController<ProcessAuditLog, L
 		List<ProcessAuditLog> list = (List<ProcessAuditLog>)dataMap.get("Datas");
 		List<ProcessAuditLog> lastList = Lists.newArrayList();
 		ProcessStep startStep = processStepAdvanceService.getStartStep(o.getHeaderId());
-		for(ProcessAuditLog l : list){
-			int compare = l.getStepId().compareTo(startStep.getStepId());
-			//审批日志记录倒序从数据库查询出来，因此只去最后一次日志循环需要与启动环节进行比较
-			if(compare == -1){ //驳回变成firstStep，退出循环，重头开始
+        ProcessStep firstStep = processStepAdvanceService.getFirstStep(o.getHeaderId());
+        Collection<String> lastStepCodes = Sets.newHashSet();
+        for(ProcessAuditLog l : list){
+//			int compare = l.getStepId().compareTo(startStep.getStepId());
+//			//审批日志记录倒序从数据库查询出来，因此只去最后一次日志循环需要与启动环节进行比较
+//			if(compare == -1){ //驳回变成firstStep，退出循环，重头开始
+//				lastList.add(l);
+//				break;
+//			}
+//			if(compare >= 1){ //凡是大于启动环节的环节都予以保留
+//				lastList.add(l);
+//				continue;
+//			}
+//			else if(compare == 0){ //直到到达最后一次启动环节停止
+//				lastList.add(l);
+//				break;
+//			}
+
+
+            
+            //审批日志记录倒序从数据库查询出来，因此只取最后一次日志轨迹，就需要与启动环节进行比较
+            if(l.getStepId().equals(firstStep.getStepId())){
+                //驳回变成firstStep，退出循环，重头开始
 				lastList.add(l);
 				break;
-			}
-			if(compare >= 1){ //凡是大于启动环节的环节都予以保留
-				lastList.add(l);
-				continue;
-			}
-			else if(compare == 0){ //直到到达最后一次启动环节停止
-				lastList.add(l);
-				break;
-			}
+            }else {
+                if (!l.getStepId().equals(startStep.getStepId())) {  //凡是不等于启动环节的环节都予以保留
+                    lastList.add(l);
+                    continue;
+                } else {
+                    //审批日志记录指针到达上次审批链条被驳回的启动日志记录位置，跳出循环，返回最后一次审批轨迹
+                    lastList.add(l);
+                    break;
+                }
+            }
 		}
 		Collections.reverse(lastList);
 		dataMap.put("Datas", lastList);

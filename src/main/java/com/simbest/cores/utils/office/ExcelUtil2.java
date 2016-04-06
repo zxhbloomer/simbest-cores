@@ -138,25 +138,16 @@ public class ExcelUtil2<T> {
 	}
 
 
-	/**
-	 * 对list数据源将其里面的数据导入到excel表单
-	 * 
-	 * @param sheetName
-	 *            工作表的名称
-	 * @param sheetSize
-	 *            每个sheet中数据的行数,此数值必须小于65536
-	 * @param output
-	 *            java输出流
-	 */
+    /**
+     * 将集合数组长度小于65535的数据导出到excel中
+     * @param list
+     * @param sheetName
+     * @param output
+     * @param isTagValue
+     * @return
+     */
 	public boolean exportExcel(List<T> list, String sheetName, OutputStream output, String isTagValue) {
-		@SuppressWarnings("unchecked")
-		List<T>[] lists = new ArrayList[1];
-		lists[0] = list;
-
-		String[] sheetNames = new String[1];
-		sheetNames[0] = sheetName;
-
-		return exportExcel(lists, sheetNames, output,isTagValue);
+		return exportExcelList(list, sheetName, 65535, output,isTagValue);
 	}
 	
 	/**

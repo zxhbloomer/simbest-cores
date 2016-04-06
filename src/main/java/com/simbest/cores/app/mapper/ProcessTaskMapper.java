@@ -10,4 +10,6 @@ public interface ProcessTaskMapper extends IGenericMapper<ProcessTask, Long> {
 			@Param("headerId") Integer headerId,
 			@Param("receiptId") Long receiptId,
 			@Param("currentUserId") Integer currentUserId);
+
+    int deleteById(@Param("id") Long id);
 }

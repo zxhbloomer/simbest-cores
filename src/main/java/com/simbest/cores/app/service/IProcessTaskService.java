@@ -8,4 +8,6 @@ public interface IProcessTaskService extends IGenericService<ProcessTask, Long> 
 	ProcessTask getCurrentUserTask(Integer typeId, Integer headerId,
 			Long receiptId, Integer currentUserId);
 
+    int deleteById(Long id);
+
 }

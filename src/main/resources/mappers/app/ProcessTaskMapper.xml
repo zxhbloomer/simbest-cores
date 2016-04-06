@@ -91,4 +91,8 @@
             AND currentUserId=#{currentUserId}
         </if>
     </delete>
+
+    <delete id="deleteById" parameterType="Long" flushCache="true" statementType="PREPARED" timeout="20">
+        DELETE FROM app_process_task WHERE id = #{id}
+    </delete>
 </mapper>

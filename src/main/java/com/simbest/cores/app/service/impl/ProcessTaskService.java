@@ -32,4 +32,9 @@ public class ProcessTaskService extends GenericMapperService<ProcessTask,Long> i
 		return mapper.getCurrentUserTask(typeId, headerId, receiptId, currentUserId);
 	}
 
+    @Override
+    public int deleteById(Long id) {
+        return mapper.deleteById(id);
+    }
+
 }

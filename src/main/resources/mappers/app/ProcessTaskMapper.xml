@@ -68,7 +68,11 @@
 	        </if> 
           ORDER By k.generateDate DESC,k.createDate DESC
     </select>
-    
+
+    <select id='getById' parameterType='Long' resultMap="processTaskResult">
+        SELECT k.*,t.typeDesc,h.headerDesc,s.stepDesc FROM app_process_task k,app_process_type t,app_process_header h,app_process_step s WHERE k.typeId=t.typeId AND k.headerId=h.headerId AND k.stepId=s.stepId AND k.id = #{id}
+    </select>
+
     <select id='getCurrentUserTask' resultMap="processTaskResult">
 	     SELECT * FROM app_process_task k WHERE k.typeId = #{typeId} AND k.headerId = #{headerId} AND k.receiptId = #{receiptId} AND k.currentUserId = #{currentUserId}
     </select>	

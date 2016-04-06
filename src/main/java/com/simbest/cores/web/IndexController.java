@@ -15,9 +15,4 @@ public class IndexController {
         return mav;
     }
 
-    @RequestMapping("/welcome")
-    public ModelAndView welcome() {
-    	ModelAndView mav = new ModelAndView("welcome");
-        return mav;
-    }
 }

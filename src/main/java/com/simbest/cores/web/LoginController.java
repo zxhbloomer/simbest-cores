@@ -94,9 +94,11 @@ public class LoginController {
 		}catch(UnknownAccountException e){
 			res.setResponseid(0);
 			res.setMessage("用户名不存在！");
+            res.setMessage("用户名或密码错误！");
 		}catch (AuthenticationException e){
 			res.setResponseid(0);
 			res.setMessage("用户名/密码不对！");
+            res.setMessage("用户名或密码错误！");
 		}catch (InvalidateAccountException e){
 			res.setResponseid(0);
 			res.setMessage("帐户不可用！");

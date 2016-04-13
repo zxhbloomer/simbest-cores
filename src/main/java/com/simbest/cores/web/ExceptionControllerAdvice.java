@@ -234,12 +234,20 @@ public class ExceptionControllerAdvice {
     public Map<String, Object> processSNSUserBindFailedLoginException(HttpServletRequest request, SNSUserBindFailedLoginException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
+    	Map<String, Object> result = Maps.newHashMap();
 		result.put("message", "绑定用户账号异常!");
 		result.put("responseid", 0);
 		return result;
     }
-    
+
+    @ExceptionHandler({NotAllowUploadFileTypeException.class})
+    @ResponseBody
+    public String processNotAllowUploadFileTypeException(HttpServletRequest request, NotAllowUploadFileTypeException e) {
+        log.error(request.getRequestURI());
+        Exceptions.printException(e);
+        return "<script type=\"text/javascript\">parent.imageMessage=\"不支持此文件类型!\";</script>";
+    }
+
     /**
      * 应用异常
      * @param e

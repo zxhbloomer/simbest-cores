@@ -136,6 +136,7 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 			try{
 				event.getRemoveCallback().execute(deleteTasks);
 			}catch(Exception e){
+                log.error("Remove callback execute failed..............................");
 				Exceptions.printException(e);
 			}
 		}
@@ -169,7 +170,8 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 			try{
 				noticeTask(process, event.getNoticeMethod(), processTask.getPreviousUserId(), process.getCreateUserId());
 			}catch(Exception e){
-				log.error("ERROR: 30007");
+                log.error("Notice task execute failed..............................");
+                Exceptions.printException(e);
 			}
 		}
 		
@@ -219,9 +221,11 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
         try {
             process = originalProcess.getClass().newInstance();
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            log.error("get process instance failed..............................");
+            Exceptions.printException(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("get process instance failed..............................");
+            Exceptions.printException(e);
         }
         BeanUtils.copyProperties(originalProcess,process);
         if (subjectType.equals(ProcessEnum.audit_role)) { // 审批类型为角色
@@ -302,6 +306,7 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 				try{
 					event.getCreateCallback().execute(processTask);
 				}catch(Exception e){
+                    log.error("create callback execute failed..............................");
 					Exceptions.printException(e);
 				}
 			}
@@ -323,6 +328,7 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 					try{
 						event.getCreateCallback().execute(agentTask);
 					}catch(Exception e){
+                        log.error("create callback execute failed..............................");
 						Exceptions.printException(e);
 					}
 				}
@@ -367,7 +373,7 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 				sender.postMessage(title, content, fromUserId, toUserId, process);
 			}
 		}catch(Exception e){
-			log.error("ERROR: 30007");
+            log.error("notice task execute failed..............................");
 			Exceptions.printException(e);
 		}
 	}

@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -59,5 +60,25 @@ public class CustomMultipartResolver extends CommonsMultipartResolver {
 
     public void setFileTypes(Set<String> fileTypes) {
         this.fileTypes = fileTypes;
+    }
+
+    public static void main(String[] args) {  
+        String specialStr = " #测试转义：#<table id=\"testid\"><tr>test1;test2</tr></table>";
+     // ①转换为HTML转义字符表示
+        String str1 = HtmlUtils.htmlEscape(specialStr);
+        System.out.println(str1);
+
+     // ②转换为数据转义表示
+        String str2 = HtmlUtils.htmlEscapeDecimal(specialStr);
+        System.out.println(str2);
+
+      //③转换为十六进制数据转义表示
+        String str3 = HtmlUtils.htmlEscapeHex(specialStr);
+        System.out.println(str3);
+
+       // ④下面对转义后字符串进行反向操作
+        System.out.println(HtmlUtils.htmlUnescape(str1));
+        System.out.println(HtmlUtils.htmlUnescape(str2));
+        System.out.println(HtmlUtils.htmlUnescape(str3));
     }
 }

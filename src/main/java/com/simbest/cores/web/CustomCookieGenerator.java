@@ -32,6 +32,8 @@ public class CustomCookieGenerator {
 		//开发调试期间不保存Cookie
 		if(!Boolean.valueOf(config.getValue("app.debug"))){
 			generator.setCookieName(cookieName);
+            generator.setCookieHttpOnly(true);
+            generator.setCookieSecure(true);
 			generator.addCookie(response, cookieValue);		
 		}
 	}

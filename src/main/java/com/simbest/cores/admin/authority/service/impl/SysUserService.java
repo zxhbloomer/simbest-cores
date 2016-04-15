@@ -30,7 +30,7 @@ import com.simbest.cores.utils.configs.CoreConfig;
 @CacheConfig(cacheNames = {"runtime:"}, cacheResolver="genericCacheResolver", keyGenerator="genericKeyGenerator")
 public class SysUserService extends LogicService<SysUser,Integer> implements ISysUserService{
 	private static transient final Log log = LogFactory.getLog(SysUserService.class);
-	
+
 	private SysUserMapper mapper;
 	
 	private SysRoleMapper roleMapper;

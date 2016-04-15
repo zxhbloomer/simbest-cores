@@ -9,10 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.dao.DataAccessException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +92,10 @@ public class LoginController {
 			res.setResponseid(0);
 			res.setMessage("用户名不存在！");
             res.setMessage("用户名或密码错误！");
-		}catch (AuthenticationException e){
+		}catch(ExcessiveAttemptsException e){
+            res.setResponseid(0);
+            res.setMessage("用户名或密码错误超过最大次数,请稍后尝试！");
+        }catch (AuthenticationException e){
 			res.setResponseid(0);
 			res.setMessage("用户名/密码不对！");
             res.setMessage("用户名或密码错误！");

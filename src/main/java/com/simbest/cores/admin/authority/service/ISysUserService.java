@@ -5,9 +5,10 @@ import com.simbest.cores.admin.authority.model.SysUser;
 import com.simbest.cores.service.ILogicService;
 
 public interface ISysUserService extends ILogicService<SysUser,Integer>{
-	public static final String HASH_ALGORITHM = "SHA-1";
-	public static final int HASH_INTERATIONS = 1024;
-	public static final int SALT_SIZE = 8;
+
+    //	String HASH_ALGORITHM = "SHA-1";
+    int SALT_SIZE = 8;
+    int HASH_INTERATIONS = 1024;
 
 	SysUser getByUserCode(String userCode);
 	

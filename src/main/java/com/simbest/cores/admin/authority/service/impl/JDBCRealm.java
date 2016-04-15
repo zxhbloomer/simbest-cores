@@ -28,14 +28,14 @@ public class JDBCRealm extends AbstractShrioRealm {
 	}
 
 
-	/**
-	 * 设定Password校验的Hash算法与迭代次数.
-	 */
-	@PostConstruct
-	public void initCredentialsMatcher() {
-		HashedCredentialsMatcher matcher = new HashedCredentialsMatcher(
-				ISysUserService.HASH_ALGORITHM);
-		matcher.setHashIterations(ISysUserService.HASH_INTERATIONS);
-		setCredentialsMatcher(matcher);
-	}
+//	/**
+//	 * 设定Password校验的Hash算法与迭代次数.
+//	 */
+//	@PostConstruct
+//	public void initCredentialsMatcher() {
+////		HashedCredentialsMatcher matcher = new HashedCredentialsMatcher(
+////				ISysUserService.HASH_ALGORITHM);
+////		matcher.setHashIterations(ISysUserService.HASH_INTERATIONS);
+//		setCredentialsMatcher(getCredentialsMatcher());
+//	}
 }

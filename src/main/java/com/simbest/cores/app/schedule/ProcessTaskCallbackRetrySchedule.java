@@ -32,7 +32,7 @@ public class ProcessTaskCallbackRetrySchedule extends ApplicationObjectSupport {
     private IGenericService<ProcessTaskCallbackRetry, Integer> processTaskCallbackRetryService;
 
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     private void checkFailedAndRun() throws ClassNotFoundException {
         log.debug("ProcessTaskCallbackRetrySchedule Start .....................................");
         Collection<ProcessTaskCallbackRetry> list = processTaskCallbackRetryService.getAll();

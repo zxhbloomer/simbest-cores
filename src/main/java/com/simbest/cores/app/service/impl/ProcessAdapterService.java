@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.simbest.cores.app.schedule.ProcessTaskCallbackRetrySchedule;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +126,9 @@ public abstract class ProcessAdapterService<T extends ProcessModel<T>, PK extend
 	private ProcessTaskListener<T, PK> processTaskListener;
 	@Autowired
 	private ProcessUpdateListener processUpdateListener;
-	
+    @Autowired
+    private ProcessTaskCallbackRetrySchedule processTaskCallbackRetrySchedule;
+
 	private DynamicAuditUser dynamicAuditUser;
 	
 	public ProcessAdapterService(SqlSession sqlSession, ProcessHeaderCodeDynaEnum processHeaderCodeDynaEnum) {

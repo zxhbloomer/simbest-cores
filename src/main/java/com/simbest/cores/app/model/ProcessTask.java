@@ -1,22 +1,11 @@
 package com.simbest.cores.app.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * 业务代办
@@ -26,7 +15,6 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
  */
 @Entity
 @Table(name = "app_process_task", uniqueConstraints={@UniqueConstraint(columnNames={"typeId","headerId","receiptId","currentUserId"})})
-@XmlRootElement
 public class ProcessTask extends GenericModel<ProcessTask> {
 
 

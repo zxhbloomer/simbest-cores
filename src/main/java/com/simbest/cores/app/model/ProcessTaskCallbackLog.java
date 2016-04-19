@@ -1,0 +1,119 @@
+package com.simbest.cores.app.model;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.simbest.cores.admin.authority.model.SysOrg;
+import com.simbest.cores.model.GenericModel;
+import com.simbest.cores.utils.annotations.NotNullColumn;
+
+import javax.persistence.*;
+import java.util.Date;
+
+/**
+ * 业务代办回调日志记录
+ * 
+ * @author lishuyi
+ *
+ */
+@Entity
+@Table(name = "app_process_task_callback_log")
+public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog> {
+
+
+    private static final long serialVersionUID = 5167156979941299089L;
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name="task_id", nullable=true)
+    private ProcessTask processTask;
+
+    @Column(name = "callbackType", nullable = false)
+	private String callbackType;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "callbackStartDate", nullable = false)
+	private Date callbackStartDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "callbackEndDate", nullable = false)
+    private Date callbackEndDate;
+
+    @Column(name = "callbackDuration", nullable = false)
+    private Long callbackDuration;
+
+    @Column(name = "callbackResult", nullable = false, columnDefinition = "TINYINT default 1")
+    protected Boolean callbackResult;
+
+    @Column(name = "callbackError", nullable = true, length = 2000)
+    private String callbackError;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public ProcessTask getProcessTask() {
+        return processTask;
+    }
+
+    public void setProcessTask(ProcessTask processTask) {
+        this.processTask = processTask;
+    }
+
+    public String getCallbackType() {
+        return callbackType;
+    }
+
+    public void setCallbackType(String callbackType) {
+        this.callbackType = callbackType;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    public Date getCallbackStartDate() {
+        return callbackStartDate;
+    }
+
+    public void setCallbackStartDate(Date callbackStartDate) {
+        this.callbackStartDate = callbackStartDate;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    public Date getCallbackEndDate() {
+        return callbackEndDate;
+    }
+
+    public void setCallbackEndDate(Date callbackEndDate) {
+        this.callbackEndDate = callbackEndDate;
+    }
+
+    public Long getCallbackDuration() {
+        return callbackDuration;
+    }
+
+    public void setCallbackDuration(Long callbackDuration) {
+        this.callbackDuration = callbackDuration;
+    }
+
+    public Boolean getCallbackResult() {
+        return callbackResult;
+    }
+
+    public void setCallbackResult(Boolean callbackResult) {
+        this.callbackResult = callbackResult;
+    }
+
+    public String getCallbackError() {
+        return callbackError;
+    }
+
+    public void setCallbackError(String callbackError) {
+        this.callbackError = callbackError;
+    }
+}

@@ -41,16 +41,17 @@ public class LoadPostProcessor implements BeanPostProcessor {
 			throws BeansException {
 		if(Boolean.valueOf(config.getValue("app.debug"))){
 			if (beanFile.exists()) {
-                OutputStreamWriter writer = null;
-				try {
-                    FileOutputStream fileStream = new FileOutputStream(beanFile);
-                    writer = new OutputStreamWriter(fileStream, "UTF-8");
-					writer.write(beanName+"\r\n");
-				}catch (IOException e) {
+                FileWriter fileWritter = null;
+                try {
+                    fileWritter = new FileWriter(beanFile.getName(),true);
+                    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+                    bufferWritter.write(beanName+"\r\n");
+                    bufferWritter.close();
+                }catch (IOException e) {
 				}finally {
                     try {
-                        if (null != writer)
-                            writer.close();
+                        if (null != fileWritter)
+                            fileWritter.close();
                     } catch (IOException e) {
                     }
                 }

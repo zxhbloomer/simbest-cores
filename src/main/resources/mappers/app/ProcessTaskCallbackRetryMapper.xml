@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace='com.simbest.cores.app.mapper.ProcessTaskCallbackRetryMapper'>
+	<!-- 定义缓存 -->
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+     
+  	<resultMap id="ProcessTaskCallbackRetryResult" type="ProcessTaskCallbackRetry">
+        <id column="id" property="id" />  
+        <result column="processServiceClass" property="processServiceClass" />      
+        <result column="lastExecuteDate" property="lastExecuteDate" />
+        <result column="executeTimes" property="executeTimes" />
+        <result column="typeId" property="typeId" />
+        <result column="headerId" property="headerId" />
+        <result column="receiptId" property="receiptId" />
+        <result column="stepId" property="stepId" />
+        <result column="currentUserId" property="currentUserId" />
+        <result column="callbackType" property="callbackType" />
+        <association property="processTask" javaType="ProcessTask">
+            <id property="id" column="task_id"/>
+        </association>
+    </resultMap>
+	
+	<select id="getAll" resultMap="ProcessTaskCallbackRetryResult">
+         SELECT * FROM app_process_task_callback_retry WHERE executeTimes &lt; 5
+        <!--
+        <where>
+            <if test="executeTimes != null and executeTimes !=''">
+                AND executeTimes &lt; 5
+            </if>
+        </where>
+        -->
+    </select>
+
+	<insert id="create" parameterType="ProcessTaskCallbackRetry" useGeneratedKeys="true" keyProperty="id" > 
+        insert into app_process_task_callback_retry (processServiceClass,lastExecuteDate,executeTimes,task_id,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
+        values (#{processServiceClass},#{lastExecuteDate},#{executeTimes},#{processTask.id},#{typeId},#{headerId},#{receiptId},#{stepId},#{currentUserId},#{callbackType})
+    </insert>
+
+    <update id="update" parameterType="ProcessTaskCallbackRetry" flushCache="true" statementType="PREPARED">
+        UPDATE app_process_task_callback_retry SET executeTimes=executeTimes+1,lastExecuteDate=#{lastExecuteDate} WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="ProcessTaskCallbackRetry" flushCache="true" statementType="PREPARED">
+        DELETE FROM app_process_task_callback_retry WHERE id = #{id}
+    </delete>
+
+</mapper>

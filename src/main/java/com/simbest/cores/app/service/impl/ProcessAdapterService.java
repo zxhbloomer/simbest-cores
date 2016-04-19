@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.simbest.cores.app.event.*;
 import com.simbest.cores.app.schedule.ProcessTaskCallbackRetrySchedule;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.BeanUtils;
@@ -17,19 +18,7 @@ import com.google.common.collect.Lists;
 import com.simbest.cores.admin.authority.model.ShiroUser;
 import com.simbest.cores.admin.authority.model.SysUser;
 import com.simbest.cores.admin.authority.service.ISysUserAdvanceService;
-import com.simbest.cores.app.event.ProcessAuditLogEvent;
-import com.simbest.cores.app.event.ProcessAuditLogListener;
-import com.simbest.cores.app.event.ProcessDraftEvent;
-import com.simbest.cores.app.event.ProcessDraftListener;
-import com.simbest.cores.app.event.ProcessRemoveEvent;
-import com.simbest.cores.app.event.ProcessRemoveListener;
-import com.simbest.cores.app.event.ProcessTaskCreateCallback;
-import com.simbest.cores.app.event.ProcessTaskEvent;
 import com.simbest.cores.app.event.ProcessTaskEvent.NoticMethod;
-import com.simbest.cores.app.event.ProcessTaskListener;
-import com.simbest.cores.app.event.ProcessTaskRemoveCallback;
-import com.simbest.cores.app.event.ProcessUpdateEvent;
-import com.simbest.cores.app.event.ProcessUpdateListener;
 import com.simbest.cores.app.mapper.IProcessModelMapper;
 import com.simbest.cores.app.model.DynamicAuditUser;
 import com.simbest.cores.app.model.ProcessAudit;
@@ -128,6 +117,10 @@ public abstract class ProcessAdapterService<T extends ProcessModel<T>, PK extend
 	private ProcessUpdateListener processUpdateListener;
     @Autowired
     private ProcessTaskCallbackRetrySchedule processTaskCallbackRetrySchedule;
+    @Autowired
+    private ProcessTaskCreateCallbackListener processTaskCreateCallbackListener;
+    @Autowired
+    private ProcessTaskRemoveCallbackListener processTaskRemoveCallbackListener;
 
 	private DynamicAuditUser dynamicAuditUser;
 	

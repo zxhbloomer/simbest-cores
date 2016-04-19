@@ -15,7 +15,6 @@ import com.simbest.cores.service.IGenericService;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.Constants;
 import com.simbest.cores.utils.DateUtil;
-import com.simbest.cores.utils.annotations.AsyncEventListener;
 import com.simbest.cores.utils.configs.CoreConfig;
 import com.simbest.cores.utils.enums.ProcessEnum;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
@@ -38,7 +38,6 @@ import java.util.List;
  *
  */
 @Component
-@AsyncEventListener
 public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializable> extends ApplicationObjectSupport implements ApplicationListener<ProcessTaskEvent<T,PK>> {
 	private static transient final Log log = LogFactory.getLog(ProcessTaskListener.class);
 	
@@ -54,14 +53,6 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 	@Autowired
 	@Qualifier("processTaskService")
 	private IGenericService<ProcessTask, Long> processTaskService;
-
-    @Autowired
-    @Qualifier("processTaskCallbackRetryService")
-    private IGenericService<ProcessTaskCallbackRetry, Integer> processTaskCallbackRetryService;
-
-    @Autowired
-    @Qualifier("processTaskCallbackLogService")
-    private IGenericService<ProcessTaskCallbackLog, Integer> processTaskCallbackLogService;
 
 	@Autowired
 	public IProcessTrackService processTrackService;
@@ -84,7 +75,8 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 	@Autowired
 	private ISysUserAdvanceService sysUserAdvanceService;
 
-
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 	
 	@Override
 	public void onApplicationEvent(ProcessTaskEvent<T, PK> event) {
@@ -129,41 +121,8 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 			deleteTasks.setStepId(event.getPreviousStepId());	
 		}
 		//先 撤销OA待办
-		if(event.getRemoveCallback()!=null){
-            Date callbackStartDate = DateUtil.getCurrent();
-            Boolean callbackResult = true;
-            String callbackError = null;
-            try{
-                event.getRemoveCallback().execute(deleteTasks);
-            }catch(Exception e){
-                ProcessTaskCallbackRetry processTaskCallbackRetry = new ProcessTaskCallbackRetry();
-                processTaskCallbackRetry.setProcessServiceClass(event.getSource().getClass().getName());
-                processTaskCallbackRetry.setExecuteTimes(1);
-                processTaskCallbackRetry.setLastExecuteDate(DateUtil.getCurrent());
-                processTaskCallbackRetry.setCallbackType("RemoveCallback");
-                processTaskCallbackRetry.setProcessTask(deleteTasks);
-                processTaskCallbackRetry.setTypeId(deleteTasks.getTypeId());
-                processTaskCallbackRetry.setHeaderId(deleteTasks.getHeaderId());
-                processTaskCallbackRetry.setReceiptId(deleteTasks.getReceiptId());
-                processTaskCallbackRetry.setStepId(deleteTasks.getStepId());
-                processTaskCallbackRetry.setCurrentUserId(deleteTasks.getCurrentUserId());
-                int result1 = processTaskCallbackRetryService.create(processTaskCallbackRetry);
-                log.debug(result1);
-                callbackResult = false;
-                callbackError = StringUtils.substring(Exceptions.getStackTraceAsString(e), 0, 1999);
-            }finally {
-                ProcessTaskCallbackLog processTaskCallbackLog = new ProcessTaskCallbackLog();
-                processTaskCallbackLog.setProcessTask(deleteTasks);
-                processTaskCallbackLog.setCallbackType("RemoveCallback");
-                processTaskCallbackLog.setCallbackStartDate(callbackStartDate);
-                processTaskCallbackLog.setCallbackEndDate(DateUtil.getCurrent());
-                processTaskCallbackLog.setCallbackDuration(processTaskCallbackLog.getCallbackEndDate().getTime() - callbackStartDate.getTime());
-                processTaskCallbackLog.setCallbackResult(callbackResult);
-                processTaskCallbackLog.setCallbackError(callbackError);
-                int result2 = processTaskCallbackLogService.create(processTaskCallbackLog);
-                log.debug(result2);
-            }
-
+		if(event.getRemoveCallback() != null){
+            eventPublisher.publishEvent(new ProcessTaskRemoveCallbackEvent(this, event.getRemoveCallback(), deleteTasks));
 		}
 		//再 删除系统待办
 		int ret = processTaskService.delete(deleteTasks);
@@ -328,39 +287,7 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 			int ret1 = processTaskService.create(processTask);
 			noticeTask(process, noticeMethod, processTask.getPreviousUserId(), processTask.getCurrentUserId());
 			if(ret1>0 && event.getCreateCallback()!=null){
-                Date callbackStartDate = DateUtil.getCurrent();
-                Boolean callbackResult = true;
-                String callbackError = null;
-				try{
-					event.getCreateCallback().execute(processTask);
-				}catch(Exception e){
-                    ProcessTaskCallbackRetry processTaskCallbackRetry = new ProcessTaskCallbackRetry();
-                    processTaskCallbackRetry.setProcessServiceClass(event.getSource().getClass().getName());
-                    processTaskCallbackRetry.setExecuteTimes(1);
-                    processTaskCallbackRetry.setLastExecuteDate(DateUtil.getCurrent());
-                    processTaskCallbackRetry.setCallbackType("CreateCallback");
-                    processTaskCallbackRetry.setProcessTask(processTask);
-                    processTaskCallbackRetry.setTypeId(processTask.getTypeId());
-                    processTaskCallbackRetry.setHeaderId(processTask.getHeaderId());
-                    processTaskCallbackRetry.setReceiptId(processTask.getReceiptId());
-                    processTaskCallbackRetry.setStepId(processTask.getStepId());
-                    processTaskCallbackRetry.setCurrentUserId(processTask.getCurrentUserId());
-                    int result1 = processTaskCallbackRetryService.create(processTaskCallbackRetry);
-                    log.debug(result1);
-                    callbackResult = false;
-                    callbackError = StringUtils.substring(Exceptions.getStackTraceAsString(e), 0, 1999);
-				}finally {
-                    ProcessTaskCallbackLog processTaskCallbackLog = new ProcessTaskCallbackLog();
-                    processTaskCallbackLog.setProcessTask(processTask);
-                    processTaskCallbackLog.setCallbackType("CreateCallback");
-                    processTaskCallbackLog.setCallbackStartDate(callbackStartDate);
-                    processTaskCallbackLog.setCallbackEndDate(DateUtil.getCurrent());
-                    processTaskCallbackLog.setCallbackDuration(processTaskCallbackLog.getCallbackEndDate().getTime() - callbackStartDate.getTime());
-                    processTaskCallbackLog.setCallbackResult(callbackResult);
-                    processTaskCallbackLog.setCallbackError(callbackError);
-                    int result2 = processTaskCallbackLogService.create(processTaskCallbackLog);
-                    log.debug(result2);
-                }
+                eventPublisher.publishEvent(new ProcessTaskCreateCallbackEvent(this, event.getCreateCallback(), processTask));
             }
 			//检查代理秘书,并给秘书发送待办
 			ProcessAgent param = new ProcessAgent(processTask.getHeaderId(),userId,true);

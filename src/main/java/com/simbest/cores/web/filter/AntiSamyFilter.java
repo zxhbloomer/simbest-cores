@@ -3,6 +3,7 @@
  */
 package com.simbest.cores.web.filter;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.owasp.validator.html.AntiSamy;
@@ -134,7 +135,9 @@ public class AntiSamyFilter implements Filter {
                 if (cr.getNumberOfErrors() > 0) {
                     log.warn("antisamy encountered problem with input: " + cr.getErrorMessages());
                 }
-                return cr.getCleanHTML();
+                String str = StringEscapeUtils.unescapeHtml(cr.getCleanHTML());
+                str = str.replaceAll((antiSamy.scan("&nbsp;",AntiSamy.DOM)).getCleanHTML(),"");
+                return str;
             } catch (Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }

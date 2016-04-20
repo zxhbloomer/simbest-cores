@@ -3,10 +3,18 @@
  */
 package com.simbest.cores.web.filter;
 
+import com.google.common.collect.Sets;
+import com.simbest.cores.exceptions.Exceptions;
+import com.simbest.cores.utils.Constants;
+import org.apache.commons.lang.StringUtils;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Set;
 
 /**
  * 用途：验证HTTP Referer字段防御CSRF攻击
@@ -18,28 +26,37 @@ import java.io.IOException;
  */
 public class RefererFilter implements Filter {
 
+    private Set<String> whiteHostList = Sets.newHashSet();
+
     public void init(FilterConfig config) throws ServletException {
+        String whiteHosts = config.getInitParameter("whiteHosts");
+        if(StringUtils.isNotEmpty(whiteHosts)){
+            String[] whiteHostss = whiteHosts.split(Constants.COMMA);
+            for(String s:whiteHostss){
+                whiteHostList.add(s.toLowerCase());
+            }
+        }
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-
-        // 必须的
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
         // 链接来源地址，通过获取请求头 referer 得到
         String referer = request.getHeader("referer");
-
-        if (referer != null && !referer.contains(request.getServerName())) {//本站点访问，则有效
-            /**
-             * 如果 链接地址来自其他网站，则返回错误图片
-             */
-            request.getRequestDispatcher("/html/errors/404.html").forward(request, response);
-        } else {
-            /**
-             * 图片正常显示
-             */
-            chain.doFilter(request, response);
+        try {
+            if (referer != null) {
+                URI referUri = new URI(referer);
+                if (whiteHostList.size()>0 && !whiteHostList.contains(referUri.getHost().toLowerCase())) {
+                    request.getRequestDispatcher("/html/errors/404.html").forward(request, response);
+                } else {
+                    chain.doFilter(request, response);
+                }
+            }else {
+                    chain.doFilter(request, response);
+            }
+        } catch (URISyntaxException e) {
+            Exceptions.printException(e);
         }
 
     }

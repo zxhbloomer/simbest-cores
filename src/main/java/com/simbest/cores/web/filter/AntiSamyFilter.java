@@ -41,7 +41,7 @@ public class AntiSamyFilter implements Filter {
 
     public AntiSamyFilter() {
         try {
-            InputStream is = this.getClass().getResourceAsStream("/antisamy/antisamy-anythinggoes.xml");
+            InputStream is = this.getClass().getResourceAsStream("/antisamy/antisamy-ebay.xml");
             Policy policy = Policy.getInstance(is);
             antiSamy = new AntiSamy(policy);
         } catch (PolicyException e) {

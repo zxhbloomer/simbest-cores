@@ -19,9 +19,11 @@ public class ProcessTaskCreateCallbackEvent extends ApplicationEvent {
 
     private ProcessTask processTask;
 
+    private String processService;
 
-	public ProcessTaskCreateCallbackEvent(Object source, ProcessTaskCreateCallback createCallback, ProcessTask processTask) {
+	public ProcessTaskCreateCallbackEvent(Object source, String processService, ProcessTaskCreateCallback createCallback, ProcessTask processTask) {
 		super(source);
+        this.processService = processService;
 		this.createCallback = createCallback;
         this.processTask = processTask;
 	}
@@ -40,5 +42,13 @@ public class ProcessTaskCreateCallbackEvent extends ApplicationEvent {
 
     public void setProcessTask(ProcessTask processTask) {
         this.processTask = processTask;
+    }
+
+    public String getProcessService() {
+        return processService;
+    }
+
+    public void setProcessService(String processService) {
+        this.processService = processService;
     }
 }

@@ -48,11 +48,11 @@ public class ProcessTaskCreateCallbackListener implements ApplicationListener<Pr
             event.getCreateCallback().execute(processTask);
         }catch(Exception e){
             ProcessTaskCallbackRetry processTaskCallbackRetry = new ProcessTaskCallbackRetry();
-            processTaskCallbackRetry.setProcessServiceClass(event.getSource().getClass().getName());
+            processTaskCallbackRetry.setProcessServiceClass(event.getProcessService());
             processTaskCallbackRetry.setExecuteTimes(1);
             processTaskCallbackRetry.setLastExecuteDate(DateUtil.getCurrent());
             processTaskCallbackRetry.setCallbackType("CreateCallback");
-            processTaskCallbackRetry.setProcessTask(processTask);
+            processTaskCallbackRetry.setTaskId(processTask.getId());
             processTaskCallbackRetry.setTypeId(processTask.getTypeId());
             processTaskCallbackRetry.setHeaderId(processTask.getHeaderId());
             processTaskCallbackRetry.setReceiptId(processTask.getReceiptId());
@@ -64,7 +64,7 @@ public class ProcessTaskCreateCallbackListener implements ApplicationListener<Pr
             callbackError = StringUtils.substring(Exceptions.getStackTraceAsString(e), 0, 1999);
         }finally {
             ProcessTaskCallbackLog processTaskCallbackLog = new ProcessTaskCallbackLog();
-            processTaskCallbackLog.setProcessTask(processTask);
+            processTaskCallbackLog.setTaskId(processTask.getId());
             processTaskCallbackLog.setCallbackType("CreateCallback");
             processTaskCallbackLog.setCallbackStartDate(callbackStartDate);
             processTaskCallbackLog.setCallbackEndDate(DateUtil.getCurrent());

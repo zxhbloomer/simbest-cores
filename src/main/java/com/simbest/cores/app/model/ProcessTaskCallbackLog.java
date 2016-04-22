@@ -26,9 +26,7 @@ public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog>
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name="task_id", nullable=true)
-    private ProcessTask processTask;
+    private Long taskId;
 
     @Column(name = "callbackType", nullable = false)
 	private String callbackType;
@@ -59,12 +57,12 @@ public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog>
         this.id = id;
     }
 
-    public ProcessTask getProcessTask() {
-        return processTask;
+    public Long getTaskId() {
+        return taskId;
     }
 
-    public void setProcessTask(ProcessTask processTask) {
-        this.processTask = processTask;
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     public String getCallbackType() {

@@ -38,9 +38,7 @@ public class ProcessTaskCallbackRetry extends GenericModel<ProcessTaskCallbackRe
     @Column(name = "callbackType", nullable = false)
     private String callbackType;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="task_id", nullable=true)
-    private ProcessTask processTask;
+    private Long taskId;
 
     @NotNullColumn(value="业务类型")
     @Column(name = "typeId", nullable = false)
@@ -80,12 +78,12 @@ public class ProcessTaskCallbackRetry extends GenericModel<ProcessTaskCallbackRe
         this.processServiceClass = processServiceClass;
     }
 
-    public ProcessTask getProcessTask() {
-        return processTask;
+    public Long getTaskId() {
+        return taskId;
     }
 
-    public void setProcessTask(ProcessTask processTask) {
-        this.processTask = processTask;
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")

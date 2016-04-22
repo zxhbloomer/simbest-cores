@@ -51,7 +51,7 @@ public class ProcessTaskRemoveCallbackListener implements ApplicationListener<Pr
             processTaskCallbackRetry.setExecuteTimes(1);
             processTaskCallbackRetry.setLastExecuteDate(DateUtil.getCurrent());
             processTaskCallbackRetry.setCallbackType("RemoveCallback");
-            processTaskCallbackRetry.setProcessTask(deleteTasks);
+            processTaskCallbackRetry.setTaskId(deleteTasks.getId());
             processTaskCallbackRetry.setTypeId(deleteTasks.getTypeId());
             processTaskCallbackRetry.setHeaderId(deleteTasks.getHeaderId());
             processTaskCallbackRetry.setReceiptId(deleteTasks.getReceiptId());
@@ -63,7 +63,7 @@ public class ProcessTaskRemoveCallbackListener implements ApplicationListener<Pr
             callbackError = StringUtils.substring(Exceptions.getStackTraceAsString(e), 0, 1999);
         }finally {
             ProcessTaskCallbackLog processTaskCallbackLog = new ProcessTaskCallbackLog();
-            processTaskCallbackLog.setProcessTask(deleteTasks);
+            processTaskCallbackLog.setTaskId(deleteTasks.getId());
             processTaskCallbackLog.setCallbackType("RemoveCallback");
             processTaskCallbackLog.setCallbackStartDate(callbackStartDate);
             processTaskCallbackLog.setCallbackEndDate(DateUtil.getCurrent());

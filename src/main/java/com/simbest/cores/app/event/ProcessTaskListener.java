@@ -287,7 +287,8 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 			int ret1 = processTaskService.create(processTask);
 			noticeTask(process, noticeMethod, processTask.getPreviousUserId(), processTask.getCurrentUserId());
 			if(ret1>0 && event.getCreateCallback()!=null){
-                eventPublisher.publishEvent(new ProcessTaskCreateCallbackEvent(this, event.getCreateCallback(), processTask));
+                eventPublisher.publishEvent(new ProcessTaskCreateCallbackEvent(this,
+                        event.getSource().getClass().getName(), event.getCreateCallback(), processTask));
             }
 			//检查代理秘书,并给秘书发送待办
 			ProcessAgent param = new ProcessAgent(processTask.getHeaderId(),userId,true);

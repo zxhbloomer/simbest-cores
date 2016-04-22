@@ -6,6 +6,8 @@ package com.simbest.cores.app.schedule;
 import com.simbest.cores.app.model.ProcessTask;
 import com.simbest.cores.app.model.ProcessTaskCallbackRetry;
 import com.simbest.cores.app.service.IProcessService;
+import com.simbest.cores.app.service.IProcessTaskService;
+import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.service.IGenericService;
 import com.simbest.cores.utils.DateUtil;
 import org.apache.commons.logging.Log;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 
 /**
- * 用途：每十分钟检查一次待办生成与待办核销的回调接口执行情况，执行回调失败的任务，一个尝试执行5次
+ * 用途：每十分钟检查一次待办生成与待办核销的回调接口执行情况，执行回调失败的任务，一个尝试执行12次
  * 作者: lishuyi 
  * 时间: 2016-04-18  18:08 
  */
@@ -31,17 +33,23 @@ public class ProcessTaskCallbackRetrySchedule extends ApplicationObjectSupport {
     @Qualifier("processTaskCallbackRetryService")
     private IGenericService<ProcessTaskCallbackRetry, Integer> processTaskCallbackRetryService;
 
+    @Autowired
+    private IProcessTaskService processTaskService;
 
     @Scheduled(cron = "0 0/10 * * * ?")
     private void checkFailedAndRun() throws ClassNotFoundException {
         log.debug("ProcessTaskCallbackRetrySchedule Start .....................................");
         Collection<ProcessTaskCallbackRetry> list = processTaskCallbackRetryService.getAll();
         for(ProcessTaskCallbackRetry o:list){
-            IProcessService processService = (IProcessService)getApplicationContext().getBean(Class.forName(o.getProcessServiceClass()));
             boolean tryResult = true;
             try {
+                IProcessService processService = (IProcessService)getApplicationContext().getBean(Class.forName(o.getProcessServiceClass()));
                 if (o.getCallbackType().equals("CreateCallback")) {
-                    processService.createProcessTaskCreateCallback().execute(o.getProcessTask());
+                    if(null != o.getTaskId()){
+                        ProcessTask task = processTaskService.getById(o.getTaskId());
+                        if(null != task)
+                            processService.createProcessTaskCreateCallback().execute(task);
+                    }
                 } else {
                     ProcessTask deleteTasks = new ProcessTask();
                     deleteTasks.setTypeId(o.getTypeId());
@@ -52,6 +60,7 @@ public class ProcessTaskCallbackRetrySchedule extends ApplicationObjectSupport {
                     processService.createProcessTaskRemoveCallback().execute(deleteTasks);
                 }
             }catch (Exception e){
+                Exceptions.printException(e);
                 tryResult = false;
             }finally {
                 int ret;

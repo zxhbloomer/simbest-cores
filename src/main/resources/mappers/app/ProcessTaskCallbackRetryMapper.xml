@@ -16,9 +16,7 @@
         <result column="stepId" property="stepId" />
         <result column="currentUserId" property="currentUserId" />
         <result column="callbackType" property="callbackType" />
-        <association property="processTask" javaType="ProcessTask">
-            <id property="id" column="task_id"/>
-        </association>
+        <result column="taskId" property="taskId" />
     </resultMap>
 	
 	<select id="getAll" resultMap="ProcessTaskCallbackRetryResult">
@@ -26,15 +24,15 @@
         <!--
         <where>
             <if test="executeTimes != null and executeTimes !=''">
-                AND executeTimes &lt; 5
+                AND executeTimes &lt; 12
             </if>
         </where>
         -->
     </select>
 
 	<insert id="create" parameterType="ProcessTaskCallbackRetry" useGeneratedKeys="true" keyProperty="id" > 
-        insert into app_process_task_callback_retry (processServiceClass,lastExecuteDate,executeTimes,task_id,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
-        values (#{processServiceClass},#{lastExecuteDate},#{executeTimes},#{processTask.id},#{typeId},#{headerId},#{receiptId},#{stepId},#{currentUserId},#{callbackType})
+        insert into app_process_task_callback_retry (processServiceClass,lastExecuteDate,executeTimes,taskId,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
+        values (#{processServiceClass},#{lastExecuteDate},#{executeTimes},#{taskId},#{typeId},#{headerId},#{receiptId},#{stepId},#{currentUserId},#{callbackType})
     </insert>
 
     <update id="update" parameterType="ProcessTaskCallbackRetry" flushCache="true" statementType="PREPARED">

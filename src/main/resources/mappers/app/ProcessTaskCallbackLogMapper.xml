@@ -13,9 +13,7 @@
         <result column="callbackDuration" property="callbackDuration" />
         <result column="callbackResult" property="callbackResult" />
         <result column="callbackError" property="callbackError" />
-        <association property="processTask" javaType="ProcessTask">
-            <id property="id" column="task_id"/>
-        </association>
+        <result column="taskId" property="taskId" />
     </resultMap>
 	
 	<select id="getAll" resultMap="ProcessTaskCallbackLogResult">
@@ -23,8 +21,8 @@
     </select>
 
 	<insert id="create" parameterType="ProcessTaskCallbackLog" useGeneratedKeys="true" keyProperty="id" > 
-        insert into app_process_task_callback_log (callbackType,callbackStartDate,callbackEndDate,callbackDuration,callbackResult,callbackError,task_id)
-        values (#{callbackType},#{callbackStartDate},#{callbackEndDate},#{callbackDuration},#{callbackResult},#{callbackError},#{processTask.id})
+        insert into app_process_task_callback_log (callbackType,callbackStartDate,callbackEndDate,callbackDuration,callbackResult,callbackError,taskId)
+        values (#{callbackType},#{callbackStartDate},#{callbackEndDate},#{callbackDuration},#{callbackResult},#{callbackError},#{taskId})
     </insert>
     
 </mapper>

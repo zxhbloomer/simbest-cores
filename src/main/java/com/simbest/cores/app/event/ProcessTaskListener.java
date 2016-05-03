@@ -122,7 +122,10 @@ public class ProcessTaskListener<T extends ProcessModel<T>, PK extends Serializa
 		}
 		//先 撤销OA待办
 		if(event.getRemoveCallback() != null){
-            eventPublisher.publishEvent(new ProcessTaskRemoveCallbackEvent(this, event.getRemoveCallback(), deleteTasks));
+            Collection<ProcessTask> delOaTasks = processTaskService.getAll(deleteTasks);
+            for(ProcessTask task: delOaTasks) {
+                eventPublisher.publishEvent(new ProcessTaskRemoveCallbackEvent(this, event.getRemoveCallback(), task));
+            }
 		}
 		//再 删除系统待办
 		int ret = processTaskService.delete(deleteTasks);

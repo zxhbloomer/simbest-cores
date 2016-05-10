@@ -191,7 +191,8 @@ public class ProcessAuditAdvanceService extends GenericAdvanceService<ProcessAud
 					//如果是拟制人，需要关联createUserId，显示用户姓名
 					if(createUserId != null && role.getId().equals(Integer.valueOf(getCoreConfig().getValue("app.role.applicant")))){
 						SysUser user = sysUserAdvanceService.loadByKey(createUserId);
-						sb.append(user.getUsername());
+                        if(user != null)
+						    sb.append(user.getUsername());
 					}else{ //否则显示角色下所有用户姓名
 //						List<SysUser> users = sysUserService.getByRole(role.getId());
 //						for(SysUser u:users){

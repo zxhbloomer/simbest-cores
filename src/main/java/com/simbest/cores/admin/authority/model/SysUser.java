@@ -90,7 +90,7 @@ public class SysUser extends LogicModel<SysUser> {
 	
 	@ExcelVOAttribute(name = "邮箱地址", column = "E")
 	@NotNullColumn(value="邮箱地址")
-	@Column(name="email", length=30)
+	@Column(name="email", length=80)
 	private String email;
 	
 	@ExcelVOAttribute(name = "职位", column = "G")

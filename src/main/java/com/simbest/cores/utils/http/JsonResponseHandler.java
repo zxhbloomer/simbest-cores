@@ -20,8 +20,12 @@ public class JsonResponseHandler{
 	
 	private static Map<String, ResponseHandler<?>> map = new HashMap<String, ResponseHandler<?>>();
 
-	@SuppressWarnings("unchecked")
 	public static <T> ResponseHandler<T> createResponseHandler(final Class<T> clazz){
+		return createResponseHandler(clazz, Constants.CHARSET);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> ResponseHandler<T> createResponseHandler(final Class<T> clazz, final String charset){
 		if(map.containsKey(clazz.getName())){
 			return (ResponseHandler<T>)map.get(clazz.getName());
 		}else{
@@ -32,7 +36,7 @@ public class JsonResponseHandler{
 					int status = response.getStatusLine().getStatusCode();
 	                if (status >= 200 && status < 300) {
 	                    HttpEntity entity = response.getEntity();
-	                    String str = EntityUtils.toString(entity, Constants.CHARSET);	  
+	                    String str = EntityUtils.toString(entity, charset);	  
 	                    log.debug(clazz.getSimpleName()+"  Serializable String value is:"+str);
 	                    T o =JacksonUtils.readValue(str, clazz);
 	                    log.debug(clazz.getSimpleName()+"  Deserializable Object value is:"+o);

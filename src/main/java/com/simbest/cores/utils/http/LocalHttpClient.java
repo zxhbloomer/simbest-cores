@@ -75,6 +75,10 @@ public class LocalHttpClient {
 		return execute(request, JsonResponseHandler.createResponseHandler(clazz));
 	}
 
+	public static <T> T executeJsonResult(HttpUriRequest request,Class<T> clazz, String charset){
+		return execute(request, JsonResponseHandler.createResponseHandler(clazz, charset));
+	}
+	
 	/**
 	 * 数据返回自动XML对象解析
 	 * @param request
@@ -85,6 +89,10 @@ public class LocalHttpClient {
 		return execute(request,XmlResponseHandler.createResponseHandler(clazz));
 	}
 
+	public static <T> T executeXmlResult(HttpUriRequest request,Class<T> clazz, String charset){
+		return execute(request,XmlResponseHandler.createResponseHandler(clazz, charset));
+	}
+	
 	/**
 	 * 数据返回直接为响应字符串
 	 * @param request
@@ -92,6 +100,10 @@ public class LocalHttpClient {
 	 */
 	public static String executeStringResult(HttpUriRequest request){
 		return execute(request,StringResponseHandler.createResponseHandler());
+	}
+	
+	public static String executeStringResult(HttpUriRequest request, String charset){
+		return execute(request,StringResponseHandler.createResponseHandler(charset));
 	}
 	
 	/**

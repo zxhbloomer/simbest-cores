@@ -8,6 +8,7 @@ package com.simbest.cores.utils;
  */
 public class Constants {
 	public static final String CHARSET = "UTF-8";
+	public static final String GB2312 = "GB2312";
 	public static final String ENCODE = "SHA-1";
 
 	public static final String Linux="Linux";

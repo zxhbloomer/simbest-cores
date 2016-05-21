@@ -3,6 +3,15 @@
  */
 package com.simbest.cores.utils;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
+import org.mozilla.universalchardet.UniversalDetector;
 
 /**
  * 字符集转换工具
@@ -12,13 +21,13 @@ package com.simbest.cores.utils;
  */
 public class CharsetUtil {
 	public static void main(String[] args) {
-		String str="{\"aaaa\":\"中国花\"}";
+		String str = "{\"aaaa\":\"中国花\"}";
 		System.out.println(GBK2UTF8(str));
 		System.out.println(UTF82GBK(str));
 		System.out.println(UTF8ToUnicode(str));
 		System.out.println(GBK2Unicode(str));
 	}
-	
+
 	public static String GBK2UTF8(String gbk) {
 		String l_temp = GBK2Unicode(gbk);
 		l_temp = UnicodeToUTF8(l_temp);
@@ -70,24 +79,24 @@ public class CharsetUtil {
 	}
 
 	public static String UTF8ToUnicode(String inStr) {
-//		char[] myBuffer = inStr.toCharArray();
-//		StringBuffer sb = new StringBuffer();
-//		for (int i = 0; i < inStr.length(); i++) {
-//			UnicodeBlock ub = UnicodeBlock.of(myBuffer[i]);
-//			if (ub == UnicodeBlock.BASIC_LATIN) {
-//				sb.append(myBuffer[i]);
-//			} else if (ub == UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
-//				int j = (int) myBuffer[i] - 65248;
-//				sb.append((char) j);
-//			} else {
-//				short s = (short) myBuffer[i];
-//				s = 32079;
-//				String hexS = Integer.toHexString(s);
-//				String unicode = "\\u" + hexS;
-//				sb.append(unicode.toLowerCase());
-//			}
-//		}
-//		return sb.toString();
+		// char[] myBuffer = inStr.toCharArray();
+		// StringBuffer sb = new StringBuffer();
+		// for (int i = 0; i < inStr.length(); i++) {
+		// UnicodeBlock ub = UnicodeBlock.of(myBuffer[i]);
+		// if (ub == UnicodeBlock.BASIC_LATIN) {
+		// sb.append(myBuffer[i]);
+		// } else if (ub == UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+		// int j = (int) myBuffer[i] - 65248;
+		// sb.append((char) j);
+		// } else {
+		// short s = (short) myBuffer[i];
+		// s = 32079;
+		// String hexS = Integer.toHexString(s);
+		// String unicode = "\\u" + hexS;
+		// sb.append(unicode.toLowerCase());
+		// }
+		// }
+		// return sb.toString();
 		char[] myBuffer = inStr.toCharArray();
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < myBuffer.length; i++) {
@@ -164,27 +173,81 @@ public class CharsetUtil {
 	private static boolean isNeedConvert(char para) {
 		return ((para & (0x00FF)) != para);
 	}
-	
+
 	private static String unicodeEscaped(char ch) {
-		if(isChineseChar(ch)){
+		if (isChineseChar(ch)) {
 			if (ch < 0x10) {
 				return "\\u000" + Integer.toHexString(ch);
 			} else if (ch < 0x100) {
-		    	return "\\u00" + Integer.toHexString(ch);
-		 	} else if (ch < 0x1000) {
-		 		return "\\u0" + Integer.toHexString(ch);
-		 	}
+				return "\\u00" + Integer.toHexString(ch);
+			} else if (ch < 0x1000) {
+				return "\\u0" + Integer.toHexString(ch);
+			}
 			return "\\u" + Integer.toHexString(ch);
-		}else{
+		} else {
 			return String.valueOf(ch);
 		}
 	}
+
+	public static boolean isChineseChar(char c) {
+		boolean temp = false;
+		if ((c >= 0x4e00) && (c <= 0x9fbb)) {
+			temp = true;
+		}
+		return temp;
+	}
+
+	public static String changeCharset(String str, String newCharset)
+			throws UnsupportedEncodingException {
+		if (str != null) {
+			// 用默认字符编码解码字符串。
+			byte[] bs = str.getBytes();
+			// 用新的字符编码生成字符串
+			return new String(bs, newCharset);
+		}
+		return null;
+	}
+
+	public static String changeCharset(String str, String oldCharset, String newCharset)
+			throws UnsupportedEncodingException {
+		if (str != null) {
+			// 用旧的字符编码解码字符串。解码可能会出现异常。
+			byte[] bs = str.getBytes(oldCharset);
+			// 用新的字符编码生成字符串
+			return new String(bs, newCharset);
+		}
+		return null;
+	}
+
+	public static String getStringCharset(String str) throws IOException {
+		return getInputStreamCharset(new ByteArrayInputStream(str.getBytes()));
+	}
 	
-	 public static boolean isChineseChar(char c){
-        boolean temp = false;
-        if((c >= 0x4e00)&&(c <= 0x9fbb)) {
-            temp=true;
-        }
-        return temp;
-    }
+	public static String getInputStreamCharset(InputStream is) throws IOException {
+		UniversalDetector detector = new UniversalDetector(null);
+		byte[] buf = new byte[4096];
+		int nread;
+		while ((nread = is.read(buf)) > 0 && !detector.isDone()) {
+			detector.handleData(buf, 0, nread);
+		}
+		detector.dataEnd();
+		return detector.getDetectedCharset();
+	}
+
+	public static String getFileCharset(File file) throws IOException {
+		byte[] buf = new byte[4096];
+		BufferedInputStream bufferedInputStream = new BufferedInputStream(
+				new FileInputStream(file));
+		final UniversalDetector universalDetector = new UniversalDetector(null);
+		int numberOfBytesRead;
+		while ((numberOfBytesRead = bufferedInputStream.read(buf)) > 0
+				&& !universalDetector.isDone()) {
+			universalDetector.handleData(buf, 0, numberOfBytesRead);
+		}
+		universalDetector.dataEnd();
+		String encoding = universalDetector.getDetectedCharset();
+		universalDetector.reset();
+		bufferedInputStream.close();
+		return encoding;
+	}
 }

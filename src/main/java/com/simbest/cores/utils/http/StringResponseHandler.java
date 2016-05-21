@@ -17,6 +17,10 @@ public class StringResponseHandler{
 	private static Set<ResponseHandler<String>> sets = Sets.newHashSet();
 	
 	public static  ResponseHandler<String> createResponseHandler(){
+		return createResponseHandler(Constants.CHARSET);
+	}
+
+	public static  ResponseHandler<String> createResponseHandler(final String charset){
 		if(sets.size() !=0){
 			return sets.iterator().next();
 		}else{
@@ -27,7 +31,7 @@ public class StringResponseHandler{
 					int status = response.getStatusLine().getStatusCode();
 	                if (status >= 200 && status <= 302) {
 	                    HttpEntity entity = response.getEntity();
-	                    return EntityUtils.toString(entity, Constants.CHARSET);	  
+	                    return EntityUtils.toString(entity, charset);	  
 	                } else {
 	                    throw new ClientProtocolException("Unexpected response status: " + status);
 	                }
@@ -37,5 +41,4 @@ public class StringResponseHandler{
 		return responseHandler;
 		}
 	}
-
 }

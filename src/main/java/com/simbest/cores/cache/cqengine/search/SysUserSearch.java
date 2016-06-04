@@ -86,12 +86,8 @@ public class SysUserSearch {
             parser.registerAttribute(SysUserIndex.POSITION);
 
             AsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
-            Future<String> future = executor.submit(new IndexTask(sysUserAdvanceService));
-            try {
-                log.debug(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                Exceptions.printException(e);
-            }
+            executor.execute(new IndexTask(sysUserAdvanceService));
+
         }
 
     }
@@ -177,9 +173,8 @@ public class SysUserSearch {
     }
 
 
-    class IndexTask implements Callable<String> {
+    class IndexTask implements Runnable {
         private ISysUserAdvanceService sysUserAdvanceService;
-
         int count = 0;
         public IndexTask(ISysUserAdvanceService sysUserAdvanceService) {
             super();
@@ -187,13 +182,13 @@ public class SysUserSearch {
         }
 
         @Override
-        public String call() throws Exception {
+        public void run() {
             Collection<SysUser> users = sysUserAdvanceService.getAll();
             for(SysUser u:users){
                 if(addSysUser(u))
                     count++;
             }
-            return "Find "+users.size()+" records in redis, and indexed "+count+" records to the Google CQEngine !";
+            log.debug("Find "+users.size()+" records in redis, and indexed "+count+" records to the Google CQEngine !");
         }
     }
 }

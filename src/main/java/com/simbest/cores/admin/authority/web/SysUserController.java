@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.simbest.cores.admin.authority.model.DynamicUserTreeNode;
 import com.simbest.cores.admin.authority.model.ShiroUser;
@@ -38,6 +37,7 @@ import com.simbest.cores.admin.authority.service.ISysPermissionAdvanceService;
 import com.simbest.cores.admin.authority.service.ISysRoleAdvanceService;
 import com.simbest.cores.admin.authority.service.ISysUserAdvanceService;
 import com.simbest.cores.admin.authority.service.ISysUserService;
+import com.simbest.cores.cache.cqengine.search.SysUserSearch;
 import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.AppCodeGenerator;
@@ -71,7 +71,10 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	
 	@Autowired
 	private AppUserSession appUserSession;
-	
+
+    //@Autowired
+    private SysUserSearch userSearch;
+
 	public SysUserController() {
 		super(SysUser.class, "/action/admin/authority/sysuser/sysUserList", "/action/admin/authority/sysuser/sysUserForm");
 	}	
@@ -327,85 +330,28 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	public ModelAndView userRoleView() throws Exception {
 		return new ModelAndView("/action/admin/authority/sysuser/userRoleView");
 	}
-	
-	@RequestMapping(value = "/getFirstDynamicUserTree/{orgId}/{userType}", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> getFirstDynamicUserTree(@PathVariable("orgId")Integer orgId, @PathVariable("userType")Integer userType) throws Exception {
-		Map<String, Object> result = Maps.newHashMap();
-		List<DynamicUserTreeNode> resultList = Lists.newArrayList();
-		SysOrg root = sysOrgAdvanceService.loadByKey(orgId);
-		DynamicUserTreeNode rootNode = new DynamicUserTreeNode();
-		rootNode.setType("org");
-		rootNode.setChild(true);
-		rootNode.setId(root.getId());
-		rootNode.setPid(root.getParent()==null?null:root.getParent().getId());
-		rootNode.setTitle(root.getOrgName());
-		resultList.add(rootNode);
-		loadUserAndOrg(resultList, orgId, userType);		
-		Map<String, Object> dataMap = super.wrapQueryResult(resultList);
-		result.put("data", dataMap);
-		result.put("message", "");
-		result.put("responseid", 1);
-		return result;
-	}
-	
-	@RequestMapping(value = "/getChoseDynamicUserTree/{orgId}/{userType}", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> getChoseDynamicUserTree(@PathVariable("orgId")Integer orgId, @PathVariable("userType")Integer userType) throws Exception {
-		Map<String, Object> result = Maps.newHashMap();
-		List<DynamicUserTreeNode> resultList = Lists.newArrayList();		
-		loadUserAndOrg(resultList, orgId, userType);		
-		Map<String, Object> dataMap = super.wrapQueryResult(resultList);
-		result.put("data", dataMap);
-		result.put("message", "");
-		result.put("responseid", 1);
-		return result;
-	}
-	
-	private void loadUserAndOrg(List<DynamicUserTreeNode> resultList, Integer orgId, Integer userType){	
-		List<SysUser> userList = sysUserAdvanceService.getByOrg(orgId,userType);
-		for(SysUser user : userList){
-			DynamicUserTreeNode node = new DynamicUserTreeNode();
-			node.setType("user");
-			node.setChild(false);
-			node.setId(user.getId());
-			node.setPid(orgId);
-			node.setTitle(user.getUsername());
-			resultList.add(node);
-		}
-		List<SysOrg> orgList = sysOrgAdvanceService.getByParent(orgId);
-		for(SysOrg org : orgList){
-			DynamicUserTreeNode node = new DynamicUserTreeNode();
-			Integer children = sysOrgAdvanceService.countByParent(org.getId());
-			if(children != null && children>0)
-				node.setChild(true);
-			else
-				node.setChild(false);
-			node.setType("org");
-			node.setId(org.getId());
-			node.setPid(orgId);
-			node.setTitle(org.getOrgName());
-			resultList.add(node);
-		}
-	}
-	/**
-	 * 加载部门、用户树(不基于角色)
-	 * @param roleId
-	 * @return
-	 * @throws Exception
-	 */
+
+    /**
+     * 一. 穷举遍历递归部门用户树
+     * 递归层层向下查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载
+     * @param userType
+     * @return
+     * @throws Exception
+     */
 	@RequestMapping(value = "/userRole/getUsersTreeData/{userType}")
 	@ResponseBody
 	public Map<String, Object> getUsersTreeData(@PathVariable("userType")Integer userType) throws Exception {		
 		return sysUserAdvanceService.getUsersTreeData(userType);
 	}
-	
-	/**
-	 * 加载部门、用户树(基于角色)
-	 * @param roleId
-	 * @return
-	 * @throws Exception
-	 */
+
+    /**
+     * 二. 穷举遍历递归部门用户树[需要关联角色]
+     * 递归层层向下查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载，并显示用户角色
+     * @param roleId
+     * @param userType
+     * @return
+     * @throws Exception
+     */
 	@RequestMapping(value = "/userRole/getUsersRoleTreeData/{userType}/{roleId}")
 	@ResponseBody
 	public Map<String, Object> getUsersRoleTreeData(@PathVariable("roleId") Integer roleId, @PathVariable("userType") Integer userType) throws Exception {
@@ -469,12 +415,12 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 		return map;
 	}
 
-	/**
-	 * 构造权限树(人员直接对权限授权)
-	 * @param id
-	 * @return
-	 * @throws Exception
-	 */
+    /**
+     * 三. 穷举遍历用户权限树，用于对用户直接授权
+     * @param userId
+     * @return
+     * @throws Exception
+     */
 	@RequiresPermissions(value={"admin:authority:sysuser:create","admin:authority:sysuser:update"},logical=Logical.OR)
 	@RequestMapping(value = "/userPermission/getPermissionsTreeData/{userId}")
 	@ResponseBody
@@ -506,4 +452,62 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 		result.put("responseid", 1);
 		return result;
 	}
+
+    /**
+     * 四. 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单（含首节点）
+     * @param orgId
+     * @param userType
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getFirstDynamicUserTree/{orgId}/{userType}", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getFirstDynamicUserTree(@PathVariable("orgId")Integer orgId, @PathVariable("userType")Integer userType) throws Exception {
+        Map<String, Object> result = Maps.newHashMap();
+        List<DynamicUserTreeNode> resultList = sysUserAdvanceService.getFirstDynamicUserTree(orgId, userType);
+        Map<String, Object> dataMap = super.wrapQueryResult(resultList);
+        result.put("data", dataMap);
+        result.put("message", "");
+        result.put("responseid", 1);
+        return result;
+    }
+
+    /**
+     * 四. 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单
+     * @param orgId
+     * @param userType
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getChoseDynamicUserTree/{orgId}/{userType}", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> getChoseDynamicUserTree(@PathVariable("orgId")Integer orgId, @PathVariable("userType")Integer userType) throws Exception {
+        Map<String, Object> result = Maps.newHashMap();
+        List<DynamicUserTreeNode> resultList = sysUserAdvanceService.getChoseDynamicUserTree(orgId, userType);
+        Map<String, Object> dataMap = super.wrapQueryResult(resultList);
+        result.put("data", dataMap);
+        result.put("message", "");
+        result.put("responseid", 1);
+        return result;
+    }
+
+    /**
+     * 五.动态搜索用户属性，构建当前登录人组织成员及父类所有组织树
+     * @param u
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/searchCurrentUserDynamicUserTree")
+    @ResponseBody
+    public Map<String, Object> searchCurrentUserDynamicUserTree(SysUser u) throws Exception {
+        ShiroUser o = appUserSession.getCurrentUser();
+        Map<String, Object> result = Maps.newHashMap();
+        List<DynamicUserTreeNode> resultList = userSearch.searchDynamicUserTree(u.getLoginName(),o.getMpNum(),u.getPosition());
+        Map<String, Object> dataMap = super.wrapQueryResult(resultList);
+        result.put("data", dataMap);
+        result.put("message", "");
+        result.put("responseid", 1);
+        return result;
+    }
+
 }

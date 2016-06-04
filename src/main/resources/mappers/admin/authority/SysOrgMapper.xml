@@ -41,11 +41,12 @@
 			<id property="id" column="pid"/>
 			<result column="porgCode" property="orgCode" />
 			<result column="porgName" property="orgName" />
+            <result column="porgLevel" property="orgLevel" />
 		</association>
     </resultMap>
     		 
 	<select id='getById' parameterType='Integer' resultMap="simpleOrgResult">
-     	SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.id = #{id}
+     	SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.id = #{id}
 	</select>
 	<select id='getRoot' resultMap="simpleOrgResult">
 	     SELECT * FROM sys_org WHERE parent_id is null
@@ -55,16 +56,16 @@
   
     
 	<select id='getByParent' parameterType='Integer' resultMap="simpleOrgResult">
-	     SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id = #{parentId}	
+	     SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id = #{parentId}
     </select>
     <select id='countByParent' parameterType='Integer' resultType="Integer">
 	     SELECT count(*) FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id = #{parentId}	
     </select>
 	<select id='getExcludeRoot' resultMap="simpleOrgResult">
-	     SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id is not null order by c.id asc	
+	     SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id is not null order by c.id asc
     </select>    
 	<select id='getAll' resultMap="simpleOrgResult">
-     	SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id
+     	SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id
      	<where>
 	     	<if test="orgName != null and orgName !=''">
 	            AND c.orgName = #{orgName}

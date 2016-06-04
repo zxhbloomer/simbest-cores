@@ -47,7 +47,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 	private ISysLoginInfoService sysLoginInfoService;
 	
 	@Autowired
-	private ISysUserAdvanceService sysUserService;
+	private ISysUserAdvanceService sysUserAdvanceService;
 	
 	@Resource(name = "sysPermissionService")
 	private ISysPermissionService sysPermissionService;
@@ -55,7 +55,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 	private Boolean record;
 	
 	@Autowired
-	private void initRecord(CoreConfig coreConfig){
+	private void initRecord(CoreConfig coreConfig, ISysUserAdvanceService sysUserAdvanceService){
 		record = Boolean.valueOf(coreConfig.getValue("app.record.log"));
 	}
 	
@@ -82,7 +82,7 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
     		if(principal != null){ // 已登陆成功不再登陆	
     			if(record){
 		    		//记录登陆信息
-					SysUser sysUser = sysUserService.getByUnique(principal.loginName);
+					SysUser sysUser = sysUserAdvanceService.getByUnique(principal.loginName);
 					SysLoginInfo record = new SysLoginInfo();
 					record.setSessionid(currentUser.getSession().getId().toString());
 					record.setLoginip(currentUser.getSession().getHost());

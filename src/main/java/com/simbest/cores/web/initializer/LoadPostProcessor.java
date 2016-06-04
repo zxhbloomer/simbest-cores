@@ -40,6 +40,7 @@ public class LoadPostProcessor implements BeanPostProcessor {
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
 		if(Boolean.valueOf(config.getValue("app.debug"))){
+            log.debug("load bean of name "+beanName+" successfully......");
 			if (beanFile.exists()) {
                 FileWriter fileWritter = null;
                 try {

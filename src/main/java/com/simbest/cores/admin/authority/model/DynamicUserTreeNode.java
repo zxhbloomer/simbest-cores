@@ -3,11 +3,15 @@
  */
 package com.simbest.cores.admin.authority.model;
 
+import com.simbest.cores.model.BaseObject;
+
 /**
+ * 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单
+ *
  * @author Li
  *
  */
-public class DynamicUserTreeNode {
+public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	private Integer id;
 	private String title;
 	private Integer pid;

@@ -21,12 +21,13 @@ public class ShiroUser implements Serializable {
 	public String openid;
 	public String unionid;
 	public String phone;
+    private String mpNum;
 	public List<Integer> roleIds;
 
 	public ShiroUser(String loginName, String userName, String userCode,
 			Integer userId, Integer orgId, String orgName,
 			List<Integer> roleIds, String headUrl, String accesstoken,
-			String openid, String unionid, String phone) {
+			String openid, String unionid, String phone, String mpNum) {
 		super();
 		this.loginName = loginName;
 		this.userName = userName;
@@ -40,6 +41,7 @@ public class ShiroUser implements Serializable {
 		this.openid = openid;
 		this.unionid = unionid;
 		this.phone = phone;
+        this.mpNum = mpNum;
 	}
 
 	/**
@@ -142,7 +144,11 @@ public class ShiroUser implements Serializable {
 		this.headUrl = headUrl;
 	}
 
-	/**
+    public String getMpNum() {
+        return mpNum;
+    }
+
+    /**
 	 * 重载equals,只计算loginName;
 	 */
 	@Override

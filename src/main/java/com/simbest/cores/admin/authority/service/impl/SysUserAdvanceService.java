@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.simbest.cores.admin.authority.cache.SysUserCache;
+import com.simbest.cores.admin.authority.model.DynamicUserTreeNode;
 import com.simbest.cores.admin.authority.model.ShiroUser;
 import com.simbest.cores.admin.authority.model.SysOrg;
 import com.simbest.cores.admin.authority.model.SysPermission;
 import com.simbest.cores.admin.authority.model.SysUser;
 import com.simbest.cores.admin.authority.service.ISysOrgAdvanceService;
-import com.simbest.cores.admin.authority.service.ISysOrgService;
 import com.simbest.cores.admin.authority.service.ISysPermissionAdvanceService;
 import com.simbest.cores.admin.authority.service.ISysRoleAdvanceService;
 import com.simbest.cores.admin.authority.service.ISysUserAdvanceService;
@@ -30,7 +30,6 @@ import com.simbest.cores.admin.authority.service.ISysUserService;
 import com.simbest.cores.service.impl.LogicAdvanceService;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.Constants;
-import com.simbest.cores.utils.SmsService;
 import com.simbest.cores.utils.SmsUtils;
 import com.simbest.cores.utils.StringUtil;
 import com.simbest.cores.utils.configs.CoreConfig;
@@ -74,7 +73,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	private BoundHashOperations<String, Integer, Map<String, Object>> usersTreeDataHolder = null;
 	private BoundHashOperations<String, String, Map<String, Object>> usersRoleTreeDataHolder = null;
 	private BoundHashOperations<String, Integer, Map<String, Object>> permissionsTreeDataHolder = null;
-	
+
 	@Autowired
 	public SysUserAdvanceService(@Qualifier(value="sysUserService")ISysUserService sysUserService, SysUserCache sysUserCache) {
 		super(sysUserService, sysUserCache);
@@ -88,7 +87,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		usersRoleTreeDataHolder = redisTemplate.boundHashOps("usersRoleTreeDataHolder");
 		permissionsTreeDataHolder = redisTemplate.boundHashOps("permissionsTreeDataHolder");
 	}
-	
+
 	@Override
 	public SysUser getByUserCode(String userCode) {	
 		return sysUserService.getByUserCode(userCode);
@@ -123,10 +122,13 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	public List<SysUser> getByIterateOrg(Integer orgId, Integer userType) {
 		return sysUserService.getByIterateOrg(orgId, userType);
 	}
-	
-	/**
-	 * (二. 穷举遍历递归部门用户树)递归层层 向下 查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载
-	 */
+
+    /**
+     * 一. 穷举遍历递归部门用户树
+     * 递归层层向下查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载
+     * @param userType
+     * @return
+     */
 	@Override
 	public Map<String, Object> getUsersTreeData(Integer userType) {
 		Map<String, Object> data = usersTreeDataHolder.get(userType);
@@ -213,13 +215,16 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		}
 		return sysUserNodes;
 	}
-	
-	/**
-	 *  (三. 穷举遍历递归部门用户树,并关联用户角色)递归层层 向下 查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载，并显示用户角色
-	 */
+
+    /**
+     * 二. 穷举遍历递归部门用户树[需要关联角色]
+     *  递归层层向下查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载，并显示用户角色
+     * @param roleId
+     * @param userType
+     * @return
+     */
 	@Override
-	public Map<String, Object> getUsersRoleTreeData(Integer roleId,
-			Integer userType) {
+	public Map<String, Object> getUsersRoleTreeData(Integer roleId, Integer userType) {
 		Map<String, Object> data = usersRoleTreeDataHolder.get(roleId+Constants.UNDERLINE+userType);
 		if(data == null){
 			data = getUsersRoleTree(roleId,userType);
@@ -246,7 +251,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	}
 	
 	/**
-	 * 递归层层 向下 查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载
+	 * 递归层层向下查询子部门，直到所有部门加载完成。查询部门时，把该部门所有用户也作为叶子节点加载
 	 * @param parent
 	 * @param roleId
 	 * @return
@@ -309,10 +314,12 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		}
 		return sysUserNodes;
 	}
-	
-	/**
-	 *  (四. 穷举遍历用户权限树，用于对用户直接授权)
-	 */
+
+    /**
+     * 三. 穷举遍历用户权限树，用于对用户直接授权
+     * @param userId
+     * @return
+     */
 	@Override
 	public Map<String, Object> getUserPermissionsTreeData(Integer userId) {
 		Map<String, Object> data = permissionsTreeDataHolder.get(userId);
@@ -324,7 +331,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	}
 	
 	/**
-	 * 递归层层 向下 查询用户权限
+	 * 递归层层向下查询用户权限
 	 * @param userId
 	 * @return
 	 */
@@ -369,7 +376,68 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		}
 		return childrenNodes;
 	}
-	
+
+
+    /**
+     * 四. 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单（含首节点）
+     * @param orgId
+     * @param userType
+     * @return
+     */
+    @Override
+    public List<DynamicUserTreeNode> getFirstDynamicUserTree(Integer orgId, Integer userType){
+        List<DynamicUserTreeNode> resultList = Lists.newArrayList();
+        SysOrg root = sysOrgAdvanceService.loadByKey(orgId);
+        DynamicUserTreeNode rootNode = new DynamicUserTreeNode();
+        rootNode.setType("org");
+        rootNode.setChild(true);
+        rootNode.setId(root.getId());
+        rootNode.setPid(root.getParent()==null?null:root.getParent().getId());
+        rootNode.setTitle(root.getOrgName());
+        resultList.add(rootNode);
+        return loadUserAndOrg(resultList, orgId, userType);
+    }
+
+    /**
+     * 四. 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单
+     * @param orgId
+     * @param userType
+     * @return
+     */
+    @Override
+    public List<DynamicUserTreeNode> getChoseDynamicUserTree(Integer orgId, Integer userType) {
+        return loadUserAndOrg(Lists.<DynamicUserTreeNode>newArrayList(), orgId, userType);
+    }
+
+    private List<DynamicUserTreeNode> loadUserAndOrg(List<DynamicUserTreeNode> resultList, Integer orgId, Integer userType){
+        List<SysUser> userList = getByOrg(orgId,userType);
+        for(SysUser user : userList){
+            DynamicUserTreeNode node = new DynamicUserTreeNode();
+            node.setType("user");
+            node.setChild(false);
+            node.setId(user.getId());
+            node.setPid(orgId);
+            node.setTitle(user.getUsername());
+            resultList.add(node);
+        }
+        List<SysOrg> orgList = sysOrgAdvanceService.getByParent(orgId);
+        for(SysOrg org : orgList){
+            DynamicUserTreeNode node = new DynamicUserTreeNode();
+            Integer children = sysOrgAdvanceService.countByParent(org.getId());
+            if(children != null && children>0)
+                node.setChild(true);
+            else
+                node.setChild(false);
+            node.setType("org");
+            node.setId(org.getId());
+            node.setPid(orgId);
+            node.setTitle(org.getOrgName());
+            resultList.add(node);
+        }
+        return resultList;
+    }
+
+
 	@Override
 	public int updatePassword(SysUser u) {
 		return sysUserService.updatePassword(u);
@@ -379,6 +447,18 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	public int updateGroupRemark(Integer id, Integer groupid, String remark) {
 		return sysUserService.updateGroupRemark(id, groupid, remark);
 	}
+
+    @Override
+    public String getAllParentIdString(Integer orgId){
+        SysOrg org = sysOrgAdvanceService.loadByKey(orgId);
+        if(org == null)
+            throw new NullPointerException("Can not find sysorg with orgId: " +orgId);
+        if(null == org.getParent() || null == org.getParent().getId()){
+            return orgId.toString();
+        }else{
+            return orgId + Constants.SPACE + getAllParentIdString(org.getParent().getId());
+        }
+    }
 
 	@Override
 	public int createOrUpdateViaAdmin(SysUser u) {

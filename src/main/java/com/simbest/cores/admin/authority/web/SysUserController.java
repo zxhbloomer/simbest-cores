@@ -72,7 +72,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@Autowired
 	private AppUserSession appUserSession;
 
-    //@Autowired
+    @Autowired
     private SysUserSearch userSearch;
 
 	public SysUserController() {

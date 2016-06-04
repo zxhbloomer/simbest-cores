@@ -2,12 +2,13 @@ package com.simbest.cores.admin.authority.service;
 import java.util.List;
 import java.util.Map;
 
+import com.googlecode.cqengine.query.simple.In;
 import com.simbest.cores.admin.authority.model.DynamicUserTreeNode;
+import com.simbest.cores.admin.authority.model.SysOrg;
 import com.simbest.cores.admin.authority.model.SysUser;
 import com.simbest.cores.service.IGenericAdvanceService;
 
 public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,Integer>, ISysUserService{
-    String getAllParentIdString(Integer orgId);
 
 	/**
 	 * 前端用户知道openid，不知道phone
@@ -65,4 +66,6 @@ public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,I
      * @return
      */
     List<DynamicUserTreeNode> getChoseDynamicUserTree(Integer orgId, Integer userType);
+
+    List<DynamicUserTreeNode> searchDynamicUserTree(String loginName, Integer ownerOrgId, String position);
 }

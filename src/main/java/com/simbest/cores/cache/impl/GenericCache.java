@@ -108,8 +108,9 @@ public class GenericCache<V extends GenericModel<V>, K extends Serializable> imp
 			}
 		}
 
-		Collection<V> itemCollection = service.getAll();				
+		Collection<V> itemCollection = service.getAll();
 		for (V o : itemCollection){
+            doSometingForEachObject(o);
 			id.setAccessible(true);
 			getKeyHashOps().put((K) id.get(o), o);//主键缓存
 			if(unique != null){
@@ -127,8 +128,16 @@ public class GenericCache<V extends GenericModel<V>, K extends Serializable> imp
 				}
 			}
 		}
+        doSometingAfterLoad(itemCollection);
 	}
 
+    public void doSometingForEachObject(V o){
+        // generic cache do nothing
+    }
+
+    public void doSometingAfterLoad(Collection<V> itemCollection){
+        // generic cache do nothing
+    }
 	
 	/**
 	 * 根据键，获取值

@@ -23,27 +23,25 @@ import java.util.List;
  */
 public class SysUserIndex extends BaseObject<SysUserIndex> {
     private String loginName;
-    private String mpNum;
+    private Integer ownerOrgId;
     private String position;
     private SysUser sysUser;
-    private SysOrg sysOrg;
-    private List<SysOrg> parents;
+    private List<SysOrg> hierarchyOrgs;
 
-    public SysUserIndex(String loginName, String mpNum, String position, SysUser sysUser, SysOrg sysOrg, List<SysOrg> parents) {
+    public SysUserIndex(String loginName, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs) {
         this.loginName = loginName;
-        this.mpNum = mpNum;
+        this.ownerOrgId = ownerOrgId;
         this.position = position;
         this.sysUser = sysUser;
-        this.sysOrg = sysOrg;
-        this.parents = parents;
+        this.hierarchyOrgs = hierarchyOrgs;
     }
 
     public static final SimpleAttribute<SysUserIndex, String> LOGIN_NAME = new SimpleAttribute<SysUserIndex, String>("loginName") {
         public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.loginName; }
     };
     
-    public static final SimpleAttribute<SysUserIndex, String> MP_NAME = new SimpleAttribute<SysUserIndex, String>("mpNum") {
-        public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.mpNum; }
+    public static final SimpleAttribute<SysUserIndex, Integer> OWNER_ORG = new SimpleAttribute<SysUserIndex, Integer>("ownerOrgId") {
+        public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.ownerOrgId; }
     };
 
     public static final SimpleAttribute<SysUserIndex, String> POSITION = new SimpleAttribute<SysUserIndex, String>("position") {
@@ -54,47 +52,19 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
         return loginName;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
-    }
-
-    public String getMpNum() {
-        return mpNum;
-    }
-
-    public void setMpNum(String mpNum) {
-        this.mpNum = mpNum;
+    public Integer getOwnerOrgId() {
+        return ownerOrgId;
     }
 
     public String getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
     public SysUser getSysUser() {
         return sysUser;
     }
 
-    public void setSysUser(SysUser sysUser) {
-        this.sysUser = sysUser;
-    }
-
-    public SysOrg getSysOrg() {
-        return sysOrg;
-    }
-
-    public void setSysOrg(SysOrg sysOrg) {
-        this.sysOrg = sysOrg;
-    }
-
-    public List<SysOrg> getParents() {
-        return parents;
-    }
-
-    public void setParents(List<SysOrg> parents) {
-        this.parents = parents;
+    public List<SysOrg> getHierarchyOrgs() {
+        return hierarchyOrgs;
     }
 }

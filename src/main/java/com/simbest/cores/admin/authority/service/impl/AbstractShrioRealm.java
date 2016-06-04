@@ -91,7 +91,7 @@ public abstract class AbstractShrioRealm extends AuthorizingRealm {
 					u.getUserCode(), u.getId(), u.getSysOrg().getId(),
 					u.getSysOrg().getOrgName(), roleIds,
 					u.getHeadimgurl(), u.getAccesstoken(),
-					u.getOpenid(), u.getUnionid(), u.getPhone(), u.getMpNum());
+					u.getOpenid(), u.getUnionid(), u.getPhone(), u.getOwnerOrgId());
 			AuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principal,u.getPassword(),ByteSource.Util.bytes(salt), getName());
 			return authenticationInfo;
 		} else {
@@ -110,7 +110,7 @@ public abstract class AbstractShrioRealm extends AuthorizingRealm {
 							u.getUserCode(), u.getId(), u.getSysOrg()
 									.getId(), u.getSysOrg().getOrgName(),
 							roleIds, u.getHeadimgurl(), u.getAccesstoken(),
-							u.getOpenid(), u.getUnionid(), u.getPhone(), u.getMpNum()),
+							u.getOpenid(), u.getUnionid(), u.getPhone(), u.getOwnerOrgId()),
 					u.getPassword(), getName());
 			return authenticationInfo;
 		} else {

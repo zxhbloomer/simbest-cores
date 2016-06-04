@@ -3,6 +3,9 @@ package com.simbest.cores.admin.authority.service.impl;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import com.simbest.cores.utils.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -70,4 +73,36 @@ public class SysOrgAdvanceService extends GenericAdvanceService<SysOrg,Integer> 
 	}
 
 
+    /**
+     * 获取所属部门公司层级Id字符串
+     * @param orgId
+     * @return
+     */
+    @Override
+    public String getHierarchyOrgIds(Integer orgId){
+        SysOrg org = loadByKey(orgId);
+        if(org == null)
+            throw new NullPointerException("Can not find sysorg with orgId: " +orgId);
+        if(null == org.getParent() || null == org.getParent().getId()){
+            return orgId.toString();
+        }else{
+            return orgId + Constants.SPACE + getHierarchyOrgIds(org.getParent().getId());
+        }
+    }
+
+    /**
+     * 获取所属部门公司层级对象
+     * @param orgId
+     * @return
+     */
+    @Override
+    public List<SysOrg> getHierarchyOrgs(Integer orgId){
+        String parentIds = getHierarchyOrgIds(orgId);
+        String[] parentIdArray = StringUtils.split(StringUtils.trim(parentIds), Constants.SPACE);
+        List<SysOrg> parentSysOrgs = Lists.newArrayList();
+        for(String parentId:parentIdArray){
+            parentSysOrgs.add(loadByKey(Integer.valueOf(parentId)));
+        }
+        return parentSysOrgs;
+    }
 }

@@ -21,13 +21,13 @@ public class ShiroUser implements Serializable {
 	public String openid;
 	public String unionid;
 	public String phone;
-    private String mpNum;
+    private Integer ownerOrgId;
 	public List<Integer> roleIds;
 
 	public ShiroUser(String loginName, String userName, String userCode,
 			Integer userId, Integer orgId, String orgName,
 			List<Integer> roleIds, String headUrl, String accesstoken,
-			String openid, String unionid, String phone, String mpNum) {
+			String openid, String unionid, String phone, Integer ownerOrgId) {
 		super();
 		this.loginName = loginName;
 		this.userName = userName;
@@ -41,7 +41,7 @@ public class ShiroUser implements Serializable {
 		this.openid = openid;
 		this.unionid = unionid;
 		this.phone = phone;
-        this.mpNum = mpNum;
+        this.ownerOrgId = ownerOrgId;
 	}
 
 	/**
@@ -144,8 +144,8 @@ public class ShiroUser implements Serializable {
 		this.headUrl = headUrl;
 	}
 
-    public String getMpNum() {
-        return mpNum;
+    public Integer getOwnerOrgId() {
+        return ownerOrgId;
     }
 
     /**

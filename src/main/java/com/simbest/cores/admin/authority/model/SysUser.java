@@ -227,7 +227,7 @@ public class SysUser extends LogicModel<SysUser> {
 
 	//公众号运营者对粉丝的备注，公众号运营者可在微信公众平台用户管理界面对粉丝添加备注
 	@NotNullColumn(value="用户备注")
-	@Column(length=20, nullable=true)
+	@Column(length=250, nullable=true)
 	private String remark;
 	
 	//用户微信分组
@@ -252,7 +252,11 @@ public class SysUser extends LogicModel<SysUser> {
 	@Transient
 	@JsonIgnore
 	private String sessionId;
-	
+
+    private Integer ownerOrgId;
+
+    private String hierarchyOrgIds;
+
 	/**
 	 * Default constructor - creates a new instance with no values set.
 	 */
@@ -896,4 +900,19 @@ public class SysUser extends LogicModel<SysUser> {
 		this.birthDateStr = birthDateStr;
 	}
 
+    public Integer getOwnerOrgId() {
+        return ownerOrgId;
+    }
+
+    public void setOwnerOrgId(Integer ownerOrgId) {
+        this.ownerOrgId = ownerOrgId;
+    }
+
+    public String getHierarchyOrgIds() {
+        return hierarchyOrgIds;
+    }
+
+    public void setHierarchyOrgIds(String hierarchyOrgIds) {
+        this.hierarchyOrgIds = hierarchyOrgIds;
+    }
 }

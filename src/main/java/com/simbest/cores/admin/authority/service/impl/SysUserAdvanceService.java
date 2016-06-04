@@ -1,32 +1,14 @@
 package com.simbest.cores.admin.authority.service.impl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.shiro.SecurityUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.googlecode.cqengine.resultset.ResultSet;
 import com.simbest.cores.admin.authority.cache.SysUserCache;
-import com.simbest.cores.admin.authority.model.DynamicUserTreeNode;
-import com.simbest.cores.admin.authority.model.ShiroUser;
-import com.simbest.cores.admin.authority.model.SysOrg;
-import com.simbest.cores.admin.authority.model.SysPermission;
-import com.simbest.cores.admin.authority.model.SysUser;
-import com.simbest.cores.admin.authority.service.ISysOrgAdvanceService;
-import com.simbest.cores.admin.authority.service.ISysPermissionAdvanceService;
-import com.simbest.cores.admin.authority.service.ISysRoleAdvanceService;
-import com.simbest.cores.admin.authority.service.ISysUserAdvanceService;
-import com.simbest.cores.admin.authority.service.ISysUserService;
+import com.simbest.cores.admin.authority.model.*;
+import com.simbest.cores.admin.authority.service.*;
+import com.simbest.cores.cache.cqengine.index.SysUserIndex;
+import com.simbest.cores.cache.cqengine.search.SysUserSearch;
 import com.simbest.cores.service.impl.LogicAdvanceService;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.Constants;
@@ -35,6 +17,19 @@ import com.simbest.cores.utils.StringUtil;
 import com.simbest.cores.utils.configs.CoreConfig;
 import com.simbest.cores.utils.enums.SNSLoginType;
 import com.simbest.cores.web.filter.SNSAuthenticationToken;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 考虑用户数量庞大，只对默认的id和loginName进行容器启动时初始化缓存，userCode、openid、unionid则使用Spring Cache在运行期间加载
@@ -66,13 +61,18 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 
 	@Autowired
 	private AppUserSession appUserSession;
-	
+
+    @Autowired
+    private SysUserSearch sysUserSearch;
+
 	@Autowired
 	private RedisTemplate<String, Map<String, Object>> redisTemplate;
 
 	private BoundHashOperations<String, Integer, Map<String, Object>> usersTreeDataHolder = null;
 	private BoundHashOperations<String, String, Map<String, Object>> usersRoleTreeDataHolder = null;
 	private BoundHashOperations<String, Integer, Map<String, Object>> permissionsTreeDataHolder = null;
+    private BoundHashOperations<String, String, List<DynamicUserTreeNode>> choseDynamicUserTreeDataHolder = null;
+    private BoundHashOperations<String, String, List<DynamicUserTreeNode>> searchDynamicUserTreeDataHolder = null;
 
 	@Autowired
 	public SysUserAdvanceService(@Qualifier(value="sysUserService")ISysUserService sysUserService, SysUserCache sysUserCache) {
@@ -86,6 +86,8 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		usersTreeDataHolder = redisTemplate.boundHashOps("usersTreeDataHolder");
 		usersRoleTreeDataHolder = redisTemplate.boundHashOps("usersRoleTreeDataHolder");
 		permissionsTreeDataHolder = redisTemplate.boundHashOps("permissionsTreeDataHolder");
+        choseDynamicUserTreeDataHolder = redisTemplate.boundHashOps("choseDynamicUserTreeDataHolder");
+        searchDynamicUserTreeDataHolder = redisTemplate.boundHashOps("searchDynamicUserTreeDataHolder");
 	}
 
 	@Override
@@ -406,7 +408,12 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
     @Override
     public List<DynamicUserTreeNode> getChoseDynamicUserTree(Integer orgId, Integer userType) {
-        return loadUserAndOrg(Lists.<DynamicUserTreeNode>newArrayList(), orgId, userType);
+        List<DynamicUserTreeNode> data = choseDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+userType);
+        if(data == null){
+            data = loadUserAndOrg(Lists.<DynamicUserTreeNode>newArrayList(), orgId, userType);
+            choseDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+userType, data);
+        }
+        return data;
     }
 
     private List<DynamicUserTreeNode> loadUserAndOrg(List<DynamicUserTreeNode> resultList, Integer orgId, Integer userType){
@@ -437,6 +444,92 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         return resultList;
     }
 
+    /**
+     * 五.根据CQEngine所建立的索引字段搜索，并构建树
+     * @param loginName
+     * @param mpNum
+     * @param position
+     * @return
+     */
+    @Override
+    public List<DynamicUserTreeNode> searchDynamicUserTree(String loginName, Integer ownerOrgId, String position) {
+        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(loginName+Constants.UNDERLINE+ownerOrgId+Constants.UNDERLINE+position);
+        if(data == null){
+            if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
+                data = loadDynamicUserTreeByCQEngine(loginName, ownerOrgId, position);
+            }else{
+                data = loadDynamicUserTreeByDatabase(loginName, ownerOrgId, position);
+            }
+            searchDynamicUserTreeDataHolder.put(loginName+Constants.UNDERLINE+ownerOrgId+Constants.UNDERLINE+position, data);
+        }
+        return data;
+    }
+
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(String loginName, Integer ownerOrgId, String position){
+        List<DynamicUserTreeNode> resultList = Lists.newArrayList();
+        Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
+        SysUser params = new SysUser();
+        params.setLoginName(loginName);
+        params.setOwnerOrgId(ownerOrgId);
+        params.setPosition(position);
+        Collection<SysUser> list = getAll(params);
+        for (SysUser user : list) {
+            DynamicUserTreeNode userNode = new DynamicUserTreeNode();
+            userNode.setType("user");
+            userNode.setChild(false);
+            userNode.setId(user.getId());
+            userNode.setPid(user.getSysOrg().getId());
+            userNode.setTitle(user.getUsername());
+            unduplicatedOrgSet.addAll(sysOrgAdvanceService.getHierarchyOrgs(user.getSysOrg().getId()));
+            resultList.add(userNode);
+        }
+        for(SysOrg org : unduplicatedOrgSet){
+            DynamicUserTreeNode orgNode = new DynamicUserTreeNode();
+            Integer children = sysOrgAdvanceService.countByParent(org.getId());
+            if(children != null && children>0)
+                orgNode.setChild(true);
+            else
+                orgNode.setChild(false);
+            orgNode.setType("org");
+            orgNode.setId(org.getId());
+            if(null != org.getParent())
+                orgNode.setPid(org.getParent().getId());
+            orgNode.setTitle(org.getOrgName());
+            resultList.add(orgNode);
+        }
+        return resultList;
+    }
+
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(String loginName, Integer ownerOrgId, String position){
+        List<DynamicUserTreeNode> resultList = Lists.newArrayList();
+        Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
+        ResultSet<SysUserIndex> list = sysUserSearch.searchQuery(loginName,ownerOrgId,position);
+        for (SysUserIndex user : list) {
+            DynamicUserTreeNode userNode = new DynamicUserTreeNode();
+            userNode.setType("user");
+            userNode.setChild(false);
+            userNode.setId(user.getSysUser().getId());
+            userNode.setPid(user.getSysUser().getSysOrg().getId());
+            userNode.setTitle(user.getSysUser().getUsername());
+            unduplicatedOrgSet.addAll(user.getHierarchyOrgs());
+            resultList.add(userNode);
+        }
+        for(SysOrg org : unduplicatedOrgSet){
+            DynamicUserTreeNode orgNode = new DynamicUserTreeNode();
+            Integer children = sysOrgAdvanceService.countByParent(org.getId());
+            if(children != null && children>0)
+                orgNode.setChild(true);
+            else
+                orgNode.setChild(false);
+            orgNode.setType("org");
+            orgNode.setId(org.getId());
+            if(null != org.getParent())
+                orgNode.setPid(org.getParent().getId());
+            orgNode.setTitle(org.getOrgName());
+            resultList.add(orgNode);
+        }
+        return resultList;
+    }
 
 	@Override
 	public int updatePassword(SysUser u) {
@@ -447,18 +540,6 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	public int updateGroupRemark(Integer id, Integer groupid, String remark) {
 		return sysUserService.updateGroupRemark(id, groupid, remark);
 	}
-
-    @Override
-    public String getAllParentIdString(Integer orgId){
-        SysOrg org = sysOrgAdvanceService.loadByKey(orgId);
-        if(org == null)
-            throw new NullPointerException("Can not find sysorg with orgId: " +orgId);
-        if(null == org.getParent() || null == org.getParent().getId()){
-            return orgId.toString();
-        }else{
-            return orgId + Constants.SPACE + getAllParentIdString(org.getParent().getId());
-        }
-    }
 
 	@Override
 	public int createOrUpdateViaAdmin(SysUser u) {

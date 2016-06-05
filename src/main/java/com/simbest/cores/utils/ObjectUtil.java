@@ -1,6 +1,7 @@
 package com.simbest.cores.utils;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import javax.persistence.Id;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.google.common.collect.Sets;
@@ -20,8 +22,11 @@ import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.ProcessProperty;
 import com.simbest.cores.utils.annotations.Unique;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
+    public transient final Log log = LogFactory.getLog(getClass());
 
 	/**
 	 * 判断对象的所有属性是否均为空
@@ -29,7 +34,7 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 	 * @param obj
 	 * @return
 	 */
-	public static boolean isEmpty(GenericModel<?> obj) {
+	public static boolean isEmpty(Object obj) {
 		for (PropertyDescriptor pd : PropertyUtils.getPropertyDescriptors(obj)) {
 			try{
 				if (!pd.getName().equals("class")&& pd.getReadMethod()!=null && !pd.getReadMethod().getName().equals("isEmpty")) {
@@ -59,7 +64,7 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 
 	/**
 	 * 获取ProcessAdapterService子类中持久化对象的主键Id字段
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 */
@@ -79,11 +84,11 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 
 	/**
 	 * 获取持久化对象的主键Id字段
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
-	public static Field getIdField(GenericModel<?> obj) {
+    public static Field getIdField(Object obj) {
 		Field id = null;
 		for (Field field : getAllFields(obj.getClass())) {
 			if (field.isAnnotationPresent(Id.class)) {
@@ -96,11 +101,11 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 
 	/**
 	 * 获取持久化对象的唯一性字段
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 */
-	public static Field getUniqueField(GenericModel<?> obj) {
+	public static Field getUniqueField(Object obj) {
 		Field unique = null;
 		for (Field field : getAllFields(obj.getClass())) {
 			if (field.isAnnotationPresent(Unique.class)) {
@@ -117,7 +122,7 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 	 * @param fieldName
 	 * @return
 	 */
-	public static Field getIndicateField(GenericModel<?> obj, String fieldName) {
+	public static Field getIndicateField(Object obj, String fieldName) {
 		Field indicateField = null;
 		for (Field field : getAllFields(obj.getClass())) {
 			if (field.getName().equals(fieldName)) {
@@ -127,7 +132,26 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 		}
 		return indicateField;
 	}
-	
+
+    public static Object getIdVaue(Object obj) {
+        try {
+            Field id = getIdField(obj);
+            id.setAccessible(true);
+            return id.get(obj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Collection getIdVaueList(Collection os) {
+        Collection<Object> idList = Lists.newArrayList();
+        for(Object obj:os){
+            idList.add(getIdVaue(obj));
+        }
+        return idList;
+    }
+
 	public static Collection<Field> getProcessFields(ProcessModel<?> process) {
 		Set<Field> fields = Sets.newHashSet();
 		for (Field field : getAllFields(process.getClass())) {
@@ -147,7 +171,7 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 		}
 		return fieldNames.toArray(new String[fieldNames.size()]);
 	}
-	
+
 	/**
 	 * 返回所有字段
 	 */
@@ -181,4 +205,5 @@ public class ObjectUtil extends org.apache.commons.lang.ObjectUtils {
 
 		return classes;
 	}
+
 }

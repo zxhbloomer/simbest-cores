@@ -32,41 +32,36 @@ public class CQEngineDemo {
         sysUserOrgData.addIndex(HashIndex.onAttribute(SysUserIndex.OWNER_ORG));
         sysUserOrgData.addIndex(HashIndex.onAttribute(SysUserIndex.POSITION));
 
-        sysUserOrgData.add(new SysUserIndex("chenhaiwei",1,"三级",null,null));
-        sysUserOrgData.add(new SysUserIndex("zhoupeng",2,"四级",null,null));
-        sysUserOrgData.add(new SysUserIndex("yangjixue",1,"四级",null,null));
-        sysUserOrgData.add(new SysUserIndex("zhaoxiang",3,"三级",null,null));
+        sysUserOrgData.add(new SysUserIndex(1,"chenhaiwei",1,"三级",null,null));
+        sysUserOrgData.add(new SysUserIndex(2,"zhoupeng",2,"四级",null,null));
+        sysUserOrgData.add(new SysUserIndex(3,"yangjixue",1,"四级",null,null));
+        sysUserOrgData.add(new SysUserIndex(4,"zhaoxiang",3,"三级",null,null));
 
         Query<SysUserIndex> query;
 
-        System.out.println("\nAll sysUserOrgData, ordered by MP_NAME:");
         query = all(SysUserIndex.class);
         for (SysUserIndex uo : sysUserOrgData.retrieve(query, queryOptions(orderBy(ascending(SysUserIndex.LOGIN_NAME))))) {
             System.out.println(uo);
         }
 
-        System.out.println("\nFord sysUserOrgData:");
-        query = and(equal(SysUserIndex.LOGIN_NAME, "省公司"), equal(SysUserIndex.POSITION, "四级"));
+        System.out.println("-----------------------------------------------------------------------------------------------");
+        query = and(equal(SysUserIndex.LOGIN_NAME, "zhoupeng"), equal(SysUserIndex.POSITION, "四级"));
         for (SysUserIndex uo : sysUserOrgData.retrieve(query)) {
             System.out.println(uo);
         }
 
         System.out.println("-----------------------------------------------------------------------------------------------");
-        ResultSet<SysUserIndex> results = parser.retrieve(sysUserOrgData, "SELECT * FROM sysUserData WHERE (ownerOrgId=321 AND position='经理')");
+        ResultSet<SysUserIndex> results = parser.retrieve(sysUserOrgData, "SELECT * FROM sysUserData WHERE (ownerOrgId=1 AND position='四级')");
         for (SysUserIndex car : results) {
             System.out.println(car);
         }
 
-        SysUser u1 = new SysUser();
-        SysUser u2 = new SysUser();
-        u1.setLoginName("lishuyi");
-        u2.setLoginName("lishuyi");
-
-        System.out.println(u1.equals(u2));
-        System.out.println(u1.toString());
-        System.out.println(u2.toString());
-        System.out.println(u1.hashCode());
-        System.out.println(u2.hashCode());
-        System.out.println(u1.toString().equals(u2.toString()));
+        System.out.println("-----------------------------------------------------------------------------------------------");
+        SysUserIndex oldVersion = sysUserOrgData.retrieve(equal(SysUserIndex.LOGIN_NAME, "yangjixue")).uniqueResult();
+        sysUserOrgData.remove(oldVersion);
+        query = all(SysUserIndex.class);
+        for (SysUserIndex uo : sysUserOrgData.retrieve(query, queryOptions(orderBy(ascending(SysUserIndex.LOGIN_NAME))))) {
+            System.out.println(uo);
+        }
     }
 }

@@ -3,6 +3,7 @@
  */
 package com.simbest.cores.cache.cqengine.search;
 
+import com.google.common.collect.Lists;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
@@ -21,9 +22,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Collection;
 import java.util.List;
 
 import static com.googlecode.cqengine.codegen.AttributeBytecodeGenerator.createAttributes;
+import static com.googlecode.cqengine.query.QueryFactory.*;
 
 /**
  * 用途： 
@@ -67,11 +70,41 @@ public class SysUserSearch {
      * @param parents
      * @return
      */
-    public boolean addToIndex(SysUser u, List<SysOrg> hierarchyOrgs){
+    public boolean createToIndex(SysUser u, List<SysOrg> hierarchyOrgs){
         //建立索引的字段不可为空，否则忽略数据
-        if(StringUtils.isNotEmpty(u.getLoginName()) && null !=u.getOwnerOrgId() && StringUtils.isNotEmpty(u.getPosition())){
-            sysUserData.add(new SysUserIndex(u.getLoginName(), u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs));
+        if(null !=u.getId() && StringUtils.isNotEmpty(u.getLoginName()) && null !=u.getOwnerOrgId() && StringUtils.isNotEmpty(u.getPosition())){
+            sysUserData.add(new SysUserIndex(u.getId(), u.getLoginName(), u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs));
             return true;
+        }
+        return false;
+    }
+
+    public boolean removeFromIndex(Integer id){
+        ResultSet<SysUserIndex> resultSet = sysUserData.retrieve(equal(SysUserIndex.ID, id));
+        if(null != resultSet && resultSet.isNotEmpty()){
+            SysUserIndex index = resultSet.uniqueResult();
+            return sysUserData.remove(index);
+        }
+        return false;
+    }
+
+    public boolean removeAllFromIndex(Collection<Integer> ids){
+        ResultSet<SysUserIndex> resultSet = sysUserData.retrieve(in(SysUserIndex.ID, ids));
+        if(null != resultSet && resultSet.isNotEmpty()){
+            Collection<SysUserIndex> indexs = Lists.newArrayList();
+            for (SysUserIndex user : resultSet) {
+                indexs.add(user);
+            }
+            return sysUserData.removeAll(indexs);
+        }
+        return false;
+    }
+
+    public boolean removeFromIndex(String loginName){
+        ResultSet<SysUserIndex> resultSet = sysUserData.retrieve(equal(SysUserIndex.LOGIN_NAME, loginName));
+        if(null != resultSet && resultSet.isNotEmpty()){
+            SysUserIndex index = resultSet.uniqueResult();
+            return sysUserData.remove(index);
         }
         return false;
     }
@@ -82,8 +115,10 @@ public class SysUserSearch {
      * @return
      */
     @Cacheable
-    public ResultSet<SysUserIndex> searchQuery(String loginName, Integer ownerOrgId, String position){
+    public ResultSet<SysUserIndex> searchQuery(Integer id, String loginName, Integer ownerOrgId, String position){
         String sql = "SELECT * FROM sysUserData WHERE (";
+        if(null != id)
+            sql += " AND "+SysUserIndex.ID.getAttributeName()+"="+id;
         if(StringUtils.isNotEmpty(loginName))
             sql += " AND "+SysUserIndex.LOGIN_NAME.getAttributeName()+"='"+loginName+"\'";
         if(null != ownerOrgId)

@@ -2,7 +2,6 @@ package com.simbest.cores.service.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +14,6 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.google.common.collect.Sets;
 import com.simbest.cores.cache.IGenericCache;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.service.IGenericAdvanceService;
@@ -241,15 +239,11 @@ public class GenericAdvanceService<V extends GenericModel<V>, K extends Serializ
 	@Override
 	public int delete(V o) {
 		log.debug("@Generic Advance Service delete objects by object: " + o);
+        Collection<V> os = getGenericService().getAll(o);
 		int ret =  getGenericService().delete(o);
-		if(ret > 0){			
-			try {
-				Field id = ObjectUtil.getIdField(o);
-				id.setAccessible(true);
-				removeValue((K) id.get(o));
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				log.error("@Generic Advance Service get id value failed......");
-			}
+		if(ret > 0){
+            Collection ids = ObjectUtil.getIdVaueList(os);
+            removeValues(ids.toArray());
 		}
 		return ret;
 	}
@@ -268,18 +262,9 @@ public class GenericAdvanceService<V extends GenericModel<V>, K extends Serializ
 	@Override
 	public int batchDelete(Collection<V> os) {
 		log.debug("@Generic Advance Service batch logic delete objects: " + os);
-		int ret =  getGenericService().batchDelete(os);
-		if(ret > 0){			
-			Collection<K> idList = Sets.newHashSet();
-			for(V o:os){
-				try {
-					Field id = ObjectUtil.getIdField(o);
-					id.setAccessible(true);
-					idList.add((K)id.get(o));
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					log.error("@Generic Advance Service get id value failed......");
-				}
-			}
+        Collection<Object> idList = ObjectUtil.getIdVaueList(os);
+        int ret =  getGenericService().batchDelete(os);
+		if(ret > 0){
 			if(idList.size() > 0)
 				removeValues(idList.toArray());
 		}
@@ -299,28 +284,16 @@ public class GenericAdvanceService<V extends GenericModel<V>, K extends Serializ
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void saveOrUpdate(V v) {		
-		try {
-			Field id = ObjectUtil.getIdField(v);
-			id.setAccessible(true);
-			saveOrUpdate((K) id.get(v), v);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			log.error("@Generic Advance Service get id value failed......");
-		}
+	public void saveOrUpdate(V v) {
+        saveOrUpdate((K) ObjectUtil.getIdVaue(v), v);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void saveOrUpdate(K k, V v) {
 		log.debug("@Generic Advance Service update cache value with key: "+k+" , and value with: "+v);
-		try {
-			Field id = ObjectUtil.getIdField(v);
-			id.setAccessible(true);
-			v = getGenericService().getById((K)id.get(v));
-			getCacheService().saveOrUpdate(k, v);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			log.error("@Generic Advance Service get id value failed......");
-		}
+        v = getGenericService().getById((K)ObjectUtil.getIdVaue(v));
+        getCacheService().saveOrUpdate(k, v);
 	}
 	
 	@Override

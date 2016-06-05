@@ -52,7 +52,7 @@ public class SysUserCache extends GenericCache<SysUser,Integer>{
     @Override
     public void doSometingForEachObject(SysUser o){
         if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
-            boolean result = sysUserSearch.addToIndex(o, sysOrgAdvanceService.getHierarchyOrgs(o.getSysOrg().getId()));
+            boolean result = sysUserSearch.createToIndex(o, sysOrgAdvanceService.getHierarchyOrgs(o.getSysOrg().getId()));
             if (result)
                 count++;
         }

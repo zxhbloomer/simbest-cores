@@ -22,19 +22,25 @@ import java.util.List;
  *
  */
 public class SysUserIndex extends BaseObject<SysUserIndex> {
+    private Integer id;
     private String loginName;
     private Integer ownerOrgId;
     private String position;
     private SysUser sysUser;
     private List<SysOrg> hierarchyOrgs;
 
-    public SysUserIndex(String loginName, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs) {
+    public SysUserIndex(Integer id, String loginName, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs) {
+        this.id = id;
         this.loginName = loginName;
         this.ownerOrgId = ownerOrgId;
         this.position = position;
         this.sysUser = sysUser;
         this.hierarchyOrgs = hierarchyOrgs;
     }
+
+    public static final SimpleAttribute<SysUserIndex, Integer> ID = new SimpleAttribute<SysUserIndex, Integer>("id") {
+        public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.id; }
+    };
 
     public static final SimpleAttribute<SysUserIndex, String> LOGIN_NAME = new SimpleAttribute<SysUserIndex, String>("loginName") {
         public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.loginName; }
@@ -47,6 +53,10 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
     public static final SimpleAttribute<SysUserIndex, String> POSITION = new SimpleAttribute<SysUserIndex, String>("position") {
         public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.position; }
     };
+
+    public Integer getId() {
+        return id;
+    }
 
     public String getLoginName() {
         return loginName;

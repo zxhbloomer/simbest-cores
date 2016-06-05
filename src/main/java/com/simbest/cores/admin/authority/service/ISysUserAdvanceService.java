@@ -67,5 +67,5 @@ public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,I
      */
     List<DynamicUserTreeNode> getChoseDynamicUserTree(Integer orgId, Integer userType);
 
-    List<DynamicUserTreeNode> searchDynamicUserTree(String loginName, Integer ownerOrgId, String position);
+    List<DynamicUserTreeNode> searchDynamicUserTree(Integer ownerOrgId, String position);
 }

@@ -502,7 +502,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
     public Map<String, Object> searchCurrentUserDynamicUserTree(SysUser u) throws Exception {
         ShiroUser o = appUserSession.getCurrentUser();
         Map<String, Object> result = Maps.newHashMap();
-        List<DynamicUserTreeNode> resultList = sysUserAdvanceService.searchDynamicUserTree(u.getLoginName(),o.getOwnerOrgId(),u.getPosition());
+        List<DynamicUserTreeNode> resultList = sysUserAdvanceService.searchDynamicUserTree(o.getOwnerOrgId(),u.getPosition());
         Map<String, Object> dataMap = super.wrapQueryResult(resultList);
         result.put("data", dataMap);
         result.put("message", "");

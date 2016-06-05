@@ -7,6 +7,13 @@ import java.util.List;
 public interface ISysOrgAdvanceService extends IGenericAdvanceService<SysOrg,Integer>, ISysOrgService{
 
     /**
+     * 获取所属部门公司
+     * @param id
+     * @return
+     */
+    SysOrg getOwner(Integer id);
+
+    /**
      * 获取所属部门公司层级Id字符串
      * @param orgId
      * @return

@@ -72,6 +72,20 @@ public class SysOrgAdvanceService extends GenericAdvanceService<SysOrg,Integer> 
 		return sysOrgService.getParent(id);
 	}
 
+    /**
+     * 获取所属部门公司
+     * @param id
+     * @return
+     */
+    @Override
+    @Cacheable
+    public SysOrg getOwner(Integer id) {
+        SysOrg org = loadByKey(id);
+        if(org.getParent() == null)
+            return org;
+        else
+            return getOwner(org.getParent().getId());
+    }
 
     /**
      * 获取所属部门公司层级Id字符串

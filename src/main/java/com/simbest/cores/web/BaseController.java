@@ -187,9 +187,7 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 			int ret = getService().update(o);
 			map.put("message", ret > 0 ? "操作成功!":"操作失败!");
 			map.put("responseid", ret > 0 ? 1:ret);
-			Field id = ObjectUtil.getIdField(o);
-			id.setAccessible(true);
-			o = getService().getById((PK) id.get(o));
+			o = getService().getById((PK) ObjectUtil.getIdVaue(o));
 			map.put("data", o);
 		}catch (NullPointerException e) {
 			map.put("responseid", 0);

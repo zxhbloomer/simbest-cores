@@ -12,6 +12,7 @@ import com.simbest.cores.cache.cqengine.search.SysUserSearch;
 import com.simbest.cores.service.impl.LogicAdvanceService;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.Constants;
+import com.simbest.cores.utils.ObjectUtil;
 import com.simbest.cores.utils.SmsUtils;
 import com.simbest.cores.utils.StringUtil;
 import com.simbest.cores.utils.configs.CoreConfig;
@@ -452,24 +453,23 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      * @return
      */
     @Override
-    public List<DynamicUserTreeNode> searchDynamicUserTree(String loginName, Integer ownerOrgId, String position) {
-        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(loginName+Constants.UNDERLINE+ownerOrgId+Constants.UNDERLINE+position);
+    public List<DynamicUserTreeNode> searchDynamicUserTree(Integer ownerOrgId, String position) {
+        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(ownerOrgId+Constants.UNDERLINE+position);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
-                data = loadDynamicUserTreeByCQEngine(loginName, ownerOrgId, position);
+                data = loadDynamicUserTreeByCQEngine(ownerOrgId, position);
             }else{
-                data = loadDynamicUserTreeByDatabase(loginName, ownerOrgId, position);
+                data = loadDynamicUserTreeByDatabase(ownerOrgId, position);
             }
-            searchDynamicUserTreeDataHolder.put(loginName+Constants.UNDERLINE+ownerOrgId+Constants.UNDERLINE+position, data);
+            searchDynamicUserTreeDataHolder.put(ownerOrgId+Constants.UNDERLINE+position, data);
         }
         return data;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(String loginName, Integer ownerOrgId, String position){
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(Integer ownerOrgId, String position){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
         SysUser params = new SysUser();
-        params.setLoginName(loginName);
         params.setOwnerOrgId(ownerOrgId);
         params.setPosition(position);
         Collection<SysUser> list = getAll(params);
@@ -500,10 +500,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         return resultList;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(String loginName, Integer ownerOrgId, String position){
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(Integer ownerOrgId, String position){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
-        ResultSet<SysUserIndex> list = sysUserSearch.searchQuery(loginName,ownerOrgId,position);
+        ResultSet<SysUserIndex> list = sysUserSearch.searchQuery(null, null, ownerOrgId, position);
         for (SysUserIndex user : list) {
             DynamicUserTreeNode userNode = new DynamicUserTreeNode();
             userNode.setType("user");
@@ -541,18 +541,100 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		return sysUserService.updateGroupRemark(id, groupid, remark);
 	}
 
+    private void wrapSysUser(SysUser u){
+        SysOrg owner = sysOrgAdvanceService.getOwner(u.getSysOrg().getId());
+        u.setOwnerOrgId(owner.getId());
+        u.setHierarchyOrgIds(sysOrgAdvanceService.getHierarchyOrgIds(u.getSysOrg().getId()));
+    }
+
+    @Override
+    public int create(SysUser u) {
+        wrapSysUser(u);
+        int ret = super.create(u);
+        if(ret > 0) {
+            sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int batchCreate(Collection<SysUser> os) {
+        for(SysUser u:os){
+            wrapSysUser(u);
+        }
+        int ret = super.batchCreate(os);
+        if(ret > 0){
+            for(SysUser u:os){
+                sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
+            }
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int delete(Integer id) {
+        int ret = super.delete(id);
+        if(ret > 0) {
+            sysUserSearch.removeFromIndex(id);
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int delete(SysUser o) {
+        Collection<SysUser> os = getAll(o);
+        int ret = super.delete(o);
+        if(ret > 0) {
+            Collection<Integer> ids = ObjectUtil.getIdVaueList(os);
+            sysUserSearch.removeAllFromIndex(ids);
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int batchDelete(Set<Integer> ids) {
+        int ret = super.batchDelete(ids);
+        if(ret > 0) {
+            sysUserSearch.removeAllFromIndex(ids);
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int batchDelete(Collection<SysUser> os) {
+        Collection<Integer> ids = ObjectUtil.getIdVaueList(os);
+        int ret = super.batchDelete(os);
+        if(ret > 0){
+            sysUserSearch.removeAllFromIndex(ids);
+        }
+        return ret;
+    }
+
 	@Override
 	public int createOrUpdateViaAdmin(SysUser u) {
+        wrapSysUser(u);
 		int ret = sysUserService.createOrUpdateViaAdmin(u);
-		saveOrUpdate(u);
+        if(ret > 0) {
+            saveOrUpdate(u);
+            sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
+        }
 		log.debug(ret);
 		return ret;
 	}
 	
 	@Override
 	public int createViaAdmin(SysUser u) {
+        wrapSysUser(u);
 		int ret = sysUserService.createViaAdmin(u);
-		saveOrUpdate(u);
+        if(ret > 0) {
+            saveOrUpdate(u);
+            sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
+        }
 		log.debug(ret);
 		return ret;
 	}
@@ -560,7 +642,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	@Override
 	public int updateViaAdmin(SysUser u){
 		int ret = sysUserService.updateViaAdmin(u);
-		saveOrUpdate(u);
+        if(ret > 0) {
+            saveOrUpdate(u);
+            sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
+        }
 		log.debug(ret);
 		return ret;
 	}
@@ -568,15 +653,19 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	@Override
 	public int deleteUserByAdmin(SysUser u) {
 		int ret = sysUserService.deleteUserByAdmin(u);
-		removeValue(u.getId());
+        if(ret > 0) {
+            removeValue(u.getId());
+        }
 		return ret;
 	}
 	
 	@Override
 	public int forceDelete(Integer userId) {
 		int ret = sysUserService.forceDelete(userId);
-		log.debug("forceDelete userId:"+userId);
-		removeValue(userId);
+        if(ret > 0) {
+            log.debug("forceDelete userId:" + userId);
+            removeValue(userId);
+        }
 		return ret;
 	}
 

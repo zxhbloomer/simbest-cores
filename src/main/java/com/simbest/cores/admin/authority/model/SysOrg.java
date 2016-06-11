@@ -25,7 +25,12 @@ import com.simbest.cores.utils.annotations.Unique;
 public class SysOrg extends SystemModel<SysOrg> {
 
 	private static final long serialVersionUID = -1447427183198771078L;
-	
+
+    /**
+     * 用于决策选择公司，分别表示相同组织、上级组织、所属公司、全部组织
+     */
+    public enum SwithOrgType{Same, Parent, Owner, all}
+
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -87,12 +87,15 @@
 	</bean>
 	<bean id="recordJobRunningResultService" class="com.simbest.cores.service.impl.GenericSQLService">		
     	<constructor-arg index="0" value="com.simbest.cores.admin.task.mapper.RecordJobRunningResultMapper"/>
+        <property name="sqlSessionTemplate" ref="sqlSessionTemplateSimple" />
     </bean>
     <bean id="processTaskCallbackRetryService" class="com.simbest.cores.service.impl.GenericSQLService">
         <constructor-arg index="0" value="com.simbest.cores.app.mapper.ProcessTaskCallbackRetryMapper"/>
+        <property name="sqlSessionTemplate" ref="sqlSessionTemplateSimple" />
     </bean>
     <bean id="processTaskCallbackLogService" class="com.simbest.cores.service.impl.GenericSQLService">
         <constructor-arg index="0" value="com.simbest.cores.app.mapper.ProcessTaskCallbackLogMapper"/>
+        <property name="sqlSessionTemplate" ref="sqlSessionTemplateSimple" />
     </bean>
 	<bean id="processTypeService" class="com.simbest.cores.service.impl.GenericMapperService">
 		<constructor-arg index="0" ref="sqlSessionTemplateSimple" />

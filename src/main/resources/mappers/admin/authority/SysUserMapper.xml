@@ -228,6 +228,9 @@
         <if test="sysOrg != null and sysOrg.id != null">
             and u.org_id = #{sysOrg.id}
         </if>
+        <if test="sysOrg != null and sysOrg.parent != null and sysOrg.parent.id != null">
+            and o.parent_id = #{sysOrg.parent.id}
+        </if>
         <if test="orderByClause != null and orderByClause !=''" >
 	      order by ${orderByClause}
 	    </if>

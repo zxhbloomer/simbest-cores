@@ -1,5 +1,6 @@
 package com.simbest.cores.utils.json;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -39,7 +40,6 @@ public class JacksonUtils {
         module.addDeserializer(Date.class, new CustomJsonDateDeseralizer());
         // Add more here ...
         mapper.registerModule(module);
-		
 	}
 	
 	/**
@@ -73,9 +73,19 @@ public class JacksonUtils {
 			Exceptions.printException(e);
 		}
 		return null;
-	} 
-	
-	/**
+	}
+
+    public static <T> T readValue(File jsonFile, Class<T> clazz){
+        try {
+            return mapper.readValue(jsonFile, clazz);
+        } catch (IOException e) {
+            log.error(String.format("Error 12000: Json source is %s, translate class is %s", jsonFile, clazz));
+            Exceptions.printException(e);
+        }
+        return null;
+    }
+
+    /**
 	 * 将Json字符串转换为对象实体列表
 	 * @param jsonStr
 	 * @param listType

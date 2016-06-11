@@ -3,7 +3,6 @@ package com.simbest.cores.admin.authority.service.impl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.googlecode.cqengine.resultset.ResultSet;
 import com.simbest.cores.admin.authority.cache.SysUserCache;
 import com.simbest.cores.admin.authority.model.*;
 import com.simbest.cores.admin.authority.service.*;
@@ -134,6 +133,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
 	@Override
 	public Map<String, Object> getUsersTreeData(Integer userType) {
+		log.debug("Invoke getUsersTreeData with userType:"+userType);
 		Map<String, Object> data = usersTreeDataHolder.get(userType);
 		if(data == null){
 			data = getUsersTree(userType);
@@ -228,6 +228,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
 	@Override
 	public Map<String, Object> getUsersRoleTreeData(Integer roleId, Integer userType) {
+		log.debug("Invoke getUsersRoleTreeData with userType:"+userType+" roleId:"+roleId);
 		Map<String, Object> data = usersRoleTreeDataHolder.get(roleId+Constants.UNDERLINE+userType);
 		if(data == null){
 			data = getUsersRoleTree(roleId,userType);
@@ -325,6 +326,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
 	@Override
 	public Map<String, Object> getUserPermissionsTreeData(Integer userId) {
+		log.debug("Invoke getUserPermissionsTreeData with userId:"+userId);
 		Map<String, Object> data = permissionsTreeDataHolder.get(userId);
 		if(data == null){
 			data = getPermissionsTree(userId);
@@ -389,6 +391,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
     @Override
     public List<DynamicUserTreeNode> getFirstDynamicUserTree(Integer orgId, Integer userType){
+    	log.debug("Invoke getFirstDynamicUserTree with orgId:"+orgId+" userType:"+userType);
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         SysOrg root = sysOrgAdvanceService.loadByKey(orgId);
         DynamicUserTreeNode rootNode = new DynamicUserTreeNode();
@@ -409,6 +412,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
     @Override
     public List<DynamicUserTreeNode> getChoseDynamicUserTree(Integer orgId, Integer userType) {
+    	log.debug("Invoke getChoseDynamicUserTree with orgId:"+orgId+" userType:"+userType);
         List<DynamicUserTreeNode> data = choseDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+userType);
         if(data == null){
             data = loadUserAndOrg(Lists.<DynamicUserTreeNode>newArrayList(), orgId, userType);
@@ -446,31 +450,36 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
     }
 
     /**
-     * 五.根据CQEngine所建立的索引字段搜索，并构建树
+     * 五. 根据组织、上级组织、所属公司、职位获得决策项的树形菜单
      * @param loginName
      * @param mpNum
      * @param position
      * @return
      */
     @Override
-    public List<DynamicUserTreeNode> searchDynamicUserTree(Integer ownerOrgId, String position) {
-        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(ownerOrgId+Constants.UNDERLINE+position);
+    public List<DynamicUserTreeNode> searchDynamicUserTree(Integer orgId, Integer parentId, Integer ownerId, String position) {
+        log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s", orgId,parentId,ownerId,position));
+        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
-                data = loadDynamicUserTreeByCQEngine(ownerOrgId, position);
+                data = loadDynamicUserTreeByCQEngine(orgId,parentId,ownerId,position);
             }else{
-                data = loadDynamicUserTreeByDatabase(ownerOrgId, position);
+                data = loadDynamicUserTreeByDatabase(orgId,parentId,ownerId,position);
             }
-            searchDynamicUserTreeDataHolder.put(ownerOrgId+Constants.UNDERLINE+position, data);
+            searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position, data);
         }
         return data;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(Integer ownerOrgId, String position){
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(Integer orgId, Integer parentId, Integer ownerId, String position){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
         SysUser params = new SysUser();
-        params.setOwnerOrgId(ownerOrgId);
+        SysOrg sysOrg = new SysOrg(orgId);
+        SysOrg parent = new SysOrg(parentId);
+        sysOrg.setParent(parent);
+        params.setSysOrg(sysOrg);
+        params.setOwnerOrgId(ownerId);
         params.setPosition(position);
         Collection<SysUser> list = getAll(params);
         for (SysUser user : list) {
@@ -500,10 +509,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         return resultList;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(Integer ownerOrgId, String position){
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(Integer orgId, Integer parentId, Integer ownerId, String position){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
-        ResultSet<SysUserIndex> list = sysUserSearch.searchQuery(null, null, ownerOrgId, position);
+        Collection<SysUserIndex> list = sysUserSearch.searchQuery(orgId,parentId,ownerId,position);
         for (SysUserIndex user : list) {
             DynamicUserTreeNode userNode = new DynamicUserTreeNode();
             userNode.setType("user");

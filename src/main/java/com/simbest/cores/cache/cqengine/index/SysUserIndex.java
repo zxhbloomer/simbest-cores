@@ -4,6 +4,7 @@
 package com.simbest.cores.cache.cqengine.index;
 
 import com.googlecode.cqengine.attribute.SimpleAttribute;
+import com.googlecode.cqengine.attribute.SimpleNullableAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.simbest.cores.admin.authority.model.SysOrg;
 import com.simbest.cores.admin.authority.model.SysUser;
@@ -24,18 +25,36 @@ import java.util.List;
 public class SysUserIndex extends BaseObject<SysUserIndex> {
     private Integer id;
     private String loginName;
+    private Integer orgId;
+    private Integer parentId;
     private Integer ownerOrgId;
     private String position;
     private SysUser sysUser;
     private List<SysOrg> hierarchyOrgs;
+    private Integer orderBy;
 
-    public SysUserIndex(Integer id, String loginName, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs) {
+    /**
+     *
+     * @param id
+     * @param loginName
+     * @param orgId
+     * @param parentId
+     * @param ownerOrgId
+     * @param position
+     * @param sysUser
+     * @param hierarchyOrgs
+     * @param orderBy
+     */
+    public SysUserIndex(Integer id, String loginName, Integer orgId, Integer parentId, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs, Integer orderBy) {
         this.id = id;
         this.loginName = loginName;
+        this.orgId = orgId;
+        this.parentId = parentId;
         this.ownerOrgId = ownerOrgId;
         this.position = position;
         this.sysUser = sysUser;
         this.hierarchyOrgs = hierarchyOrgs;
+        this.orderBy = orderBy;
     }
 
     public static final SimpleAttribute<SysUserIndex, Integer> ID = new SimpleAttribute<SysUserIndex, Integer>("id") {
@@ -45,13 +64,25 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
     public static final SimpleAttribute<SysUserIndex, String> LOGIN_NAME = new SimpleAttribute<SysUserIndex, String>("loginName") {
         public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.loginName; }
     };
-    
-    public static final SimpleAttribute<SysUserIndex, Integer> OWNER_ORG = new SimpleAttribute<SysUserIndex, Integer>("ownerOrgId") {
+
+    public static final SimpleAttribute<SysUserIndex, Integer> ORG_ID = new SimpleAttribute<SysUserIndex, Integer>("orgId") {
+        public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.orgId; }
+    };
+
+    public static final SimpleAttribute<SysUserIndex, Integer> PARENT_ID = new SimpleAttribute<SysUserIndex, Integer>("parentId") {
+        public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.parentId; }
+    };
+
+    public static final SimpleNullableAttribute<SysUserIndex, Integer> OWNER_ORG = new SimpleNullableAttribute<SysUserIndex, Integer>("ownerOrgId") {
         public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.ownerOrgId; }
     };
 
-    public static final SimpleAttribute<SysUserIndex, String> POSITION = new SimpleAttribute<SysUserIndex, String>("position") {
+    public static final SimpleNullableAttribute<SysUserIndex, String> POSITION = new SimpleNullableAttribute<SysUserIndex, String>("position") {
         public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.position; }
+    };
+
+    public static final SimpleNullableAttribute<SysUserIndex, Integer> ORDERBY = new SimpleNullableAttribute<SysUserIndex, Integer>("orderBy") {
+        public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.orderBy; }
     };
 
     public Integer getId() {
@@ -60,6 +91,10 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
 
     public String getLoginName() {
         return loginName;
+    }
+
+    public Integer getOrgId() {
+        return orgId;
     }
 
     public Integer getOwnerOrgId() {
@@ -76,5 +111,9 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
 
     public List<SysOrg> getHierarchyOrgs() {
         return hierarchyOrgs;
+    }
+
+    public Integer getOrderBy() {
+        return orderBy;
     }
 }

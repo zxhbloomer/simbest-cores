@@ -9,8 +9,10 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.query.parser.sql.SQLParser;
 import com.googlecode.cqengine.resultset.ResultSet;
+import com.googlecode.cqengine.resultset.common.ResultSets;
 import com.simbest.cores.admin.authority.model.SysOrg;
 import com.simbest.cores.admin.authority.model.SysUser;
+import com.simbest.cores.admin.authority.service.ISysOrgAdvanceService;
 import com.simbest.cores.cache.cqengine.index.SysUserIndex;
 import com.simbest.cores.utils.configs.CoreConfig;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +28,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.googlecode.cqengine.codegen.AttributeBytecodeGenerator.createAttributes;
-import static com.googlecode.cqengine.query.QueryFactory.*;
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.in;
 
 /**
  * 用途： 
@@ -47,18 +50,27 @@ public class SysUserSearch {
     private SQLParser<SysUserIndex> parser = SQLParser.forPojoWithAttributes(SysUserIndex.class, createAttributes(SysUserIndex.class));
 
     @Autowired
+    private ISysOrgAdvanceService sysOrgAdvanceService;
+
+    @Autowired
     protected CoreConfig config;
 
     @PostConstruct
     public void init(){
         if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
             //建立索引
+            sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.ID));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.LOGIN_NAME));
+            sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.ORG_ID));
+            sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.PARENT_ID));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.OWNER_ORG));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.POSITION));
 
             //注册查询解析器
+            parser.registerAttribute(SysUserIndex.ID);
             parser.registerAttribute(SysUserIndex.LOGIN_NAME);
+            parser.registerAttribute(SysUserIndex.ORG_ID);
+            parser.registerAttribute(SysUserIndex.PARENT_ID);
             parser.registerAttribute(SysUserIndex.OWNER_ORG);
             parser.registerAttribute(SysUserIndex.POSITION);
         }
@@ -72,8 +84,11 @@ public class SysUserSearch {
      */
     public boolean createToIndex(SysUser u, List<SysOrg> hierarchyOrgs){
         //建立索引的字段不可为空，否则忽略数据
-        if(null !=u.getId() && StringUtils.isNotEmpty(u.getLoginName()) && null !=u.getOwnerOrgId() && StringUtils.isNotEmpty(u.getPosition())){
-            sysUserData.add(new SysUserIndex(u.getId(), u.getLoginName(), u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs));
+        if(null !=u.getOwnerOrgId() && StringUtils.isNotEmpty(u.getPosition())){
+            SysOrg sysOrg = sysOrgAdvanceService.loadByKey(u.getSysOrg().getId());
+            SysUserIndex index = new SysUserIndex(u.getId(), u.getLoginName(), sysOrg.getId(), sysOrg.getParent().getId(), u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs, u.getOrderBy());
+            log.debug(index);
+            sysUserData.add(index);
             return true;
         }
         return false;
@@ -115,23 +130,48 @@ public class SysUserSearch {
      * @return
      */
     @Cacheable
-    public ResultSet<SysUserIndex> searchQuery(Integer id, String loginName, Integer ownerOrgId, String position){
+    public Collection<SysUserIndex> searchQuery(Integer id, String loginName, Integer orgId, Integer parentId, Integer ownerOrgId, String position){
         String sql = "SELECT * FROM sysUserData WHERE (";
         if(null != id)
             sql += " AND "+SysUserIndex.ID.getAttributeName()+"="+id;
         if(StringUtils.isNotEmpty(loginName))
             sql += " AND "+SysUserIndex.LOGIN_NAME.getAttributeName()+"='"+loginName+"\'";
+        if(null != orgId)
+            sql += " AND "+SysUserIndex.ORG_ID.getAttributeName()+"="+orgId;
+        if(null != parentId)
+            sql += " AND "+SysUserIndex.PARENT_ID.getAttributeName()+"="+parentId;
         if(null != ownerOrgId)
             sql += " AND "+SysUserIndex.OWNER_ORG.getAttributeName()+"="+ownerOrgId;
         if(StringUtils.isNotEmpty(position))
             sql += " AND "+SysUserIndex.POSITION.getAttributeName()+"='"+position+"\'";
-        sql = StringUtils.replace(sql, "WHERE ( AND", "WHERE (" )+")";
+        sql = StringUtils.replace(sql, "WHERE ( AND", "WHERE (" )+") ORDER BY orderBy ASC";
         log.debug(sql);
-        return parser.retrieve(sysUserData, sql);
+        return ResultSets.asCollection(parser.retrieve(sysUserData, sql));
     }
 
 
+    @Cacheable
+    public Collection<SysUserIndex> searchQuery(Integer orgId, Integer parentId, Integer ownerOrgId, String position){
+        return searchQuery(null,null,orgId,parentId,ownerOrgId,position);
+    }
 
+    @Cacheable
+    public Collection<SysUserIndex> searchQuery(Integer id){
+        return searchQuery(id,null,null,null,null,null);
+    }
 
+    @Cacheable
+    public Collection<SysUserIndex> searchQuery(String loginName){
+        return searchQuery(null,loginName,null,null,null,null);
+    }
 
+//    @Cacheable
+//    public Collection<SysUserIndex> searchQueryWithFilter(Integer id, String loginName, Integer orgId,Integer parentId, Integer ownerOrgId, String position, Collection<SysUserIndex> os){
+//        Collection<SysUserIndex> datas = searchQuery(id,loginName,orgId,parentId,ownerOrgId,position);
+//        for(SysUserIndex o : os){
+//            if(datas.contains(o))
+//                datas.remove(o);
+//        }
+//        return datas;
+//    }
 }

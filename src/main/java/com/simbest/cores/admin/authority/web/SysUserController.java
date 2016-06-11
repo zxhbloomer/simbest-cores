@@ -491,23 +491,25 @@ public class SysUserController extends BaseController<SysUser, Integer>{
         return result;
     }
 
-    /**
-     * 五.动态搜索用户属性，构建当前登录人组织成员及父类所有组织树
-     * @param u
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/searchCurrentUserDynamicUserTree")
-    @ResponseBody
-    public Map<String, Object> searchCurrentUserDynamicUserTree(SysUser u) throws Exception {
-        ShiroUser o = appUserSession.getCurrentUser();
-        Map<String, Object> result = Maps.newHashMap();
-        List<DynamicUserTreeNode> resultList = sysUserAdvanceService.searchDynamicUserTree(o.getOwnerOrgId(),u.getPosition());
-        Map<String, Object> dataMap = super.wrapQueryResult(resultList);
-        result.put("data", dataMap);
-        result.put("message", "");
-        result.put("responseid", 1);
-        return result;
-    }
+//    /**
+//     * 五.动态搜索用户属性，构建当前登录人组织成员及父类所有组织树
+//     * @param u
+//     * @return
+//     * @throws Exception
+//     */
+//    @RequestMapping(value = "/searchCurrentUserDynamicUserTree")
+//    @ResponseBody
+//    public Map<String, Object> searchCurrentUserDynamicUserTree(SysUser u) throws Exception {
+//        ShiroUser user = appUserSession.getCurrentUser();
+//        SysOrg org = sysOrgAdvanceService.loadByKey(user.getOrgId());
+//        Integer parentId = null==org.getParent() ? null:org.getParent().getId();
+//        Map<String, Object> result = Maps.newHashMap();
+//        List<DynamicUserTreeNode> resultList = sysUserAdvanceService.searchDynamicUserTree(o.getOwnerOrgId(),u.getPosition());
+//        Map<String, Object> dataMap = super.wrapQueryResult(resultList);
+//        result.put("data", dataMap);
+//        result.put("message", "");
+//        result.put("responseid", 1);
+//        return result;
+//    }
 
 }

@@ -69,7 +69,7 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
         public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.orgId; }
     };
 
-    public static final SimpleAttribute<SysUserIndex, Integer> PARENT_ID = new SimpleAttribute<SysUserIndex, Integer>("parentId") {
+    public static final SimpleNullableAttribute<SysUserIndex, Integer> PARENT_ID = new SimpleNullableAttribute<SysUserIndex, Integer>("parentId") {
         public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.parentId; }
     };
 

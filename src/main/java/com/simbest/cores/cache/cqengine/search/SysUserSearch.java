@@ -86,7 +86,8 @@ public class SysUserSearch {
         //建立索引的字段不可为空，否则忽略数据
         if(null !=u.getOwnerOrgId() && StringUtils.isNotEmpty(u.getPosition())){
             SysOrg sysOrg = sysOrgAdvanceService.loadByKey(u.getSysOrg().getId());
-            SysUserIndex index = new SysUserIndex(u.getId(), u.getLoginName(), sysOrg.getId(), sysOrg.getParent().getId(), u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs, u.getOrderBy());
+            Integer parentId = null==sysOrg.getParent() ? null:sysOrg.getParent().getId();
+            SysUserIndex index = new SysUserIndex(u.getId(), u.getLoginName(), sysOrg.getId(), parentId, u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs, u.getOrderBy());
             log.debug(index);
             sysUserData.add(index);
             return true;

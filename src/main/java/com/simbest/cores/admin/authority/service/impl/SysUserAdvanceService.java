@@ -451,37 +451,45 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 
     /**
      * 五. 根据组织、上级组织、所属公司、职位获得决策项的树形菜单
-     * @param loginName
-     * @param mpNum
+     * @param orgId
+     * @param parentId
+     * @param ownerId
      * @param position
+     * @param userId
      * @return
      */
     @Override
-    public List<DynamicUserTreeNode> searchDynamicUserTree(Integer orgId, Integer parentId, Integer ownerId, String position) {
+    public List<DynamicUserTreeNode> searchDynamicUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId) {
         log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s", orgId,parentId,ownerId,position));
         List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
-                data = loadDynamicUserTreeByCQEngine(orgId,parentId,ownerId,position);
+                data = loadDynamicUserTreeByCQEngine(orgId,parentId,ownerId,position,userId);
             }else{
-                data = loadDynamicUserTreeByDatabase(orgId,parentId,ownerId,position);
+                data = loadDynamicUserTreeByDatabase(orgId,parentId,ownerId,position,userId);
             }
             searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position, data);
         }
         return data;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(Integer orgId, Integer parentId, Integer ownerId, String position){
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
-        SysUser params = new SysUser();
-        SysOrg sysOrg = new SysOrg(orgId);
-        SysOrg parent = new SysOrg(parentId);
-        sysOrg.setParent(parent);
-        params.setSysOrg(sysOrg);
-        params.setOwnerOrgId(ownerId);
-        params.setPosition(position);
-        Collection<SysUser> list = getAll(params);
+        Collection<SysUser> list = null;
+        if(null != userId){
+            SysUser sysUser = loadByKey(userId);
+            list.add(sysUser);
+        }else {
+            SysUser params = new SysUser();
+            SysOrg sysOrg = new SysOrg(orgId);
+            SysOrg parent = new SysOrg(parentId);
+            sysOrg.setParent(parent);
+            params.setSysOrg(sysOrg);
+            params.setOwnerOrgId(ownerId);
+            params.setPosition(position);
+            list = getAll(params);
+        }
         for (SysUser user : list) {
             DynamicUserTreeNode userNode = new DynamicUserTreeNode();
             userNode.setType("user");
@@ -492,16 +500,16 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             unduplicatedOrgSet.addAll(sysOrgAdvanceService.getHierarchyOrgs(user.getSysOrg().getId()));
             resultList.add(userNode);
         }
-        for(SysOrg org : unduplicatedOrgSet){
+        for (SysOrg org : unduplicatedOrgSet) {
             DynamicUserTreeNode orgNode = new DynamicUserTreeNode();
             Integer children = sysOrgAdvanceService.countByParent(org.getId());
-            if(children != null && children>0)
+            if (children != null && children > 0)
                 orgNode.setChild(true);
             else
                 orgNode.setChild(false);
             orgNode.setType("org");
             orgNode.setId(org.getId());
-            if(null != org.getParent())
+            if (null != org.getParent())
                 orgNode.setPid(org.getParent().getId());
             orgNode.setTitle(org.getOrgName());
             resultList.add(orgNode);
@@ -509,10 +517,15 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         return resultList;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(Integer orgId, Integer parentId, Integer ownerId, String position){
+    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
-        Collection<SysUserIndex> list = sysUserSearch.searchQuery(orgId,parentId,ownerId,position);
+        Collection<SysUserIndex> list = null;
+        if(null != userId){
+            list = sysUserSearch.searchQuery(userId);
+        }else {
+            list = sysUserSearch.searchQuery(orgId, parentId, ownerId, position);
+        }
         for (SysUserIndex user : list) {
             DynamicUserTreeNode userNode = new DynamicUserTreeNode();
             userNode.setType("user");

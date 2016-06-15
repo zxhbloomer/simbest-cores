@@ -166,13 +166,4 @@ public class SysUserSearch {
         return searchQuery(null,loginName,null,null,null,null);
     }
 
-//    @Cacheable
-//    public Collection<SysUserIndex> searchQueryWithFilter(Integer id, String loginName, Integer orgId,Integer parentId, Integer ownerOrgId, String position, Collection<SysUserIndex> os){
-//        Collection<SysUserIndex> datas = searchQuery(id,loginName,orgId,parentId,ownerOrgId,position);
-//        for(SysUserIndex o : os){
-//            if(datas.contains(o))
-//                datas.remove(o);
-//        }
-//        return datas;
-//    }
 }

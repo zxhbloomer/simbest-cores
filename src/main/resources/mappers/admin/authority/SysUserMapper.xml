@@ -231,9 +231,7 @@
         <if test="sysOrg != null and sysOrg.parent != null and sysOrg.parent.id != null">
             and o.parent_id = #{sysOrg.parent.id}
         </if>
-        <if test="orderByClause != null and orderByClause !=''" >
-	      order by ${orderByClause}
-	    </if>
+        ORDER BY ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
     </select>
     <!-- 关联查询方式，适用于集合列表实体对象  End --> 
 

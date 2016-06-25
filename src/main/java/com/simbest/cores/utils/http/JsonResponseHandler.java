@@ -36,8 +36,8 @@ public class JsonResponseHandler{
 					int status = response.getStatusLine().getStatusCode();
 	                if (status >= 200 && status < 300) {
 	                    HttpEntity entity = response.getEntity();
-	                    String str = EntityUtils.toString(entity, charset);	  
-	                    log.debug(clazz.getSimpleName()+"  Serializable String value is:"+str);
+	                    String str = EntityUtils.toString(entity, charset);
+                        log.debug(clazz.getSimpleName()+"  Serializable String value is:"+str);
 	                    T o =JacksonUtils.readValue(str, clazz);
 	                    log.debug(clazz.getSimpleName()+"  Deserializable Object value is:"+o);
 	                    return o;	                    

@@ -68,7 +68,7 @@ public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,I
     List<DynamicUserTreeNode> getChoseDynamicUserTree(Integer orgId, Integer userType);
 
     /**
-     * 五. 根据组织、上级组织、所属公司、职位获得决策项的树形菜单
+     * 五. 根据组织、上级组织、所属公司、职位、用户信息，获得决策项的树形菜单
      * @param orgId
      * @param parentId
      * @param ownerId
@@ -77,4 +77,12 @@ public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,I
      * @return
      */
     List<DynamicUserTreeNode> searchDynamicUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId);
+
+    /**
+     * 六. 根据组织、职位遍历组织及儿子组织的树形菜单
+     * @param orgId
+     * @param position
+     * @return
+     */
+    List<DynamicUserTreeNode> searchDynamicUserChildTree(Integer orgId, String position);
 }

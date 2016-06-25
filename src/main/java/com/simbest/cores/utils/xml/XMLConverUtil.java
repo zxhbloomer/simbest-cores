@@ -1,12 +1,6 @@
-package com.simbest.cores.utils.http;
+package com.simbest.cores.utils.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,4 +91,34 @@ public class XMLConverUtil{
 		}
 		return null;
 	}
+
+    /**
+     * 将对象根据路径转换成xml文件
+     *
+     * @param obj
+     * @param path
+     * @return
+     */
+    public static void convertToXml(Object obj, String path) {
+        try {
+            // 利用jdk中自带的转换类实现
+            JAXBContext context = JAXBContext.newInstance(obj.getClass());
+
+            Marshaller marshaller = context.createMarshaller();
+            // 格式化xml输出的格式
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
+                    Boolean.TRUE);
+            // 将对象转换成输出流形式的xml
+            // 创建输出流
+            FileWriter fw = null;
+            try {
+                fw = new FileWriter(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            marshaller.marshal(obj, fw);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
 }

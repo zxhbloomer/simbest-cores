@@ -1,9 +1,7 @@
 package com.simbest.cores.utils.http;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.simbest.cores.utils.Constants;
+import com.simbest.cores.utils.xml.XMLConverUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -12,8 +10,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
 
-import com.simbest.cores.utils.CharsetUtil;
-import com.simbest.cores.utils.Constants;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XmlResponseHandler{
 	private static transient final Log log = LogFactory.getLog(XmlResponseHandler.class);
@@ -36,9 +35,9 @@ public class XmlResponseHandler{
 					int status = response.getStatusLine().getStatusCode();
 	                if (status >= 200 && status < 300) {
 	                    HttpEntity entity = response.getEntity();
-	                    String str = EntityUtils.toString(entity);
+                        String str = EntityUtils.toString(entity, charset);
 	                    log.debug(clazz.getSimpleName()+"  Serializable String value is:"+str);
-	                    T o = XMLConverUtil.convertToObject(clazz, CharsetUtil.changeCharset(str, "ISO-8859-1", charset));
+	                    T o = XMLConverUtil.convertToObject(clazz, str);
 	                    log.debug(clazz.getSimpleName()+"  Deserializable Object value is:"+o);
 	                   return o;
 	                } else {

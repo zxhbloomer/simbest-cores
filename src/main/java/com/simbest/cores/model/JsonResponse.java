@@ -7,7 +7,7 @@ package com.simbest.cores.model;
  * @author Li
  *
  */
-public class JsonResponse {
+public class JsonResponse extends BaseObject<JsonResponse>{
 	private Integer responseid;
 	private String message;
 	private Object data;

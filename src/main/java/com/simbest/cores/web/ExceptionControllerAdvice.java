@@ -78,6 +78,7 @@ public class ExceptionControllerAdvice {
 		JsonResponse response = new JsonResponse();	
 		response.setMessage("发现存在不止一条记录！");
 		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
 	}
 	
@@ -90,6 +91,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "当前流程状态为禁用模式!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -102,6 +104,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "编辑更新流程失败!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -114,6 +117,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "加载当前环节审批配置信息失败!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
 
@@ -126,6 +130,7 @@ public class ExceptionControllerAdvice {
         Map<String, Object> result = Maps.newHashMap();
         result.put("message", "下一环节处理人无效，流程不可提交!");
         result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
         return result;
     }
 
@@ -138,6 +143,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "加载流程审批环节失败!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -156,6 +162,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "请求的资源不存在!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -185,6 +192,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", message);
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
 
@@ -197,6 +205,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "请先登录!");
 		result.put("responseid", 200);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -208,6 +217,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "用户名不存在!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -219,6 +229,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();		    	
 		result.put("message", "用户名/密码错误!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
     
@@ -237,6 +248,7 @@ public class ExceptionControllerAdvice {
     	Map<String, Object> result = Maps.newHashMap();
 		result.put("message", "绑定用户账号异常!");
 		result.put("responseid", 0);
+        result.put("data", Exceptions.getStackTraceAsString(e));
 		return result;
     }
 
@@ -262,6 +274,7 @@ public class ExceptionControllerAdvice {
 		Map<String, Object> map = Maps.newHashMap();
 		map.put("responseid", 0);
 		map.put("message", getUnKnowErrorMsg());
+        map.put("data", Exceptions.getStackTraceAsString(e));
 		return map;
     }
     
@@ -279,6 +292,7 @@ public class ExceptionControllerAdvice {
 		Map<String, Object> map = Maps.newHashMap();
 		map.put("responseid", 0);
 		map.put("message", getUnKnowErrorMsg());
+        map.put("data", Exceptions.getStackTraceAsString(e));
 		return map;
 	}
 	

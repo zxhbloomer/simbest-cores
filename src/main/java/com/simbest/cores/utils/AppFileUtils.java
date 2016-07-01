@@ -113,7 +113,40 @@ public class AppFileUtils {
   	    
   	    System.out.println(StringUtils.substringAfterLast("http://bj.bcebos.com/v1/onegymbucket/static/uploadFiles/manager1/2015-11-12/483bdc2b9ee8413d99e91293237615c9/ccc.jpg", "onegymbucket/"));
 	}
-    
+
+    public File downloadFromUrl(String fileUrl, String fileName, String storePath){
+        File targetFile = null;
+        HttpURLConnection conn = null;
+        try{
+            URL url = new URL(fileUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoInput(true);
+            conn.setRequestMethod(Constants.HTTPGET);
+            conn.connect();
+            if(conn.getContentLengthLong() != 0) {
+                //存储时，存放应用磁盘Context路径
+                String savePath = getFileLocation() + storePath + fileName + getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
+                targetFile = new File(savePath);
+                FileUtils.copyURLToFile(url, targetFile);
+                conn.disconnect();
+                log.debug(String.format("Downloaded file from url: %s, and save at: %s", fileUrl, targetFile.getAbsolutePath()));
+            }else{
+                log.error(String.format("Want to download file from %s, but get nothing......",fileUrl));
+            }
+        }catch(Exception e){
+            if(conn != null){
+                conn.disconnect();
+                conn = null;
+            }
+            log.error(Exceptions.getStackTraceAsString(e));
+        }finally{
+            if(conn != null){
+                conn.disconnect();
+            }
+        }
+        return targetFile;
+    }
+
 	/**
 	 * 将文件由远程URL读取后，再上传至云存储或应用系统
 	 * 
@@ -155,14 +188,7 @@ public class AppFileUtils {
 					break;
 			}
 			conn.disconnect();
-		}catch(IOException e){
-			if(conn != null){
-				conn.disconnect();
-				conn = null;
-			}
-			log.error(Exceptions.getStackTraceAsString(e));
-		}
-		catch(Exception e){
+		} catch(Exception e){
 			if(conn != null){
 				conn.disconnect();
 				conn = null;
@@ -171,6 +197,7 @@ public class AppFileUtils {
 		}finally{
 			if(conn != null){
 				conn.disconnect();
+                conn = null;
 			}
 		}
 		savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
@@ -214,10 +241,7 @@ public class AppFileUtils {
 				default:
 					break;
 			}
-		}catch(IOException e){
-			log.error(Exceptions.getStackTraceAsString(e));
-		}
-		catch(Exception e){
+		} catch(Exception e){
 			log.error(Exceptions.getStackTraceAsString(e));
 		}
 		savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
@@ -470,10 +494,93 @@ public class AppFileUtils {
         String contentType = null;
         try {
             contentType = Files.probeContentType(path);
+            if(StringUtils.isEmpty(contentType))
+                contentType = getFileExtByName(pathToFile);
         } catch (IOException e) {
         	Exceptions.printException(e);
         }
         return contentType;      
+    }
+
+    public static boolean isWord(String pathToFile){
+        String contentType = getContentType(pathToFile);
+        if("application/vnd.openxmlformats-officedocument.wordprocessingml.document".equals(contentType))
+            return true;
+        else if("application/msword".equals(contentType))
+            return true;
+        else if("doc".equals(contentType))
+            return true;
+        else if("docx".equals(contentType))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isExcel(String pathToFile){
+        String contentType = getContentType(pathToFile);
+        if("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equals(contentType))
+            return true;
+        else if("application/vnd.ms-excel".equals(contentType))
+            return true;
+        else if("xls".equals(contentType))
+            return true;
+        else if("xlsx".equals(contentType))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isOfficeFile(String pathToFile){
+        if(isExcel(pathToFile) || isWord(pathToFile))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isImage(String pathToFile){
+        String contentType = getContentType(pathToFile);
+        if("image/jpeg".equals(contentType))
+            return true;
+        else if("image/gif".equals(contentType))
+            return true;
+        else if("image/png".equals(contentType))
+            return true;
+        else if("image/bmp".equals(contentType))
+            return true;
+        else if("jpeg".equals(contentType))
+            return true;
+        else if("jpg".equals(contentType))
+            return true;
+        else if("gif".equals(contentType))
+            return true;
+        else if("png".equals(contentType))
+            return true;
+        else if("bmp".equals(contentType))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isTxt(String pathToFile){
+        String contentType = getContentType(pathToFile);
+        if("text/plain".equals(contentType))
+            return true;
+        else if("txt".equals(contentType))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isCompressFile(String pathToFile){
+        String contentType = getContentType(pathToFile);
+        if("application/x-zip-compressed".equals(contentType) || "application/zip".equals(contentType))
+            return true;
+        else if("rar".equals(contentType))
+            return true;
+        else if("zip".equals(contentType))
+            return true;
+        else
+            return false;
     }
 
     /**

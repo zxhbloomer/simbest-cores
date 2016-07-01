@@ -9,7 +9,7 @@
 
   5)、缓存使用Redis，并集成Shiro实现分布式Session共享。[博客移步](http://blog.csdn.net/lishehe/article/details/45223477) [源码移步](https://github.com/alexxiyang/shiro-redis)
 
-  6)、Redis客户端[spring-data-redis](https://github.com/spring-projects/spring-data-redis)	      
+  6)、Redis客户端[spring-budgetAttachmentData-redis](https://github.com/spring-projects/spring-budgetAttachmentData-redis)
 
   7)、日志组件使用SLF4J和Log4J
 

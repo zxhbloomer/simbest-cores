@@ -12,7 +12,17 @@ public class JsonResponse extends BaseObject<JsonResponse>{
 	private String message;
 	private Object data;
 
-	public Integer getResponseid() {
+    public JsonResponse() {
+
+    }
+
+    public JsonResponse(Integer responseid) {
+        this.responseid = responseid;
+    }
+
+
+
+    public Integer getResponseid() {
 		return responseid;
 	}
 

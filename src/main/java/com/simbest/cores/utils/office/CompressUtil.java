@@ -1,24 +1,27 @@
 package com.simbest.cores.utils.office;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.esotericsoftware.minlog.Log;
+import com.github.junrar.Archive;
+import com.github.junrar.exception.RarException;
+import com.github.junrar.impl.FileVolumeManager;
+import com.google.common.collect.Lists;
+import com.simbest.cores.exceptions.Exceptions;
+import com.simbest.cores.utils.AppFileUtils;
+import com.simbest.cores.utils.Constants;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.StringUtils;
 
-import com.simbest.cores.exceptions.Exceptions;
-  
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /** 
  * ZIP压缩文件操作工具类 
  * 支持密码 
@@ -28,7 +31,52 @@ import com.simbest.cores.exceptions.Exceptions;
  */  
 public class CompressUtil {
     private static transient final org.apache.commons.logging.Log log = LogFactory.getLog(CompressUtil.class);
-    /** 
+
+
+    public static void main(String[] args) throws ZipException, IOException {
+        String defaultCharacterEncoding = System.getProperty("file.encoding");
+        System.out.println("defaultCharacterEncoding by code: " + System.getProperty("file.encoding"));
+        System.out.println("defaultCharacterEncoding by charSet: " + Charset.defaultCharset());
+        System.setProperty("file.encoding", "UTF-16");
+        System.out.println("defaultCharacterEncoding by property after updating file.encoding : " + System.getProperty("file.encoding"));
+        unzip("E:\\01_Work\\01_DevSpace\\worksapce\\web-apps\\maip\\target\\maip\\budget\\测试数据.zip", "E:\\", null);
+    }
+
+
+
+    private static File[] unrar(File rarFile, String dest) throws IOException{
+        List<File> fileList = Lists.newArrayList();
+        Archive a=null;
+        try {
+            a=new Archive(new FileVolumeManager(rarFile));
+        }
+        catch (RarException | IOException e) {
+            e.printStackTrace();
+        }
+        if (a != null) {
+            a.getMainHeader().print();
+            com.github.junrar.rarfile.FileHeader fh=a.nextFileHeader();
+            File destDir = new File(dest);
+            FileUtils.forceMkdir(destDir);
+            while (fh != null) {
+                try {
+                    File out=new File(dest + fh.getFileNameString().trim());
+                    FileOutputStream os=new FileOutputStream(out);
+                    a.extractFile(fh,os);
+                    os.close();
+                    fileList.add(out);
+                    log.debug("File to be extracted....." + out.getAbsolutePath());
+                }
+                catch (RarException |IOException e) {
+                    e.printStackTrace();
+                }
+                fh=a.nextFileHeader();
+            }
+        }
+        return fileList.toArray(new File[]{});
+    }
+
+    /**
      * 使用给定密码解压指定的ZIP压缩文件到指定目录 
      * <p> 
      * 如果指定目录不存在,可以自动创建,不合法的路径将导致异常被抛出 
@@ -39,25 +87,25 @@ public class CompressUtil {
      * @throws ZipException 压缩文件有损坏或者解压缩失败抛出 
      * @throws IOException 
      */  
-    public static File [] unzip(String zip, String dest, String passwd) throws ZipException, IOException {  
-        File zipFile = new File(zip);  
-        return unzip(zipFile, dest, passwd);  
-    }  
-      
-    /** 
-     * 使用给定密码解压指定的ZIP压缩文件到当前目录 
-     * @param zip 指定的ZIP压缩文件 
-     * @param passwd ZIP文件的密码 
-     * @return  解压后文件数组 
-     * @throws ZipException 压缩文件有损坏或者解压缩失败抛出 
-     * @throws IOException 
-     */  
-    public static File [] unzip(String zip, String passwd) throws ZipException, IOException {  
+    public static File [] unzip(String zip, String dest, String passwd) throws ZipException, IOException {
+        File zipFile = new File(zip);
+        return unzip(zipFile, dest, passwd);
+    }
+
+    /**
+     * 使用给定密码解压指定的ZIP压缩文件到当前目录
+     * @param zip 指定的ZIP压缩文件
+     * @param passwd ZIP文件的密码
+     * @return  解压后文件数组
+     * @throws ZipException 压缩文件有损坏或者解压缩失败抛出
+     * @throws IOException
+     */
+    public static File [] unzip(String zip, String passwd) throws ZipException, IOException {
         File zipFile = new File(zip);  
         File parentDir = zipFile.getParentFile();  
         return unzip(zipFile, parentDir.getAbsolutePath(), passwd);  
-    }  
-      
+    }
+
     /** 
      * 使用给定密码解压指定的ZIP压缩文件到指定目录 
      * <p> 
@@ -69,30 +117,40 @@ public class CompressUtil {
      * @throws ZipException 压缩文件有损坏或者解压缩失败抛出 
      * @throws IOException 
      */  
-    public static File [] unzip(File zipFile, String dest, String passwd) throws ZipException, IOException {  
-        ZipFile zFile = new ZipFile(zipFile);  
-        zFile.setFileNameCharset("GBK");  
-        if (!zFile.isValidZipFile()) {  
-            throw new ZipException("压缩文件不合法,可能被损坏.");  
-        }  
-        File destDir = new File(dest);
-        FileUtils.forceMkdir(destDir); 
-        if (zFile.isEncrypted()) {  
-            zFile.setPassword(passwd.toCharArray());  
-        }  
-        zFile.extractAll(dest);  
-          
-        @SuppressWarnings("unchecked")
-		List<FileHeader> headerList = zFile.getFileHeaders();  
-        List<File> extractedFileList = new ArrayList<File>();  
-        for(FileHeader fileHeader : headerList) {  
-            if (!fileHeader.isDirectory()) {  
-                extractedFileList.add(new File(destDir,fileHeader.getFileName()));  
-            }  
-        }  
-        File [] extractedFiles = new File[extractedFileList.size()];  
-        extractedFileList.toArray(extractedFiles);  
-        return extractedFiles;  
+    public static File [] unzip(File zipFile, String dest, String passwd) throws ZipException, IOException {
+        if(StringUtils.isEmpty(dest))
+            throw new ZipException("@@@@Error: Unzip destination can not be empty!!!!");
+        if(zipFile == null || !zipFile.exists())
+            throw new ZipException("@@@@Error: Unzip file not exist!!!!");
+        if(AppFileUtils.getContentType(zipFile.getName()).equals("rar")){
+            return unrar(zipFile,dest);
+        } else {
+            File destDir = new File(dest);
+            FileUtils.forceMkdir(destDir);
+            ZipFile zFile = new ZipFile(zipFile);
+            zFile.setFileNameCharset(Constants.GBK); //不可随意更换位置
+            if (!zFile.isValidZipFile()) {
+                throw new ZipException(String.format("@@@@Error: Unzip file: %s is broken!!!!",zipFile.getAbsolutePath()));
+            }
+            if (zFile.isEncrypted()) {
+                zFile.setPassword(passwd.toCharArray());
+            }
+            zFile.extractAll(dest);
+
+            @SuppressWarnings("unchecked")
+            List<FileHeader> headerList = zFile.getFileHeaders();
+            List<File> extractedFileList = new ArrayList<File>();
+            for (FileHeader fileHeader : headerList) {
+                if (!fileHeader.isDirectory()) {
+                    File out = new File(destDir, fileHeader.getFileName());
+                    extractedFileList.add(out);
+                    log.debug("File to be extracted....." + out.getAbsolutePath());
+                }
+            }
+            File[] extractedFiles = new File[extractedFileList.size()];
+            extractedFileList.toArray(extractedFiles);
+            return extractedFiles;
+        }
     }  
       
     /** 
@@ -144,13 +202,14 @@ public class CompressUtil {
         ZipParameters parameters = new ZipParameters();  
         parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);           // 压缩方式  
         parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);    // 压缩级别  
-        if (!StringUtils.isEmpty(passwd)) {  
+        if (!StringUtils.isEmpty(passwd)) {
             parameters.setEncryptFiles(true);  
             parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_STANDARD); // 加密方式  
             parameters.setPassword(passwd.toCharArray());  
         }  
         try {  
-            ZipFile zipFile = new ZipFile(dest);  
+            ZipFile zipFile = new ZipFile(dest);
+            zipFile.setFileNameCharset(Constants.GBK); //不可随意更换位置
             if (srcFile.isDirectory()) {  
                 // 如果不创建目录的话,将直接把给定目录下的文件压缩到压缩文件,即没有目录结构  
                 if (!isCreateDir) {  
@@ -218,16 +277,5 @@ public class CompressUtil {
             log.debug(created);
         }
     }  
-  
-    public static void main(String[] args) {
-//        zip("d:\\test", "d:\\test\\cc.zip", null);
-//      try {  
-//          File[] files = unzip("d:\\test\\汉字.zip", "aa");  
-//          for (int i = 0; i < files.length; i++) {  
-//              System.out.println(files[i]);  
-//          }  
-//      } catch (ZipException e) {  
-//          Exceptions.printException(e);;  
-//      }  
-    }  
+
 }

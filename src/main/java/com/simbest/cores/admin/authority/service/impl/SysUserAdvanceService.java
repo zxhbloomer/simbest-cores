@@ -441,14 +441,14 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
     @Override
     public List<DynamicUserTreeNode> searchDynamicUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId) {
         log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s, userId: %s", orgId,parentId,ownerId,position, userId));
-        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position);
+        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
                 data = loadDynamicUserTreeByCQEngine(orgId,parentId,ownerId,position,userId);
             }else{
                 data = loadDynamicUserTreeByDatabase(orgId,parentId,ownerId,position,userId);
             }
-            searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position, data);
+            searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId, data);
         }
         return data;
     }

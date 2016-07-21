@@ -6,6 +6,7 @@ package com.simbest.cores.cache;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -77,7 +78,11 @@ public interface IGenericCache<V extends GenericModel<V>, K extends Serializable
 	 * 清空缓存
 	 */
 	void removeAll();
-	
+
+    List<V> multiGetByKey(Collection<K> keys);
+
+    List<V> multiGetByUnique(Collection<Object> keys);
+
 	/**
 	 * 获取主键缓存Operations
 	 * @return

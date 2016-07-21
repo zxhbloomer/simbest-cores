@@ -12,11 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @MappedSuperclass
 public abstract class GenericModel<T> extends BaseObject<T>{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3107277726119668006L;    
-
 	@Transient
 	private String orderByClause;  //动态排序
 

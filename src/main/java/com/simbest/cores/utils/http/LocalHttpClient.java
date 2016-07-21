@@ -56,14 +56,13 @@ public class LocalHttpClient {
 		return null;
 	}
 
-	public static <T> T execute(HttpUriRequest request,ResponseHandler<T> responseHandler){
-		try {
-			return httpClient.execute(request, responseHandler);
-		} catch (IOException e) {
-			Exceptions.printException(e);
-		} 
-		return null;
-	}
+	public static <T> T execute(HttpUriRequest request,ResponseHandler<T> responseHandler) throws RuntimeException {
+        try {
+            return httpClient.execute(request, responseHandler);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	/**
 	 * 数据返回自动JSON对象解析

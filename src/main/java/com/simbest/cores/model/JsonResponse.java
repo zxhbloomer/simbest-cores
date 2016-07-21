@@ -3,24 +3,28 @@
  */
 package com.simbest.cores.model;
 
+import com.simbest.cores.utils.AppCodeGenerator;
+
 /**
  * @author Li
  *
  */
 public class JsonResponse extends BaseObject<JsonResponse>{
-	private Integer responseid;
-	private String message;
+    private static final long serialVersionUID = -7314451132207798931L;
+
+    private Integer responseid;
+	private Object message;
 	private Object data;
+    private String requestId;
 
     public JsonResponse() {
-
+        this.requestId = AppCodeGenerator.nextUnLimitCode();
     }
 
     public JsonResponse(Integer responseid) {
         this.responseid = responseid;
+        this.requestId = AppCodeGenerator.nextUnLimitCode();
     }
-
-
 
     public Integer getResponseid() {
 		return responseid;
@@ -30,11 +34,11 @@ public class JsonResponse extends BaseObject<JsonResponse>{
 		this.responseid = responseid;
 	}
 
-	public String getMessage() {
+	public Object getMessage() {
 		return message;
 	}
 
-	public void setMessage(String message) {
+	public void setMessage(Object message) {
 		this.message = message;
 	}
 
@@ -46,4 +50,11 @@ public class JsonResponse extends BaseObject<JsonResponse>{
 		this.data = data;
 	}
 
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 }

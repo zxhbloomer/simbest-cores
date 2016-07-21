@@ -1,5 +1,7 @@
 package com.simbest.cores.admin.authority.service.impl;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -117,6 +119,7 @@ public class SysOrgAdvanceService extends GenericAdvanceService<SysOrg,Integer> 
         for(String parentId:parentIdArray){
             parentSysOrgs.add(loadByKey(Integer.valueOf(parentId)));
         }
+        Collections.sort(parentSysOrgs);
         return parentSysOrgs;
     }
 }

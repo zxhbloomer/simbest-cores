@@ -1,22 +1,11 @@
 package com.simbest.cores.admin.authority.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import com.google.common.collect.ComparisonChain;
 import com.simbest.cores.model.SystemModel;
-import com.simbest.cores.utils.annotations.ExcelVOAttribute;
-import com.simbest.cores.utils.annotations.NotNullColumn;
-import com.simbest.cores.utils.annotations.ReferenceTable;
-import com.simbest.cores.utils.annotations.ReferenceTables;
-import com.simbest.cores.utils.annotations.Unique;
+import com.simbest.cores.utils.annotations.*;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "sys_org")
@@ -66,11 +55,15 @@ public class SysOrg extends SystemModel<SysOrg> {
 	@Column(nullable = true)
 	private Integer orgLevel; 
 	
-	@NotNullColumn(value="组织类型")
+	@NotNullColumn(value="组织分类")
 	@Column(nullable = true)
-	private Integer orgType; 
-	
-	@ExcelVOAttribute(name = "显示顺序", column = "E")
+	private Integer orgCategory;
+
+    @NotNullColumn(value="组织类型")
+    @Column(nullable = true)
+    private Integer orgType;
+
+    @ExcelVOAttribute(name = "显示顺序", column = "E")
 	@Column(nullable = true)
 	private Integer orderBy; 
 	
@@ -247,4 +240,24 @@ public class SysOrg extends SystemModel<SysOrg> {
 		this.remark = remark;
 	}
 
+    public Integer getOrgCategory() {
+        return orgCategory;
+    }
+
+    public void setOrgCategory(Integer orgCategory) {
+        this.orgCategory = orgCategory;
+    }
+
+    @Override
+    public int compareTo(SysOrg obj) {
+        if(null == this.getOrderBy())
+            return 1; //NULL 排到后面
+        else if(null == obj.getOrderBy())
+            return -1; //NULL 排到前面
+        else
+            return ComparisonChain.start()
+                    .compare(this.getOrderBy(), obj.getOrderBy())
+                    .compare(ToStringBuilder.reflectionToString(this), ToStringBuilder.reflectionToString(obj))
+                    .result();
+    }
 }

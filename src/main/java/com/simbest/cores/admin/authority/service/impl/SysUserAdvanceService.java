@@ -430,7 +430,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
     }
 
     /**
-     * 五. 根据组织、上级组织、所属公司、职位、用户信息，获得决策项的树形菜单
+     * 五. 根据组织、上级组织、所属公司、职位、用户信息，递归查找父亲组织及相应职务人员
      * @param orgId
      * @param parentId
      * @param ownerId
@@ -439,21 +439,24 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      * @return
      */
     @Override
-    public List<DynamicUserTreeNode> searchDynamicUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId) {
+    public List<DynamicUserTreeNode> searchDynamicParentUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId) {
         log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s, userId: %s", orgId,parentId,ownerId,position, userId));
         List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
-                data = loadDynamicUserTreeByCQEngine(orgId,parentId,ownerId,position,userId);
+                data = loadDynamicParentUserTreeByCQEngine(orgId,parentId,ownerId,position,userId);
             }else{
-                data = loadDynamicUserTreeByDatabase(orgId,parentId,ownerId,position,userId);
+                data = loadDynamicParentUserTreeByDatabase(orgId,parentId,ownerId,position,userId);
             }
             searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId, data);
         }
         return data;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByDatabase(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId){
+    /**
+     * 5.1
+     */
+    private List<DynamicUserTreeNode> loadDynamicParentUserTreeByDatabase(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
         Collection<SysUser> userList = Lists.newArrayList();
@@ -481,7 +484,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         return resultList;
     }
 
-    private List<DynamicUserTreeNode> loadDynamicUserTreeByCQEngine(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId){
+    /**
+     * 5.2
+     */
+    private List<DynamicUserTreeNode> loadDynamicParentUserTreeByCQEngine(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
         Collection<SysUserIndex> userList;
@@ -505,27 +511,28 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
     }
 
     /**
-     * 六. 根据组织、职位遍历组织及儿子组织的树形菜单
+     * 六. 根据所在组织、职位查找儿子递归组织及相应职务人员
      * @param orgId
      * @param position
      * @return
      */
-    public List<DynamicUserTreeNode> searchDynamicUserChildTree(Integer orgId, String position){
+    @Override
+    public List<DynamicUserTreeNode> searchDynamicChildUserTree(Integer orgId, String position){
         log.debug(String.format("Invoke searchDynamicUserChildTree with orgId: %s, position: %s", orgId,position));
         List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+position);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
-                data = loadDynamicUserChildTreeByCQEngine(orgId,position);
+                data = loadDynamicChildUserTreeByCQEngine(orgId,position);
             }else{
-                data = loadDynamicUserChildTreeByDatabase(orgId,position);
+                data = loadDynamicChildUserTreeByDatabase(orgId,position);
             }
             searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+position, data);
         }
         return data;
     }
 
-    /** loadDynamicUserChildTreeByDatabase Start **/
-    private List<DynamicUserTreeNode> loadDynamicUserChildTreeByDatabase(Integer orgId, String position){
+    /** 6.1 Start**/
+    private List<DynamicUserTreeNode> loadDynamicChildUserTreeByDatabase(Integer orgId, String position){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         // 查询传入组织及父亲组织
         SysOrg root = sysOrgAdvanceService.loadByKey(orgId);
@@ -560,11 +567,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         params.setSysOrg(sysOrg);
         return getAll(params);
     }
-    /** loadDynamicUserChildTreeByDatabase End **/
+    /** 6.1 End **/
 
 
-    /** loadDynamicUserChildTreeByCQEngine Start **/
-    private List<DynamicUserTreeNode> loadDynamicUserChildTreeByCQEngine(Integer orgId, String position){
+    /** 6.2 Start**/
+    private List<DynamicUserTreeNode> loadDynamicChildUserTreeByCQEngine(Integer orgId, String position){
         List<DynamicUserTreeNode> resultList = Lists.newArrayList();
         // 查询传入组织及父亲组织
         SysOrg root = sysOrgAdvanceService.loadByKey(orgId);
@@ -607,7 +614,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         wrapDynamicOrg(userNodeList, unduplicatedOrgSet);
         return userNodeList;
     }
-    /** loadDynamicUserChildTreeByCQEngine End **/
+    /** 6.2 End **/
 
     private void wrapDynamicUser(Collection<DynamicUserTreeNode> resultList, Collection<SysUser> userList){
         for(SysUser user : userList){

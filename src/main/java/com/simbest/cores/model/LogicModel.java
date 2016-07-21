@@ -6,12 +6,7 @@ import javax.persistence.MappedSuperclass;
 import com.simbest.cores.utils.annotations.ProcessProperty;
 
 @MappedSuperclass
-public abstract class LogicModel<T> extends SystemModel<T>{    
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8604271441269463749L;	
+public abstract class LogicModel<T> extends SystemModel<T>{
 	
 	@Column(name = "enabled", nullable = false, columnDefinition = "TINYINT default 1")
 	@ProcessProperty

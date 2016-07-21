@@ -1,34 +1,17 @@
 package com.simbest.cores.admin.authority.model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.simbest.cores.model.LogicModel;
-import com.simbest.cores.utils.annotations.ExcelVOAttribute;
-import com.simbest.cores.utils.annotations.NotNullColumn;
-import com.simbest.cores.utils.annotations.ReferenceTable;
-import com.simbest.cores.utils.annotations.ReferenceTables;
-import com.simbest.cores.utils.annotations.Unique;
+import com.simbest.cores.utils.annotations.*;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author lishuyi
@@ -915,4 +898,18 @@ public class SysUser extends LogicModel<SysUser> {
     public void setHierarchyOrgIds(String hierarchyOrgIds) {
         this.hierarchyOrgIds = hierarchyOrgIds;
     }
+
+    @Override
+    public int compareTo(SysUser obj) {
+        if(null == this.getOrderBy())
+            return 1; //NULL 排到后面
+        else if(null == obj.getOrderBy())
+            return -1; //NULL 排到前面
+        else
+            return ComparisonChain.start()
+                    .compare(this.getOrderBy(), obj.getOrderBy())
+                    .compare(ToStringBuilder.reflectionToString(this), ToStringBuilder.reflectionToString(obj))
+                    .result();
+    }
+
 }

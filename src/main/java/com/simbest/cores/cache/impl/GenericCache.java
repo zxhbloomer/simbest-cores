@@ -283,7 +283,7 @@ public class GenericCache<V extends GenericModel<V>, K extends Serializable> imp
 		for(Object key : keys){ //记录待删除的所有对象
 			delObjects.add(loadByKey((K) key));
 		}
-		
+
 		if(delObjects.size() > 0){
 			getKeyHashOps().delete(keys);//删除主键缓存
 			
@@ -340,6 +340,17 @@ public class GenericCache<V extends GenericModel<V>, K extends Serializable> imp
 			}
 		}
 	}
+
+
+    @Override
+    public List<V> multiGetByKey(Collection<K> keys){
+        return getKeyHashOps().multiGet(keys);
+    }
+
+    @Override
+    public List<V> multiGetByUnique(Collection<Object> keys){
+        return getUniqueHashOps().multiGet(keys);
+    }
 
 	/**
 	 * @return the clazz

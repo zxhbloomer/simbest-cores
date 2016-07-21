@@ -429,6 +429,8 @@ public class AppFileUtils {
 	
 	/**
 	 * 根据文件访问URL列表, 将文件从云存储或应用系统Context路径下的文件删除
+     *
+     * 调用带有返回值的多线程（实现callable接口），也是同步的。参考：http://blueram.iteye.com/blog/1583117
 	 * @param fileUrls
 	 * @return 返回存储路径
 	 */
@@ -573,7 +575,19 @@ public class AppFileUtils {
 
     public static boolean isCompressFile(String pathToFile){
         String contentType = getContentType(pathToFile);
-        if("application/x-zip-compressed".equals(contentType) || "application/zip".equals(contentType))
+        if("application/x-zip-compressed".equals(contentType))
+            return true;
+        else if("application/zip".equals(contentType))
+            return true;
+        else if("application/x-zip".equals(contentType))
+            return true;
+        else if("application/x-rar-compressed".equals(contentType))
+            return true;
+        else if("application/rar".equals(contentType))
+            return true;
+        else if("application/x-rar".equals(contentType))
+            return true;
+        else if("rar".equals(contentType))
             return true;
         else if("rar".equals(contentType))
             return true;

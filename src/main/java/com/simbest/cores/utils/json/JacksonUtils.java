@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.simbest.cores.exceptions.Exceptions;
+import org.springframework.util.StringUtils;
 
 /**
  * 
@@ -66,21 +67,29 @@ public class JacksonUtils {
 	 * @return
 	 */
 	public static <T> T readValue(String jsonStr, Class<T> clazz){
-		try {
-			return mapper.readValue(jsonStr, clazz);
-		} catch (IOException e) {
-			log.error(String.format("Error 12000: Json source is %s, translate class is %s", jsonStr, clazz));
-			Exceptions.printException(e);
-		}
+        if(!StringUtils.isEmpty(jsonStr)){
+            try {
+                return mapper.readValue(jsonStr, clazz);
+            } catch (IOException e) {
+                log.error(String.format("@@@@Error 12000: Json source is %s, translate class is %s", jsonStr, clazz));
+                Exceptions.printException(e);
+            }
+        }else{
+            log.error(String.format("@@@@Error 12000: Json source is empty!!!"));
+        }
 		return null;
 	}
 
     public static <T> T readValue(File jsonFile, Class<T> clazz){
-        try {
-            return mapper.readValue(jsonFile, clazz);
-        } catch (IOException e) {
-            log.error(String.format("Error 12000: Json source is %s, translate class is %s", jsonFile, clazz));
-            Exceptions.printException(e);
+        if(jsonFile != null && jsonFile.exists()){
+            try {
+                return mapper.readValue(jsonFile, clazz);
+            } catch (IOException e) {
+                log.error(String.format("Error 12000: Json source is %s, translate class is %s", jsonFile, clazz));
+                Exceptions.printException(e);
+            }
+        }else{
+            log.error(String.format("@@@@Error 12000: Json File is empty!!!"));
         }
         return null;
     }
@@ -93,14 +102,18 @@ public class JacksonUtils {
 	 */
 	public static <T> T readListValue(String jsonStr, TypeReference<T> listType){
 		T result = null;
-		if(jsonStr!=null && listType!=null){
-			try {
-				result = mapper.readValue(jsonStr, listType);
-			} catch (IOException e) {			
-				log.error(String.format("Error 12000: failed translate Json source %s to list object", jsonStr));
-				log.error(Exceptions.getStackTraceAsString(e));
-			}
-		}
+        if(!StringUtils.isEmpty(jsonStr)){
+            if(jsonStr!=null && listType!=null){
+                try {
+                    result = mapper.readValue(jsonStr, listType);
+                } catch (IOException e) {
+                    log.error(String.format("Error 12000: failed translate Json source %s to list object", jsonStr));
+                    log.error(Exceptions.getStackTraceAsString(e));
+                }
+            }
+        }else{
+            log.error(String.format("@@@@Error 12000: Json source is empty!!!"));
+        }
 		return result;
 	}
 	
@@ -112,12 +125,16 @@ public class JacksonUtils {
 	 */
 	public static <T> T readMapValue(String jsonStr, TypeReference<T> mapType){
 		T result = null;
-		try {
-			result = mapper.readValue(jsonStr, mapType);
-		} catch (IOException e) {			
-			log.error(String.format("Error 12000: failed translate Json source %s to map object", jsonStr));
-			log.error(Exceptions.getStackTraceAsString(e));
-		}
+        if(!StringUtils.isEmpty(jsonStr)){
+            try {
+                result = mapper.readValue(jsonStr, mapType);
+            } catch (IOException e) {
+                log.error(String.format("Error 12000: failed translate Json source %s to map object", jsonStr));
+                log.error(Exceptions.getStackTraceAsString(e));
+            }
+        }else{
+            log.error(String.format("@@@@Error 12000: Json source is empty!!!"));
+        }
 		return result;
 	}
 	
@@ -140,7 +157,7 @@ public class JacksonUtils {
 	 */
     public static <T> T readValue(String jsonStr, JavaType valueType){
     	T result = null;
-		if(jsonStr!=null && valueType!=null){
+		if(!StringUtils.isEmpty(jsonStr) && valueType!=null){
 			try {
 				result = mapper.readValue(jsonStr, valueType);
 			} catch (IOException e) {			

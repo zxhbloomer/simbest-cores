@@ -26,7 +26,7 @@ import com.simbest.cores.exceptions.Exceptions;
  *
  */
 public class AppCodeGenerator {	
-	private static Date recordDay = DateUtil.getCurrent();
+	private static String recordDay = DateUtil.getToday();
 	private static int seqDate = 0;
 	private static int seqTime = 0;
 	private static int maxCode = 99999999;
@@ -43,12 +43,21 @@ public class AppCodeGenerator {
 		System.out.println(nextSystemUUID());
 		System.out.println(addLeftZeroForNum(4,9));
 		System.out.println(addRightZeroForNum(4,9));
-		for (int i = 0; i < 10; i++) {
+        Date date=new Date();                                                                    // 创建日期对象
+        System.out.printf("全部日期和时间信息：%tc%n",date);
+        for (int i = 0; i < 10; i++) {
 			System.out.println(nextDateCode("B"));
 		}
+        System.out.println(nextDateCode());
+        System.out.println(nextDateCode());
 		System.out.println(nextDateTimeCode());
 		System.out.println(nextDateTimeCode());
-		System.out.println(cn2En("财务部"));
+        System.out.println(nextUnLimitCode());
+        System.out.println(nextUnLimitCode());
+        for (int i = 0; i < 10000; i++) {
+            System.out.println(nextUnLimitCode("OA"));
+        }
+        System.out.println(cn2En("财务部"));
 		System.out.println(cn2FirstEn("财务部"));
 		String s = "B-20150604-00000008";
 		System.out.println(s.substring(s.lastIndexOf("-")+1));
@@ -69,15 +78,6 @@ public class AppCodeGenerator {
 				.replace(Constants.LINE, Constants.EMPTY);
 	}
 	
-//	public static String nextRandomInt(int length) {
-//		Random random = new Random();
-//		StringBuffer sb = new StringBuffer();
-//		for(int i=0;i<length;i++){
-//			sb.append(random.nextInt(9));
-//		}
-//		return sb.toString();
-//	}	
-	
 	/**
 	 * 
 	 * @param num 返回随机数的位数, 如3则可能返回012
@@ -90,35 +90,53 @@ public class AppCodeGenerator {
 		}
 		return sb.toString();
 	}
-	
+
+    /**
+     * 返回无限制编码，支持每毫秒3位随机数并发
+     * 如：201607150036290690001，含义2016-07-15 00:36:29.069 001
+     *
+     * 随机生成 a 到 b (不包含b)的整数:
+     * (int)(Math.random()*(b-a))+a;
+     * 随机生成 a 到 b (包含b)的整数:
+     * (int)(Math.random()*(b-a+1))+a;
+     * @return
+     */
+    public static String nextUnLimitCode() {
+        return String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$03d", DateUtil.getCurrent(), (int)(Math.random()*(899))+100);
+    }
+
+    public static String nextUnLimitCode(String prefix) {
+        return prefix+String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$03d", DateUtil.getCurrent(), (int)(Math.random()*(899))+100);
+    }
+
 	/**
-	 * 获取全局日期序列， 每日上限99999999个，格式2015060400000001
+	 * 获取全局日期序列， 每日上限99999999个，格式2016071500000002
 	 * @return
 	 */
 	public static synchronized String nextDateCode() {
-		Date today = DateUtil.getCurrent();
-		if(DateUtil.compareDate(today, recordDay) != 0){	
+		String today = DateUtil.getToday();
+		if(!today.equals(recordDay)){
 			seqDate = 0; //隔日起始编号清零
 			recordDay = today;
 		}
 		if (seqDate > maxCode)
 			throw new AppException("11001", "Not enough next date code");		
-		return String.format("%tY%<tm%<td%08d", recordDay, ++seqDate);
+		return String.format("%tY%<tm%<td%08d", DateUtil.parseDate(recordDay), ++seqDate);
 	}
 	
 	/**
-	 * 获取全局时间序列，每日上限99999999个， 格式2015060410591300000001
+	 * 获取全局时间序列，每日上限99999999个， 格式2016071500000000000000002
 	 * @return
 	 */
 	public static synchronized String nextDateTimeCode() {
-		Date today = DateUtil.getCurrent();
-		if(DateUtil.compareDate(today, recordDay) != 0){	
+        String today = DateUtil.getToday();
+        if(!today.equals(recordDay)){
 			seqTime = 0; //隔日起始编号清零
 			recordDay = today;
 		}
 		if (seqTime > maxCode)
 			throw new AppException("11002", "Not enough next timestamp code");
-		return String.format("%1$tY%1$tm%1$td%1$tk%1$tM%1$tS%2$08d", recordDay, ++seqTime);
+		return String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$08d", DateUtil.parseDate(recordDay), ++seqTime);
 	}
 
 	/**
@@ -129,8 +147,8 @@ public class AppCodeGenerator {
 	public static synchronized String nextDateCode(String prefix){
 		if(prefixs.get(prefix) == null)
 			prefixs.put(prefix, 0); //是否存在编码
-		Date today = DateUtil.getCurrent();
-		if(DateUtil.compareDate(today, recordDay) != 0){	
+        String today = DateUtil.getToday();
+        if(!today.equals(recordDay)){
 			prefixs.put(prefix, 0); //隔日起始编号清零
 			recordDay = today;
 		}

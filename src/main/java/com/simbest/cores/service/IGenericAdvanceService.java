@@ -4,6 +4,8 @@
 package com.simbest.cores.service;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import com.simbest.cores.cache.IGenericCache;
 import com.simbest.cores.model.GenericModel;
@@ -20,4 +22,8 @@ public interface IGenericAdvanceService<V extends GenericModel<V>, K extends Ser
 	IGenericService<V, K> getGenericService();
 
 	IGenericCache<V, K> getCacheService();
+
+    List<V> multiGetByKey(Collection<K> keys);
+
+    List<V> multiGetByUnique(Collection<Object> keys);
 }

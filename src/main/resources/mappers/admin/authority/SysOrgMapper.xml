@@ -34,6 +34,7 @@
 		<result column="porgName" property="parentName" />
 		<result column="orgLevel" property="orgLevel" />
 		<result column="orgType" property="orgType" />
+        <result column="orgCategory" property="orgCategory" />
 		<result column="orderBy" property="orderBy" />
 		<result column="shortName" property="shortName" />
 		<result column="remark" property="remark" />
@@ -49,14 +50,14 @@
      	SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.id = #{id}
 	</select>
 	<select id='getRoot' resultMap="simpleOrgResult">
-	     SELECT * FROM sys_org WHERE parent_id is null
+	     SELECT * FROM sys_org WHERE parent_id is null ORDER BY ISNULL(orderBy) ASC, orderBy ASC
     </select>	
     <!-- LazyLoading 方式启用延迟加载，适用于单个详细实体对象  End -->
     
   
     
 	<select id='getByParent' parameterType='Integer' resultMap="simpleOrgResult">
-	     SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id = #{parentId}
+	     SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id = #{parentId} ORDER BY ISNULL(c.orderBy) ASC, c.orderBy ASC
     </select>
     <select id='countByParent' parameterType='Integer' resultType="Integer">
 	     SELECT count(*) FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id WHERE c.parent_id = #{parentId}	
@@ -72,20 +73,32 @@
 	        </if>
 	        <if test="orgCode != null and orgCode !=''">
 	            AND c.orgCode = #{orgCode}
-	        </if> 
+	        </if>
+            <if test="orgLevel != null and orgLevel !=''">
+                AND c.orgLevel = #{orgLevel}
+            </if>
+            <if test="orgType != null and orgType !=''">
+                AND c.orgType = #{orgType}
+            </if>
+            <if test="orgCategory != null and orgCategory !=''">
+                AND c.orgCategory = #{orgCategory}
+            </if>
         </where> 
         <if test="orderByClause != null and orderByClause !=''" >
 	      order by ${orderByClause}
-	    </if>    
+	    </if>
+        <if test="orderByClause == null or orderByClause ==''" >
+          ORDER BY ISNULL(c.orderBy) ASC, c.orderBy ASC
+        </if>
 	</select>
   	<!-- 关联查询方式，适用于集合列表实体对象  End -->
   	
   	<insert id="create" parameterType="SysOrg" useGeneratedKeys="true" keyProperty="id"> 
-        insert into sys_org (createDate,updateDate,description,orgName,orgCode,parent_id,orgLevel,orgType,orderBy,shortName,remark) values(#{createDate},#{updateDate},#{description},#{orgName},#{orgCode},#{parent.id},#{orgLevel},#{orgType},#{orderBy},#{shortName},#{remark})
+        insert into sys_org (createDate,updateDate,description,orgName,orgCode,parent_id,orgLevel,orgType,orderBy,shortName,remark,orgCategory) values(#{createDate},#{updateDate},#{description},#{orgName},#{orgCode},#{parent.id},#{orgLevel},#{orgType},#{orderBy},#{shortName},#{remark},#{orgCategory})
     </insert> 	
     
     <update id="update" parameterType="SysOrg" flushCache="true" statementType="PREPARED" timeout="20">
-        update sys_org set updateDate=#{updateDate},description=#{description},orgName=#{orgName},orgCode=#{orgCode},parent_id=#{parent.id},orgLevel=#{orgLevel},orgType=#{orgType},orderBy=#{orderBy},shortName=#{shortName},remark=#{remark} where id=#{id}
+        update sys_org set updateDate=#{updateDate},description=#{description},orgName=#{orgName},orgCode=#{orgCode},parent_id=#{parent.id},orgLevel=#{orgLevel},orgType=#{orgType},orderBy=#{orderBy},shortName=#{shortName},remark=#{remark},orgCategory=#{orgCategory} where id=#{id}
     </update>  
     
 	<delete id="delete" parameterType="SysOrg" flushCache="true" statementType="PREPARED" timeout="20">
@@ -100,9 +113,9 @@
     </delete>
     
 	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20">
-        insert into sys_org (createDate,updateDate,description,orgName,orgCode,parent_id,orgLevel,orgType,orderBy,shortName,remark) values 
+        insert into sys_org (createDate,updateDate,description,orgName,orgCode,parent_id,orgLevel,orgType,orderBy,shortName,remark,orgCategory) values
         <foreach collection="list" index="index" item="item" separator=",">   
-	        (#{item.createDate},#{item.updateDate},#{item.description},#{item.orgName},#{item.orgCode},#{item.parent_id},#{item.orgLevel},#{item.orgType},#{item.orderBy},#{item.shortName},#{item.remark})    
+	        (#{item.createDate},#{item.updateDate},#{item.description},#{item.orgName},#{item.orgCode},#{item.parent_id},#{item.orgLevel},#{item.orgType},#{item.orderBy},#{item.shortName},#{item.remark},#{item.orgCategory})
 	    </foreach> 
     </insert>     
 </mapper>

@@ -4,7 +4,6 @@
 package com.simbest.cores.web;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,66 +84,66 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler({ProcessUnavailableException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processProcessUnavailableException(HttpServletRequest request, ProcessUnavailableException e) {
+    public JsonResponse processProcessUnavailableException(HttpServletRequest request, ProcessUnavailableException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "当前流程状态为禁用模式!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+        JsonResponse response = new JsonResponse();
+        response.setMessage("当前流程状态为禁用模式!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     @ExceptionHandler({UpdateProcessFailedException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processUpdateProcessFailedException(HttpServletRequest request, UpdateProcessFailedException e) {
+    public JsonResponse processUpdateProcessFailedException(HttpServletRequest request, UpdateProcessFailedException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "编辑更新流程失败!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("编辑更新流程失败!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     @ExceptionHandler({UnExpectedAuditException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processUnExpectedAuditException(HttpServletRequest request, UnExpectedAuditException e) {
+    public JsonResponse processUnExpectedAuditException(HttpServletRequest request, UnExpectedAuditException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "加载当前环节审批配置信息失败!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("加载当前环节审批配置信息失败!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
 
     @ExceptionHandler({UnExpectedAuditUserException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processUnExpectedAuditUserException(HttpServletRequest request, UnExpectedAuditUserException e) {
+    public JsonResponse processUnExpectedAuditUserException(HttpServletRequest request, UnExpectedAuditUserException e) {
         log.error(request.getRequestURI());
         Exceptions.printException(e);
-        Map<String, Object> result = Maps.newHashMap();
-        result.put("message", "下一环节处理人无效，流程不可提交!");
-        result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-        return result;
+        JsonResponse response = new JsonResponse();
+        response.setMessage("下一环节处理人无效，流程不可提交!");
+        response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+        return response;
     }
 
     @ExceptionHandler({UnExpectedStepException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processUnExpectedStepException(HttpServletRequest request, UnExpectedStepException e) {
+    public JsonResponse processUnExpectedStepException(HttpServletRequest request, UnExpectedStepException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "加载流程审批环节失败!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("加载流程审批环节失败!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     /**
@@ -156,20 +155,20 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler({NoSuchRequestHandlingMethodException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public Map<String, Object> noSuchRequestHandlingMethod(HttpServletRequest request, Exception e) {
+    public JsonResponse noSuchRequestHandlingMethod(HttpServletRequest request, Exception e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "请求的资源不存在!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("请求的资源不存在!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     @ExceptionHandler({UnauthorizedException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processUnauthenticatedException(HttpServletRequest request, UnauthorizedException e) {
+    public JsonResponse processUnauthenticatedException(HttpServletRequest request, UnauthorizedException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	String message = "权限不足！";
@@ -189,48 +188,48 @@ public class ExceptionControllerAdvice {
 	    			message = "您没有授权'"+sysPermission.getDescription()+"'操作权限!";
 	    	}
     	}
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", message);
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage(message);
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
 
     @ExceptionHandler({UnLoginException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> processUnLoginException(HttpServletRequest request, UnLoginException e) {
+    public JsonResponse processUnLoginException(HttpServletRequest request, UnLoginException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "请先登录!");
-		result.put("responseid", 200);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("请先登录!");
+		response.setResponseid(200);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     @ExceptionHandler({UnknownAccountException.class})
     @ResponseBody
-    public Map<String, Object> processUnknownAccountException(HttpServletRequest request, UnknownAccountException e) {
+    public JsonResponse processUnknownAccountException(HttpServletRequest request, UnknownAccountException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "用户名不存在!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("用户名不存在!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     @ExceptionHandler({AuthenticationException.class})
     @ResponseBody
-    public Map<String, Object> processAuthenticationException(HttpServletRequest request, AuthenticationException e) {
+    public JsonResponse processAuthenticationException(HttpServletRequest request, AuthenticationException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();		    	
-		result.put("message", "用户名/密码错误!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();		    	
+		response.setMessage("用户名/密码错误!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
     
     @ExceptionHandler({InvalidateSNSAdminUserException.class})
@@ -242,14 +241,14 @@ public class ExceptionControllerAdvice {
     
     @ExceptionHandler({SNSUserBindFailedLoginException.class})
     @ResponseBody
-    public Map<String, Object> processSNSUserBindFailedLoginException(HttpServletRequest request, SNSUserBindFailedLoginException e) {
+    public JsonResponse processSNSUserBindFailedLoginException(HttpServletRequest request, SNSUserBindFailedLoginException e) {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-    	Map<String, Object> result = Maps.newHashMap();
-		result.put("message", "绑定用户账号异常!");
-		result.put("responseid", 0);
-        result.put("data", Exceptions.getStackTraceAsString(e));
-		return result;
+    	JsonResponse response = new JsonResponse();
+		response.setMessage("绑定用户账号异常!");
+		response.setResponseid(0);
+        response.setData(Exceptions.getStackTraceAsString(e));
+		return response;
     }
 
     @ExceptionHandler({NotAllowUploadFileTypeException.class})
@@ -268,14 +267,14 @@ public class ExceptionControllerAdvice {
      */
     @ExceptionHandler({AppException.class })
     @ResponseBody
-	public Map<String, Object> processAppException(HttpServletRequest request, HttpServletResponse response, AppException e) throws IOException {
+	public JsonResponse processAppException(HttpServletRequest request, HttpServletResponse response, AppException e) throws IOException {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-		Map<String, Object> map = Maps.newHashMap();
-		map.put("responseid", 0);
-		map.put("message", getUnKnowErrorMsg());
-        map.put("data", Exceptions.getStackTraceAsString(e));
-		return map;
+		JsonResponse res = new JsonResponse();
+        res.setResponseid(0);
+        res.setMessage(getUnKnowErrorMsg());
+        res.setData(Exceptions.getStackTraceAsString(e));
+		return res;
     }
     
 	/**
@@ -286,14 +285,14 @@ public class ExceptionControllerAdvice {
 	 */
 	@ExceptionHandler(Exception.class)
 	@ResponseBody
-	public Map<String, Object> processUnknownException(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {	
+	public JsonResponse processUnknownException(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {	
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
-		Map<String, Object> map = Maps.newHashMap();
-		map.put("responseid", 0);
-		map.put("message", getUnKnowErrorMsg());
-        map.put("data", Exceptions.getStackTraceAsString(e));
-		return map;
+        JsonResponse res = new JsonResponse();
+        res.setResponseid(0);
+        res.setMessage(getUnKnowErrorMsg());
+        res.setData(Exceptions.getStackTraceAsString(e));
+        return res;
 	}
 	
 	private String getUnKnowErrorMsg(){

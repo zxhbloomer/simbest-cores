@@ -3,9 +3,11 @@ package com.simbest.cores.service.impl;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.simbest.cores.utils.Constants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.session.ResultHandler;
@@ -313,6 +315,26 @@ public class GenericAdvanceService<V extends GenericModel<V>, K extends Serializ
 		log.debug("@Generic Advance Service remove all cache");
 		getCacheService().removeAll();
 	}
+
+    @Override
+    public List<V> multiGetByKey(Collection<K> keys){
+        StringBuffer sb = new StringBuffer();
+        for(K key:keys){
+            sb.append(key+ Constants.SPACE);
+        }
+        log.debug("@Generic Advance Service multiGetByKey with:"+sb.toString());
+        return getCacheService().multiGetByKey(keys);
+    }
+
+    @Override
+    public List<V> multiGetByUnique(Collection<Object> keys){
+        StringBuffer sb = new StringBuffer();
+        for(Object key:keys){
+            sb.append(key+ Constants.SPACE);
+        }
+        log.debug("@Generic Advance Service multiGetByUnique with:"+sb.toString());
+        return getCacheService().multiGetByUnique(keys);
+    }
 
 	@Override
 	public BoundHashOperations<String, K, V> getKeyHashOps() {

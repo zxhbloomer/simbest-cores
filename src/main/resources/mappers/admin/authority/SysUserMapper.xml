@@ -297,20 +297,20 @@
     </select>
                
 	<insert id="create" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" >         
-	    insert into sys_user (loginName,userCode,username,password,salt,phone,email,position,officePhone,qqCode,weChatCode,weiboCode,alipayCode,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
+	    insert into sys_user (loginName,userCode,username,password,salt,phone,email,position,officePhone,qqCode,weChatCode,weiboCode,alipayCode,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,org_id,backgroundurl,signature,birthDate,updateDate)
 	    values (#{loginName},#{userCode},#{username},#{password},#{salt},#{phone},#{email},#{position},#{officePhone},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
     </insert>
     
     <!-- SysUserController.createOrGetByPhone 和   MpAccountAdvanceService.createFrontendUserOnSubscribedOrAccess -->
     <insert id="createOrUpdateViaAdmin" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" >         
-	    insert into sys_user (phone,loginName,username,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
-	    values (#{phone},#{loginName},#{username},#{sceneCode},#{sceneValue},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
+	    insert into sys_user (loginName,userCode,username,password,salt,phone,email,position,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
+	    values (#{loginName},#{userCode},#{username},#{password},#{salt},#{phone},#{email},#{position},#{sceneCode},#{sceneValue},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
 	    ON DUPLICATE KEY UPDATE updateDate=#{createDate},updateUserId=#{createUserId},updateUserCode=#{createUserCode},updateUserName=#{createUserName},
-	    sceneCode=#{sceneCode},sceneValue=#{sceneValue},subscribe=#{subscribe},nickname=#{nickname},sex=#{sex},country=#{country},province=#{province},city=#{city},language=#{language},headimgurl=#{headimgurl},subscribe_time=#{subscribe_time},
+	    sceneCode=#{sceneCode},sceneValue=#{sceneValue},subscribe=#{subscribe},nickname=#{nickname},sex=#{sex},country=#{country},province=#{province},city=#{city},language=#{language},headimgurl=#{headimgurl},subscribe_time=#{subscribe_time},tag=#{tag},
 	    removed=0,enabled=1
 	    <!-- 出现用户信息插入已存在的数据，主要是因为用户是微信用户，并且反复关注和取消关注，因此以下字段不进行覆盖
-	    	loginName=#{loginName},username=#{username},accesstoken=#{accesstoken},mpNum=#{mpNum},mpName=#{mpName},userType=#{userType},openid=#{openid},unionid=#{unionid},tag=#{tag},remark=#{remark},groupid=#{groupid},org_id=#{sysOrg.id},
-	    	password=#{password},salt=#{salt},phone=#{phone},email=#{email},position=#{position},officePhone=#{officePhone},qqCode=#{qqCode},weChatCode=#{weChatCode},weiboCode=#{weiboCode},alipayCode=#{alipayCode},
+	    	loginName=#{loginName},username=#{username},userCode=#{userCode},password=#{password},salt=#{salt},phone=#{phone},email=#{email},accesstoken=#{accesstoken},mpNum=#{mpNum},mpName=#{mpName},userType=#{userType},openid=#{openid},unionid=#{unionid},remark=#{remark},groupid=#{groupid},org_id=#{sysOrg.id},
+	    	position=#{position},officePhone=#{officePhone},qqCode=#{qqCode},weChatCode=#{weChatCode},weiboCode=#{weiboCode},alipayCode=#{alipayCode},
 	    	如果行作为新记录被插入，则受影响行的值为1；如果原有的记录被更新，则受影响行的值为2
 	    -->
     </insert>

@@ -5,13 +5,18 @@ package com.simbest.cores.web.filter;
 
 import com.google.common.collect.Sets;
 import com.simbest.cores.exceptions.Exceptions;
+import com.simbest.cores.model.JsonResponse;
 import com.simbest.cores.utils.Constants;
+import com.simbest.cores.utils.json.JacksonUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
@@ -25,7 +30,7 @@ import java.util.Set;
  * http://blog.csdn.net/u012228718/article/details/39521677
  */
 public class RefererFilter implements Filter {
-
+    public final Log log = LogFactory.getLog(RefererFilter.class);
     private Set<String> whiteHostList = Sets.newHashSet();
 
     public void init(FilterConfig config) throws ServletException {
@@ -39,16 +44,27 @@ public class RefererFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
-
+        log.debug(request.getRequestURI());
         // 链接来源地址，通过获取请求头 referer 得到
         String referer = request.getHeader("referer");
         try {
             if (referer != null) {
                 URI referUri = new URI(referer);
-                if (whiteHostList.size()>0 && !whiteHostList.contains(referUri.getHost().toLowerCase())) {
-                    request.getRequestDispatcher("/html/errors/404.html").forward(request, response);
+                String host = referUri.getHost().toLowerCase();
+                log.debug("Check host："+host);
+                if (whiteHostList.size()>0 && !whiteHostList.contains(host)) {
+                    //request.getRequestDispatcher("/html/errors/404.html").forward(request, response);
+                    PrintWriter writer = res.getWriter();
+                    JsonResponse jsonResponse = new JsonResponse(0);
+                    String msg = "Forbidden: invalid host access: "+host;
+                    jsonResponse.setMessage(msg);
+                    log.debug(msg);
+                    writer.write(JacksonUtils.writeValueAsString(jsonResponse));
+                    writer.flush();
+                    writer.close();
                 } else {
                     chain.doFilter(request, response);
                 }

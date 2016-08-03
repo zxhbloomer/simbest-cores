@@ -65,37 +65,52 @@ public class SysUser extends LogicModel<SysUser> {
 	
 	@JsonIgnore
 	private String salt;
-	
+
+
+    @ExcelVOAttribute(name = "组织编号", column = "C")
+    @Transient
+    private String orgCode;
+
+    @ExcelVOAttribute(name = "显示顺序", column = "D")
+    @Column(nullable = true)
+    private Integer orderBy;
+
+    @ExcelVOAttribute(name = "邮箱地址", column = "E")
+    @NotNullColumn(value="邮箱地址")
+    @Column(name="email", length=80)
+    private String email;
+
 	@ExcelVOAttribute(name = "手机号码", column = "F")
 	@NotNullColumn(value="手机号码")
 	@Column(name="phone", length=20)
 	private String phone;
 	
-	@ExcelVOAttribute(name = "邮箱地址", column = "E")
-	@NotNullColumn(value="邮箱地址")
-	@Column(name="email", length=80)
-	private String email;
-	
 	@ExcelVOAttribute(name = "职位", column = "G")
 	@Column(name="position")
 	private String position;
-	
-	@Column(name="officePhone")
-	private String officePhone;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "birthDate")
+    private Date birthDate;
+
+    // 性别(1是男性，2是女性，0是未知)
+    @ExcelVOAttribute(name = "性别", column = "H")
+    @Column(nullable=true)
+    private Integer sex;
+
+    @ExcelVOAttribute(name = "生日", column = "I")
+    @Transient
+    private String birthDateStr;
 		
 	@NotNullColumn(value="组织信息")
     @ManyToOne
 	@JoinColumn(name="org_id", nullable=false)
     private SysOrg sysOrg;
-	
-	@ExcelVOAttribute(name = "组织编号", column = "C")
-	@Transient
-	private String orgCode;
-	
-	@ExcelVOAttribute(name = "显示顺序", column = "D")
-	@Column(nullable = true)
-	private Integer orderBy; 
-	
+
+
+    @Column(name="officePhone")
+    private String officePhone;
+
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="sys_user_role", joinColumns={ @JoinColumn(name="user_id") }, inverseJoinColumns=@JoinColumn(name="role_id"))
 	private List<SysRole> roleList=Lists.newLinkedList(); // 有序的关联对象集合
@@ -146,7 +161,6 @@ public class SysUser extends LogicModel<SysUser> {
 	private Integer userLevel;
 	
 	
-	
 	@Column(name="mpNum", length=20, nullable=true)
 	private String mpNum; //微信服务号
 	
@@ -167,11 +181,6 @@ public class SysUser extends LogicModel<SysUser> {
 	@NotNullColumn(value="用户昵称")
 	@Column(length=50, nullable=true)
 	private String nickname;
-	
-	// 性别(1是男性，2是女性，0是未知)
-	@ExcelVOAttribute(name = "性别", column = "男")
-	@Column(nullable=true)
-	private Integer sex;
 	
 	// 国家
 	@NotNullColumn(value="所在国家")
@@ -223,14 +232,6 @@ public class SysUser extends LogicModel<SysUser> {
 	private String backgroundurl;
 	
 	private String signature; //个性签名
-		
-	@Temporal(TemporalType.DATE) 
-	@Column(name = "birthDate")
-	private Date birthDate;
-	
-	@ExcelVOAttribute(name = "生日", column = "H")
-	@Transient
-	private String birthDateStr;
 	
 	@Transient
 	@JsonIgnore

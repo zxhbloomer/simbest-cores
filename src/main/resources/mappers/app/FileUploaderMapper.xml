@@ -68,9 +68,12 @@
         <if test="createUserId != null">
         	and createUserId = #{createUserId}
         </if>  
-        <if test="attr1 != null and attr1 !=''">
+        <if test="attr1 != null and attr1 !=''"> <!--文件MD5-->
         	and attr1 = #{attr1}
-        </if>  
+        </if>
+        <if test="attr2 != null and attr2 !=''"> <!--内网文件地址-->
+            and attr2 = #{attr2}
+        </if>
     </select>
            
 	<insert id="create" parameterType="FileUploader" useGeneratedKeys="true" keyProperty="id" > 

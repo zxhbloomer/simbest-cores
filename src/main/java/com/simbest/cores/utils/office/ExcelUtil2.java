@@ -1,29 +1,18 @@
 package com.simbest.cores.utils.office;
 
+import com.google.common.collect.Lists;
+import com.simbest.cores.exceptions.Exceptions;
+import com.simbest.cores.utils.annotations.ExcelVOAttribute;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.CellRangeAddressList;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Font;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.poi.hssf.usermodel.DVConstraint;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDataValidation;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.util.CellRangeAddressList;
-
-import com.google.common.collect.Lists;
-import com.simbest.cores.exceptions.Exceptions;
-import com.simbest.cores.utils.annotations.ExcelVOAttribute;
+import java.util.*;
 
 public class ExcelUtil2<T> {
 	Class<T> clazz;
@@ -157,17 +146,17 @@ public class ExcelUtil2<T> {
 	 * 第一行被表头占用，所以都用65536-1=65535来表示sheetSize。
 	 * @param list
 	 * @param sheetName
-	 * @param sheetSize
+	 * @param rowSize
 	 * @param output
 	 * @param resu
 	 * @return
 	 */
-    public boolean exportExcelList(List<T> list, String sheetName, int sheetSize,  
+    public boolean exportExcelList(List<T> list, String sheetName, int rowSize,
             OutputStream output,String resu) {  
-        if (sheetSize > 65535 || sheetSize < 1) {  
-            sheetSize = 65535;  
+        if (rowSize > 65535 || rowSize < 1) {
+            rowSize = 65535;
         }
-        double sheetNo = Math.ceil(list.size() / sheetSize)+1;// 取出一共有多少个sheet. 
+        double sheetNo = Math.ceil(list.size() / rowSize)+1;// 取出一共有多少个sheet.
         String sheetNames[] = new String[(int) sheetNo];
         List<T>[]lists=new ArrayList[(int) sheetNo];
         sheetNames[0] = sheetName;
@@ -175,8 +164,8 @@ public class ExcelUtil2<T> {
         	sheetNames[i] = sheetName + i; 
         }
         for(int i=0;i<sheetNo;i++){
-        	int startNo = i * sheetSize;  
-            int endNo = Math.min(startNo + sheetSize, list.size());
+        	int startNo = i * rowSize;
+            int endNo = Math.min(startNo + rowSize, list.size());
             List listi = new ArrayList();
             for (int j = startNo; j < endNo; j++) {
             	listi.add(list.get(j));
@@ -227,7 +216,7 @@ public class ExcelUtil2<T> {
 			Font font = workbook.createFont();
 		    font.setFontName("微软雅黑");
 		    font.setFontHeightInPoints((short)14); //字体大小
-		    font.setBoldweight(Font.BOLDWEIGHT_BOLD);		    
+		    font.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		    style.setFont(font);
 			row = sheet.createRow(0);// 产生一行
 			int intArray[]=new int[fields.size()];//定义列宽

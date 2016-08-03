@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,6 +31,7 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,12 +89,12 @@ public class AppFileUtils {
 	    bosClient = new BosClient(config);	  
 	}
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
     	AppFileUtils utils = new AppFileUtils();
     	utils.apikey = "e46c7e6c281a4d3da7545c685bb5db1c";
     	utils.secretKey = "89d1c208bee145f49ca88ef1bbd12302";
     	utils.bucket = "onegymbucket";
-    	utils.location = StoreLocation.Cloud;
+    	utils.location = StoreLocation.Disk;
     	BosClientConfiguration config = new BosClientConfiguration();
   	    config.setCredentials(new DefaultBceCredentials(utils.apikey, utils.secretKey));
   	    config.setEndpoint(host);
@@ -112,13 +114,22 @@ public class AppFileUtils {
   	    }  	  
   	    
   	    System.out.println(StringUtils.substringAfterLast("http://bj.bcebos.com/v1/onegymbucket/static/uploadFiles/manager1/2015-11-12/483bdc2b9ee8413d99e91293237615c9/ccc.jpg", "onegymbucket/"));
-	}
+
+        String fileUrl = "http://10.87.13.157:9011/fileWeb/CSAOFWeb/魏总2修.jpg";
+        URL url = new URL(FilenameUtils.getFullPath(fileUrl)+Encodes.urlEncode(getFileName(fileUrl)));
+        String storeFile = "D:\\data\\files\\images\\oa\\news\\魏总2修1111111111111.jpg";
+        FileUtils.copyURLToFile(url, new File(storeFile));
+        utils.uploadCompressImage(new File(storeFile), 0.7f, "D:\\data\\files\\images\\oa\\news\\");
+    }
 
     public File downloadFromUrl(String fileUrl, String fileName, String storePath){
         File targetFile = null;
         HttpURLConnection conn = null;
         try{
-            URL url = new URL(fileUrl);
+            log.debug("----Info fileUrl is: "+fileUrl);
+            String urlStr = FilenameUtils.getFullPath(fileUrl)+Encodes.urlEncode(getFileName(fileUrl));
+            log.debug("----Info: url is:"+urlStr);
+            URL url = new URL(urlStr);
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setRequestMethod(Constants.HTTPGET);
@@ -156,11 +167,13 @@ public class AppFileUtils {
 	 * @return 返回存储路径
 	 */
 	public String uploadFromUrl(String fileUrl, String fileName, String storePath){
-		//fileName = AppCodeGenerator.cn2En(fileName);
 		String savePath = null;
 		HttpURLConnection conn = null;
 		try{
-			URL url = new URL(fileUrl);
+            log.debug("----Info fileUrl is: "+fileUrl);
+            String urlStr = FilenameUtils.getFullPath(fileUrl)+Encodes.urlEncode(getFileName(fileUrl));
+            log.debug("----Info: url is:"+urlStr);
+            URL url = new URL(urlStr);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setDoInput(true);
 			conn.setRequestMethod(Constants.HTTPGET);				
@@ -193,6 +206,7 @@ public class AppFileUtils {
 				conn.disconnect();
 				conn = null;
 			}
+            savePath = null;
 			log.error(Exceptions.getStackTraceAsString(e));
 		}finally{
 			if(conn != null){
@@ -200,8 +214,10 @@ public class AppFileUtils {
                 conn = null;
 			}
 		}
-		savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
-		log.debug("savePath:"+savePath);
+        if(StringUtils.isNotEmpty(savePath)) {
+            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+        }
+        log.debug("----Info: savePath is:"+savePath);
 		return savePath;
 	}
 	
@@ -242,10 +258,13 @@ public class AppFileUtils {
 					break;
 			}
 		} catch(Exception e){
-			log.error(Exceptions.getStackTraceAsString(e));
+            savePath = null;
+            log.error(Exceptions.getStackTraceAsString(e));
 		}
-		savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
-		log.debug("savePath:"+savePath);
+        if(StringUtils.isNotEmpty(savePath)) {
+            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+        }
+        log.debug("----Info: savePath is:"+savePath);
 		return savePath;
 	}
 	
@@ -280,6 +299,7 @@ public class AppFileUtils {
 					break;
 			}
 		}catch(FileNotFoundException e){
+            savePath = null;
 			log.error(Exceptions.getStackTraceAsString(e));
 		}finally {
             if(null != fis)
@@ -288,8 +308,10 @@ public class AppFileUtils {
                 } catch (IOException e) {
                 }
         }
-        savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
-		log.debug("savePath:"+savePath);
+        if(StringUtils.isNotEmpty(savePath)) {
+            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+        }
+        log.debug("----Info: savePath is:"+savePath);
 		return savePath;
 	}
 	
@@ -310,9 +332,10 @@ public class AppFileUtils {
 			String baseUrl = getBaseUrl();
 			savePath = baseUrl+storePath+fileName;
 		} catch (IOException e) {
+            savePath = null;
 			Exceptions.printException(e);
 		}
-		log.debug("savePath:"+savePath);
+		log.debug("----Info: savePath is:"+savePath);
 		return savePath;
 	}
 	
@@ -351,53 +374,77 @@ public class AppFileUtils {
 					savePath = bosClient.generatePresignedUrl(bucket, storePath, -1).toString()+"&responseContentDisposition=attachment";																
 			    	int index = savePath.indexOf("?authorization");
 			    	savePath = savePath.substring(0, index);
-                    if(bais != null)
-                        try {
-                            bais.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
+                    bais.close();
 					break;
 				case Disk:
 					//存储时，存放应用磁盘Context路径
 					ios = ImageIO.createImageOutputStream(baos);
-					File compressedFile = new File(getFileLocation()+storePath+"compressed"+imageFile.getName());
+                    String compressedFilePath = getFileLocation()+storePath;
+                    FileUtils.forceMkdir(new File(compressedFilePath));
+                    File compressedFile = new File(compressedFilePath+"compressed"+imageFile.getName());
+                    log.debug("----Info compressedFile path is :"+compressedFile.getPath());
 					FileImageOutputStream output = new FileImageOutputStream(compressedFile);
 					writer.setOutput(output);
 					writer.write(null, new IIOImage(image, null, null), param);
-					ios.flush(); 
+                    output.flush();
+                    writer.dispose();
+					ios.flush();
+                    ios.close();
+                    baos.close();
+                    output = null;
+                    writer = null;
+                    ios = null;
+                    baos = null;
 					//访问时，访问应用URL路径
-					String baseUrl = getBaseUrl();
+                    String baseUrl = getBaseUrl();
 					savePath = baseUrl+storePath+compressedFile.getName();
 					break;
 				default:
 					break;
 			}
 		}catch(IOException e){
+            savePath = null;
             Exceptions.printException(e);
+        }
+        finally {
             if(baos != null)
                 try {
                     baos.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-			if(ios != null)
-                try {
-                    ios.close();
-                } catch (IOException e1) {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
         }
-		savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+        if(StringUtils.isNotEmpty(savePath)) {
+            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+        }
 		log.debug("savePath:"+savePath);
 		return savePath;
 	}
-	
+
+    public String uploadCompressImageFromUrl(String fileUrl, float quality, String storePath){
+        try{
+            //先将远程URL资源保存为本地图片
+            log.debug("----Info fileUrl is: "+fileUrl);
+            String urlStr = FilenameUtils.getFullPath(fileUrl)+Encodes.urlEncode(getFileName(fileUrl));
+            log.debug("----Info: url is:"+urlStr);
+            URL url = new URL(urlStr);
+            log.debug("----Info url is:"+url.getPath());
+            File imageFile = File.createTempFile(getFileBaseName(fileUrl), ".jpg");
+            log.debug("----Info imageFile path is:"+imageFile.getPath());
+            FileUtils.copyURLToFile(url, imageFile);
+            return uploadCompressImage(imageFile, quality, storePath);
+        }catch(IOException e) {
+            Exceptions.printException(e);
+        }
+        return null;
+    }
+
 	/**
 	 * 根据文件访问URL, 将文件从云存储或应用系统Context路径下的文件删除
 	 * @param fileUrl
 	 */
 	public void deleteFile(String fileUrl){
+        log.debug("----Info fileUrl is :"+fileUrl);
 		if(!StringUtils.isEmpty(fileUrl)){
 			switch(location){
 				case Cloud:
@@ -453,14 +500,32 @@ public class AppFileUtils {
 		}
 		return count;
 	}
-	
+
+    /**
+     * 根据路径返回文件名，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回abc
+     * @param pathToName
+     * @return
+     */
+    public static String getFileBaseName(String pathToName){
+        return FilenameUtils.getBaseName(pathToName);
+    }
+
+    /**
+     * 根据路径返回文件名，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回abc.jpg
+     * @param pathToName
+     * @return
+     */
+    public static String getFileName(String pathToName){
+        return FilenameUtils.getName(pathToName);
+    }
+
 	/**
-	 * 根据文件返回文件后缀
-	 * @param fileName
+	 * 根据路径返回文件后缀，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回jpg
+	 * @param pathToName
 	 * @return 返回存储路径
 	 */
-	public static String getFileExtByName(String fileName){
-		return fileName.substring(fileName.lastIndexOf(Constants.DOT)+1);
+	public static String getFileExtByName(String pathToName){
+        return FilenameUtils.getExtension(pathToName);
 	}
 	
 	/**
@@ -483,6 +548,7 @@ public class AppFileUtils {
 			fileEndWitsh = ".mp4";
 		else if ("video/mpeg4".equals(contentType))
 			fileEndWitsh = ".mp4";
+        log.debug("----Info fileEndWitsh is :"+fileEndWitsh);
 		return fileEndWitsh;
 	}
     
@@ -501,6 +567,7 @@ public class AppFileUtils {
         } catch (IOException e) {
         	Exceptions.printException(e);
         }
+        log.debug("----Info contentType is :"+contentType);
         return contentType;      
     }
 
@@ -598,20 +665,24 @@ public class AppFileUtils {
     }
 
     /**
-     * 如果设置了绝对路径app.disk.location，则以绝对路径为主，否则使用应用目录下的相对路径
-     * 结合Tomcat的Context的别名设置
+     * 如果pom.xml中设置了文件存储绝对路径app.disk.location，则以该路径作为文件存储路径；
+     * 否则，根据app.root获取应用目录下的相对路径，作为存储路径；
      * @return 文件存储路径
      */
     public String getFileLocation(){
         String diskLocation = coreConfig.getValue("app.disk.location");
         if(StringUtils.isEmpty(diskLocation)){
             diskLocation = System.getProperty(coreConfig.getValue("app.root"));
+            log.debug("----Info: diskLocation is empty, so file store path is: "+diskLocation);
+        }else{
+            log.debug("----Info: diskLocation is not empty, so file store path is: "+diskLocation);
         }
         return diskLocation;
     }
 
     /**
-     * 若合Tomcat的Context的别名设置了文件存放的绝对路径，文件访问使用别名访问，否则使用应用路程
+     * 如果pom.xml定义了文件访问别名app.path.alias，则以该别名作为文件路径前缀（需要配合Tomcat的Context的别名设置）
+     * 否则，以应用工程名作为文件路径前缀
      * @return 文件访问前缀
      */
     public String getBaseUrl(){
@@ -619,6 +690,7 @@ public class AppFileUtils {
         if(StringUtils.isEmpty(baseUrl)){
             baseUrl = "/"+coreConfig.getCtx();
         }
+        log.debug("----Info baseUrl is :"+baseUrl);
         return baseUrl;
     }
 }

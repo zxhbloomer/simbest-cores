@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
-import com.google.common.collect.Maps;
 import com.simbest.cores.admin.authority.model.SysPermission;
 import com.simbest.cores.admin.authority.model.SysRole;
 import com.simbest.cores.admin.authority.service.ISysPermissionAdvanceService;
@@ -75,9 +74,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
 		JsonResponse response = new JsonResponse();	
-		response.setMessage("发现存在不止一条记录！");
+		response.setMessage("发现存在不止一条记录！ @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
 	}
 	
@@ -88,9 +86,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
         JsonResponse response = new JsonResponse();
-        response.setMessage("当前流程状态为禁用模式!");
+        response.setMessage("当前流程状态为禁用模式! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -101,9 +98,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("编辑更新流程失败!");
+		response.setMessage("编辑更新流程失败! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -114,9 +110,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("加载当前环节审批配置信息失败!");
+		response.setMessage("加载当前环节审批配置信息失败! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
 
@@ -127,9 +122,8 @@ public class ExceptionControllerAdvice {
         log.error(request.getRequestURI());
         Exceptions.printException(e);
         JsonResponse response = new JsonResponse();
-        response.setMessage("下一环节处理人无效，流程不可提交!");
+        response.setMessage("下一环节处理人无效，流程不可提交! @@@@Error: "+Exceptions.getStackTraceAsString(e));
         response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
         return response;
     }
 
@@ -140,9 +134,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("加载流程审批环节失败!");
+		response.setMessage("加载流程审批环节失败! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -159,9 +152,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("请求的资源不存在!");
+		response.setMessage("请求的资源不存在! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -189,9 +181,8 @@ public class ExceptionControllerAdvice {
 	    	}
     	}
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage(message);
+		response.setMessage(message +" @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
 
@@ -202,9 +193,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("请先登录!");
+		response.setMessage("请先登录! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(200);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -214,9 +204,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("用户名不存在!");
+		response.setMessage("用户名不存在! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -226,9 +215,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();		    	
-		response.setMessage("用户名/密码错误!");
+		response.setMessage("用户名/密码错误! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
     
@@ -245,9 +233,8 @@ public class ExceptionControllerAdvice {
 		log.error(request.getRequestURI());
 		Exceptions.printException(e);
     	JsonResponse response = new JsonResponse();
-		response.setMessage("绑定用户账号异常!");
+		response.setMessage("绑定用户账号异常! @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		response.setResponseid(0);
-        response.setData(Exceptions.getStackTraceAsString(e));
 		return response;
     }
 
@@ -272,8 +259,7 @@ public class ExceptionControllerAdvice {
 		Exceptions.printException(e);
 		JsonResponse res = new JsonResponse();
         res.setResponseid(0);
-        res.setMessage(getUnKnowErrorMsg());
-        res.setData(Exceptions.getStackTraceAsString(e));
+        res.setMessage(getUnKnowErrorMsg()+" @@@@Error: "+Exceptions.getStackTraceAsString(e));
 		return res;
     }
     
@@ -290,8 +276,7 @@ public class ExceptionControllerAdvice {
 		Exceptions.printException(e);
         JsonResponse res = new JsonResponse();
         res.setResponseid(0);
-        res.setMessage(getUnKnowErrorMsg());
-        res.setData(Exceptions.getStackTraceAsString(e));
+        res.setMessage(getUnKnowErrorMsg()+" @@@@Error: "+Exceptions.getStackTraceAsString(e));
         return res;
 	}
 	

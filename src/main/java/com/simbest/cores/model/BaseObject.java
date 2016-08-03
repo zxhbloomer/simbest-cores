@@ -15,7 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //@JsonInclude(Include.NON_EMPTY) 
 public abstract class BaseObject<T> implements Serializable, Comparable<T> {
 
-	@Override
+
+    private static final long serialVersionUID = -2968408892537486897L;
+
+    @Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}

@@ -15,6 +15,7 @@ import com.simbest.cores.utils.annotations.ProcessProperty;
 
 @MappedSuperclass
 public abstract class SystemModel<T> extends GenericModel<T>{
+    private static final long serialVersionUID = -1643479703949912244L;
 	
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "createDate", nullable = false)

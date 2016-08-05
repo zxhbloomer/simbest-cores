@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+  'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace='com.simbest.cores.admin.authority.mapper.SysGroupMapper'>
+	<!-- 定义缓存 -->
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+	
+	<!-- LazyLoading 方式启用延迟加载，适用于单个详细实体对象  Start -->
+	<resultMap id="simpleGroupResult" type="SysGroup">
+        <id column="id_" property="id_" />
+        <result column="name_" property="name_" />
+        <result column="type_" property="type_" />
+        <result column="rev_" property="rev_" />
+    </resultMap>
+    <select id='getById' parameterType='String' resultMap="simpleGroupResult">
+	     SELECT * FROM act_id_group WHERE id_ = #{id_}
+	</select>
+	<select id='getByUnique' parameterType='String' resultMap="simpleGroupResult">
+		 SELECT * FROM act_id_group WHERE name_ = #{name_}
+	</select>
+	<!-- 登陆认证需要根据用户获取角色，再根据角色获取权限资源，因此使用延迟加载方式 -->
+	<select id='getByUser' parameterType='Integer' resultMap="simpleGroupResult">
+	     SELECT r.* FROM act_id_group r, act_id_membership ur WHERE r.id_=ur.group_id_ and ur.user_id_ = #{userId}
+	</select>
+
+	<select id="getAll" resultMap="simpleGroupResult">
+        select * from act_id_group
+        <where>
+            <if test="name_ != null and name_ !=''">
+                and name_ = #{name_}
+            </if>
+        </where>
+    </select>
+	<!-- 关联查询方式，适用于集合列表实体对象  End -->
+
+    <insert id="create" parameterType="SysGroup" useGeneratedKeys="true" >
+    	insert into act_id_group(id_,rev_,name_,type_) values (#{id_},#{rev_},#{name_},#{type_})
+	</insert>
+
+	<update id="update" parameterType="SysGroup" flushCache="true" statementType="PREPARED" timeout="20">
+        update act_id_group set name_=#{name_},type_=#{type_} where id_=#{id_}
+    </update>
+
+	<insert id="createSysUserGroup"  flushCache="true" statementType="PREPARED" timeout="20">
+		insert into act_id_membership (user_id_,group_id_) values (#{userId},#{groupId})
+	</insert>
+
+    <delete id="deleteSysUserGroupByGroupId" flushCache="true" statementType="PREPARED" timeout="20">
+        delete from act_id_membership where group_id_=#{groupId}
+    </delete>
+
+	<delete id="deleteSysUserGroupByUserId" flushCache="true" statementType="PREPARED" timeout="20">
+        delete from act_id_membership where user_id_=#{userId}
+    </delete>
+
+  	<delete id="delete" parameterType="SysGroup" flushCache="true" statementType="PREPARED" timeout="20">
+        DELETE FROM act_id_group WHERE id_=#{id_}
+    </delete>
+
+    <delete id="batchDelete" flushCache="true" statementType="PREPARED" timeout="20">
+     	DELETE FROM act_id_group WHERE id_ IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach> 
+    </delete>     
+</mapper>

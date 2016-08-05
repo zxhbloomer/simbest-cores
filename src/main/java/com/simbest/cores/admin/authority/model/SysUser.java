@@ -118,7 +118,12 @@ public class SysUser extends LogicModel<SysUser> {
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="sys_user_permission", joinColumns={ @JoinColumn(name="user_id") }, inverseJoinColumns=@JoinColumn(name="permission_id"))
 	private List<SysPermission> permissionList=Lists.newLinkedList(); // 有序的关联对象集合
-	
+
+//    @ManyToMany(fetch=FetchType.EAGER)
+//    @JoinTable(name="act_id_membership", joinColumns={ @JoinColumn(name="user_id_",referencedColumnName="loginName") }, inverseJoinColumns=@JoinColumn(name="group_id_"))
+       @Transient
+    private List<SysGroup> groupList=Lists.newLinkedList(); // 有序的关联对象集合
+
 	@NotNullColumn(value="QQ号")
 	@Column(name="qqCode", length=40, nullable=true)
 	private String qqCode;
@@ -898,6 +903,14 @@ public class SysUser extends LogicModel<SysUser> {
 
     public void setHierarchyOrgIds(String hierarchyOrgIds) {
         this.hierarchyOrgIds = hierarchyOrgIds;
+    }
+
+    public List<SysGroup> getGroupList() {
+        return groupList;
+    }
+
+    public void setGroupList(List<SysGroup> groupList) {
+        this.groupList = groupList;
     }
 
     @Override

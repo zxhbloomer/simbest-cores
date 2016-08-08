@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 
-//@Service(value = "sysGroupAdvanceService")
+@Service(value = "sysGroupAdvanceService")
 public class SysGroupAdvanceService extends GenericAdvanceService<SysGroup, String> implements ISysGroupAdvanceService {
 
     private ISysGroupService sysGroupService;

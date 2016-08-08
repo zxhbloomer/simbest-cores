@@ -119,9 +119,8 @@ public class SysUser extends LogicModel<SysUser> {
 	@JoinTable(name="sys_user_permission", joinColumns={ @JoinColumn(name="user_id") }, inverseJoinColumns=@JoinColumn(name="permission_id"))
 	private List<SysPermission> permissionList=Lists.newLinkedList(); // 有序的关联对象集合
 
-//    @ManyToMany(fetch=FetchType.EAGER)
-//    @JoinTable(name="act_id_membership", joinColumns={ @JoinColumn(name="user_id_",referencedColumnName="loginName") }, inverseJoinColumns=@JoinColumn(name="group_id_"))
-       @Transient
+    @ManyToMany(fetch=FetchType.EAGER)
+    @JoinTable(name="sys_user_group", joinColumns={ @JoinColumn(name="user_id",referencedColumnName="loginName") }, inverseJoinColumns=@JoinColumn(name="group_id",referencedColumnName="name"))
     private List<SysGroup> groupList=Lists.newLinkedList(); // 有序的关联对象集合
 
 	@NotNullColumn(value="QQ号")

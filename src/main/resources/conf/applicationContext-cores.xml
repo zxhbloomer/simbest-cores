@@ -155,12 +155,10 @@
 		<constructor-arg index="0" ref="sysRoleService" />
 		<property name="clazz" value="com.simbest.cores.admin.authority.model.SysRole" />
 	</bean>
-    <!--
     <bean id="sysGroupCache" class="com.simbest.cores.cache.impl.GenericCache">
         <constructor-arg index="0" ref="sysGroupService" />
         <property name="clazz" value="com.simbest.cores.admin.authority.model.SysGroup" />
     </bean>
-    -->
 	<bean id="sysOrgCache" class="com.simbest.cores.cache.impl.GenericCache">
 		<constructor-arg index="0" ref="sysOrgService" />
 		<property name="clazz" value="com.simbest.cores.admin.authority.model.SysOrg" />

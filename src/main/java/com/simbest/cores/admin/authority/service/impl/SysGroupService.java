@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-//@Service(value = "sysGroupService")
+@Service(value = "sysGroupService")
 public class SysGroupService extends GenericMapperService<SysGroup,String> implements ISysGroupService{
 
 	private SysGroupMapper mapper;

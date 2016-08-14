@@ -58,9 +58,14 @@ public class SysUser extends LogicModel<SysUser> {
 	@ExcelVOAttribute(name = "用户编号", column = "B")
 	@NotNullColumn(value="用户编号")
 	@Column(name="userCode", length=100, nullable=true, unique=true) 
-	private String userCode; 
-	
-	@Column(nullable=true)
+	private String userCode;
+
+    @ExcelVOAttribute(name = "用户编码", column = "J")
+    @NotNullColumn(value="用户编码")
+    @Column(name="uniqueCode", length=255, nullable=true, unique=true)
+    private String uniqueCode;
+
+    @Column(nullable=true)
 	private String password; 	
 	
 	@JsonIgnore
@@ -910,6 +915,14 @@ public class SysUser extends LogicModel<SysUser> {
 
     public void setGroupList(List<SysGroup> groupList) {
         this.groupList = groupList;
+    }
+
+    public String getUniqueCode() {
+        return uniqueCode;
+    }
+
+    public void setUniqueCode(String uniqueCode) {
+        this.uniqueCode = uniqueCode;
     }
 
     @Override

@@ -32,10 +32,10 @@ public class CQEngineDemo {
         sysUserOrgData.addIndex(HashIndex.onAttribute(SysUserIndex.OWNER_ORG));
         sysUserOrgData.addIndex(HashIndex.onAttribute(SysUserIndex.POSITION));
 
-        sysUserOrgData.add(new SysUserIndex(1,"chenhaiwei",3,null,null,null,null,null,10));
-        sysUserOrgData.add(new SysUserIndex(2,"zhoupeng",2,1,null,"四级",null,null,20));
-        sysUserOrgData.add(new SysUserIndex(3,"yangjixue",1,1,null,"四级",null,null,15));
-        sysUserOrgData.add(new SysUserIndex(4,"zhaoxiang",3,1,null,"三级",null,null,5));
+        sysUserOrgData.add(new SysUserIndex(1,"chenhaiwei","chenhaiwei",3,null,null,null,null,null,10));
+        sysUserOrgData.add(new SysUserIndex(2,"zhoupeng","chenhaiwei",2,1,null,"四级",null,null,20));
+        sysUserOrgData.add(new SysUserIndex(3,"yangjixue","chenhaiwei",1,1,null,"四级",null,null,15));
+        sysUserOrgData.add(new SysUserIndex(4,"zhaoxiang","chenhaiwei",3,1,null,"三级",null,null,5));
 
         Query<SysUserIndex> query;
 

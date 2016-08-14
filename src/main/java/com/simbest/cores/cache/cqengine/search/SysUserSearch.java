@@ -61,6 +61,7 @@ public class SysUserSearch {
             //建立索引
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.ID));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.LOGIN_NAME));
+            sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.UNIQUE_CODE));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.ORG_ID));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.PARENT_ID));
             sysUserData.addIndex(HashIndex.onAttribute(SysUserIndex.OWNER_ORG));
@@ -69,6 +70,7 @@ public class SysUserSearch {
             //注册查询解析器
             parser.registerAttribute(SysUserIndex.ID);
             parser.registerAttribute(SysUserIndex.LOGIN_NAME);
+            parser.registerAttribute(SysUserIndex.UNIQUE_CODE);
             parser.registerAttribute(SysUserIndex.ORG_ID);
             parser.registerAttribute(SysUserIndex.PARENT_ID);
             parser.registerAttribute(SysUserIndex.OWNER_ORG);
@@ -87,7 +89,7 @@ public class SysUserSearch {
         if(null !=u.getOwnerOrgId() && StringUtils.isNotEmpty(u.getPosition())){
             SysOrg sysOrg = sysOrgAdvanceService.loadByKey(u.getSysOrg().getId());
             Integer parentId = null==sysOrg.getParent() ? null:sysOrg.getParent().getId();
-            SysUserIndex index = new SysUserIndex(u.getId(), u.getLoginName(), sysOrg.getId(), parentId, u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs, u.getOrderBy());
+            SysUserIndex index = new SysUserIndex(u.getId(), u.getLoginName(), u.getUnionid(), sysOrg.getId(), parentId, u.getOwnerOrgId(), u.getPosition(), u, hierarchyOrgs, u.getOrderBy());
             log.debug(index);
             sysUserData.add(index);
             return true;
@@ -131,12 +133,14 @@ public class SysUserSearch {
      * @return
      */
     @Cacheable
-    public Collection<SysUserIndex> searchQuery(Integer id, String loginName, Integer orgId, Integer parentId, Integer ownerOrgId, String position){
+    public Collection<SysUserIndex> searchQuery(Integer id, String loginName, String uniqueCode,Integer orgId, Integer parentId, Integer ownerOrgId, String position){
         String sql = "SELECT * FROM sysUserData WHERE (";
         if(null != id)
             sql += " AND "+SysUserIndex.ID.getAttributeName()+"="+id;
         if(StringUtils.isNotEmpty(loginName))
             sql += " AND "+SysUserIndex.LOGIN_NAME.getAttributeName()+"='"+loginName+"\'";
+        if(StringUtils.isNotEmpty(uniqueCode))
+            sql += " AND "+SysUserIndex.UNIQUE_CODE.getAttributeName()+"='"+uniqueCode+"\'";
         if(null != orgId)
             sql += " AND "+SysUserIndex.ORG_ID.getAttributeName()+"="+orgId;
         if(null != parentId)
@@ -152,13 +156,13 @@ public class SysUserSearch {
 
 
     @Cacheable
-    public Collection<SysUserIndex> searchQuery(Integer orgId, Integer parentId, Integer ownerOrgId, String position){
-        return searchQuery(null,null,orgId,parentId,ownerOrgId,position);
+    public Collection<SysUserIndex> searchQuery(String loginName, String uniqueCode, Integer orgId, Integer parentId, Integer ownerOrgId, String position){
+        return searchQuery(null,loginName,uniqueCode,orgId,parentId,ownerOrgId,position);
     }
 
     @Cacheable
     public Collection<SysUserIndex> searchQuery(Integer id){
-        return searchQuery(id,null,null,null,null,null);
+        return searchQuery(id,null,null,null,null,null,null);
     }
 
     @Cacheable

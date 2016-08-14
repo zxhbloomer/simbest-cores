@@ -32,6 +32,7 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
     private SysUser sysUser;
     private List<SysOrg> hierarchyOrgs;
     private Integer orderBy;
+    private String uniqueCode;
 
     /**
      *
@@ -45,9 +46,10 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
      * @param hierarchyOrgs
      * @param orderBy
      */
-    public SysUserIndex(Integer id, String loginName, Integer orgId, Integer parentId, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs, Integer orderBy) {
+    public SysUserIndex(Integer id, String loginName, String uniqueCode, Integer orgId, Integer parentId, Integer ownerOrgId, String position, SysUser sysUser, List<SysOrg> hierarchyOrgs, Integer orderBy) {
         this.id = id;
         this.loginName = loginName;
+        this.uniqueCode = uniqueCode;
         this.orgId = orgId;
         this.parentId = parentId;
         this.ownerOrgId = ownerOrgId;
@@ -85,6 +87,10 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
         public Integer getValue(SysUserIndex user, QueryOptions queryOptions) { return user.orderBy; }
     };
 
+    public static final SimpleNullableAttribute<SysUserIndex, String> UNIQUE_CODE = new SimpleNullableAttribute<SysUserIndex, String>("uniqueCode") {
+        public String getValue(SysUserIndex user, QueryOptions queryOptions) { return user.uniqueCode; }
+    };
+
     public Integer getId() {
         return id;
     }
@@ -115,5 +121,13 @@ public class SysUserIndex extends BaseObject<SysUserIndex> {
 
     public Integer getOrderBy() {
         return orderBy;
+    }
+
+    public String getUniqueCode() {
+        return uniqueCode;
+    }
+
+    public Integer getParentId() {
+        return parentId;
     }
 }

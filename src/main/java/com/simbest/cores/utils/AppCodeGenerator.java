@@ -93,7 +93,7 @@ public class AppCodeGenerator {
 
     /**
      * 返回无限制编码，支持每毫秒3位随机数并发
-     * 如：201607150036290690001，含义2016-07-15 00:36:29.069 001
+     * 如：20160715003629069001，含义2016-07-15 00:36:29.069 001
      *
      * 随机生成 a 到 b (不包含b)的整数:
      * (int)(Math.random()*(b-a))+a;
@@ -101,11 +101,11 @@ public class AppCodeGenerator {
      * (int)(Math.random()*(b-a+1))+a;
      * @return
      */
-    public static String nextUnLimitCode() {
+    public static synchronized String nextUnLimitCode() {
         return String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$03d", DateUtil.getCurrent(), (int)(Math.random()*(899))+100);
     }
 
-    public static String nextUnLimitCode(String prefix) {
+    public static synchronized String nextUnLimitCode(String prefix) {
         return prefix+String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$03d", DateUtil.getCurrent(), (int)(Math.random()*(899))+100);
     }
 

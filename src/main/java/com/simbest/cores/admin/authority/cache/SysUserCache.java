@@ -47,6 +47,7 @@ public class SysUserCache extends GenericCache<SysUser,Integer>{
 		super.setClazz(SysUser.class);
 		this.registerCustomkey("openid");
 		this.registerCustomkey("accesstoken");
+        this.registerCustomkey("uniqueCode");
 	}
 
     @Override

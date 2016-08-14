@@ -34,6 +34,8 @@
         <result column="orderBy" property="orderBy" />
         <result column="ownerOrgId" property="ownerOrgId" />
         <result column="hierarchyOrgIds" property="hierarchyOrgIds" />
+        <result column="uniqueCode" property="uniqueCode" />
+
       	<!-- 微信字段开始 -->
       	<result column="mpNum" property="mpNum" />
         <result column="mpName" property="mpName" />
@@ -124,6 +126,7 @@
         <result column="orderBy" property="orderBy" />
         <result column="ownerOrgId" property="ownerOrgId" />
         <result column="hierarchyOrgIds" property="hierarchyOrgIds" />
+        <result column="uniqueCode" property="uniqueCode" />
 
       	<!-- 微信字段开始 -->
       	<result column="mpNum" property="mpNum" />
@@ -188,11 +191,14 @@
         </if>    
         <if test="groupid != null">
             and u.groupid = #{groupid}
-        </if>    
+        </if>
 		<if test="userType != null">
             and u.userType = #{userType}
-        </if> 
-		<if test="openid!=null and openid!=''">  
+        </if>
+        <if test="uniqueCode != null">
+            and u.uniqueCode = #{uniqueCode}
+        </if>
+        <if test="openid!=null and openid!=''">
             and u.openid = #{openid}
         </if>
 		<if test="accesstoken!=null and accesstoken!=''">  
@@ -260,7 +266,10 @@
         </if>    
 		<if test="userType != null">
             and u.userType = #{userType}
-        </if> 
+        </if>
+        <if test="uniqueCode != null">
+            and u.uniqueCode = #{uniqueCode}
+        </if>
 		<if test="openid!=null and openid!=''">  
             and u.openid = #{openid}
         </if>
@@ -306,19 +315,19 @@
     </select>
                
 	<insert id="create" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" >         
-	    insert into sys_user (loginName,userCode,username,password,salt,phone,email,position,officePhone,qqCode,weChatCode,weiboCode,alipayCode,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,org_id,backgroundurl,signature,birthDate,updateDate)
-	    values (#{loginName},#{userCode},#{username},#{password},#{salt},#{phone},#{email},#{position},#{officePhone},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
+	    insert into sys_user (loginName,userCode,username,uniqueCode,password,salt,phone,email,position,officePhone,qqCode,weChatCode,weiboCode,alipayCode,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,org_id,backgroundurl,signature,birthDate,updateDate)
+	    values (#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{position},#{officePhone},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
     </insert>
     
     <!-- SysUserController.createOrGetByPhone 和   MpAccountAdvanceService.createFrontendUserOnSubscribedOrAccess -->
     <insert id="createOrUpdateViaAdmin" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" >         
-	    insert into sys_user (loginName,userCode,username,password,salt,phone,email,position,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
-	    values (#{loginName},#{userCode},#{username},#{password},#{salt},#{phone},#{email},#{position},#{sceneCode},#{sceneValue},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
+	    insert into sys_user (loginName,userCode,username,uniqueCode,password,salt,phone,email,position,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
+	    values (#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{position},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
 	    ON DUPLICATE KEY UPDATE updateDate=#{createDate},updateUserId=#{createUserId},updateUserCode=#{createUserCode},updateUserName=#{createUserName},
 	    sceneCode=#{sceneCode},sceneValue=#{sceneValue},subscribe=#{subscribe},nickname=#{nickname},sex=#{sex},country=#{country},province=#{province},city=#{city},language=#{language},headimgurl=#{headimgurl},subscribe_time=#{subscribe_time},tag=#{tag},
 	    removed=0,enabled=1
 	    <!-- 出现用户信息插入已存在的数据，主要是因为用户是微信用户，并且反复关注和取消关注，因此以下字段不进行覆盖
-	    	loginName=#{loginName},username=#{username},userCode=#{userCode},password=#{password},salt=#{salt},phone=#{phone},email=#{email},accesstoken=#{accesstoken},mpNum=#{mpNum},mpName=#{mpName},userType=#{userType},openid=#{openid},unionid=#{unionid},remark=#{remark},groupid=#{groupid},org_id=#{sysOrg.id},
+	    	loginName=#{loginName},username=#{username},userCode=#{userCode},uniqueCode=#{uniqueCode},password=#{password},salt=#{salt},phone=#{phone},email=#{email},accesstoken=#{accesstoken},mpNum=#{mpNum},mpName=#{mpName},userType=#{userType},openid=#{openid},unionid=#{unionid},remark=#{remark},groupid=#{groupid},org_id=#{sysOrg.id},
 	    	position=#{position},officePhone=#{officePhone},qqCode=#{qqCode},weChatCode=#{weChatCode},weiboCode=#{weiboCode},alipayCode=#{alipayCode},
 	    	如果行作为新记录被插入，则受影响行的值为1；如果原有的记录被更新，则受影响行的值为2
 	    -->
@@ -405,9 +414,9 @@
     </delete>	
     
 	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20">
-       insert into sys_user (phone,loginName,username,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate) values
+       insert into sys_user (phone,loginName,username,uniqueCode,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate) values
         <foreach collection="list" index="index" item="item" separator=",">   
-	        (#{item.phone},#{item.loginName},#{item.username},#{item.sceneCode},#{item.sceneValue},#{item.accesstoken},#{item.userType},#{item.userLevel},#{item.orderBy},#{item.ownerOrgId},#{item.hierarchyOrgIds},#{item.mpNum},#{item.mpName},#{item.subscribe},#{item.openid},#{item.nickname},#{item.sex},#{item.country},#{item.province},#{item.city},#{item.language},#{item.headimgurl},#{item.subscribe_time},#{item.unionid},#{item.remark},#{item.groupid},#{item.createUserId},#{item.createUserCode},#{item.createUserName},#{item.createDate},#{item.sysOrg.id},#{item.backgroundurl},#{item.signature},#{item.birthDate},#{item.updateDate})
+	        (#{item.phone},#{item.loginName},#{item.username},#{uniqueCode},#{item.sceneCode},#{item.sceneValue},#{item.accesstoken},#{item.userType},#{item.userLevel},#{item.orderBy},#{item.ownerOrgId},#{item.hierarchyOrgIds},#{item.mpNum},#{item.mpName},#{item.subscribe},#{item.openid},#{item.nickname},#{item.sex},#{item.country},#{item.province},#{item.city},#{item.language},#{item.headimgurl},#{item.subscribe_time},#{item.unionid},#{item.remark},#{item.groupid},#{item.createUserId},#{item.createUserCode},#{item.createUserName},#{item.createDate},#{item.sysOrg.id},#{item.backgroundurl},#{item.signature},#{item.birthDate},#{item.updateDate})
 	    </foreach> 
     </insert>     
 </mapper>

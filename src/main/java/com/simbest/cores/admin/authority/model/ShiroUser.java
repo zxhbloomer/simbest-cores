@@ -12,7 +12,8 @@ public class ShiroUser implements Serializable {
 	private static final long serialVersionUID = -1373760761780840081L;
 	public String loginName;
 	public String userName;
-	public String userCode;
+	public String uniqueCode;
+    public String userCode;
 	public Integer userId;
 	public Integer orgId;
 	public String orgName;
@@ -24,13 +25,14 @@ public class ShiroUser implements Serializable {
     private Integer ownerOrgId;
 	public List<Integer> roleIds;
 
-	public ShiroUser(String loginName, String userName, String userCode,
+	public ShiroUser(String loginName, String userName, String uniqueCode, String userCode,
 			Integer userId, Integer orgId, String orgName,
 			List<Integer> roleIds, String headUrl, String accesstoken,
 			String openid, String unionid, String phone, Integer ownerOrgId) {
 		super();
 		this.loginName = loginName;
 		this.userName = userName;
+        this.uniqueCode = uniqueCode;
 		this.userCode = userCode;
 		this.userId = userId;
 		this.orgId = orgId;
@@ -70,7 +72,11 @@ public class ShiroUser implements Serializable {
 		return userName;
 	}
 
-	/**
+    public String getUniqueCode() {
+        return uniqueCode;
+    }
+
+    /**
 	 * @return the userCode
 	 */
 	public String getUserCode() {

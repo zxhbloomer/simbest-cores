@@ -57,4 +57,9 @@ public class SysGroupAdvanceService extends GenericAdvanceService<SysGroup, Stri
         return sysGroupService.getByUser(userId);
     }
 
+    @Override
+    public List<String> getGroupUser(String groupid) {
+        return sysGroupService.getGroupUser(groupid);
+    }
+
 }

@@ -15,4 +15,6 @@ public interface ISysGroupService extends IGenericService<SysGroup, String> {
     int createSysUserGroup(String userId, String groupId);
 
     List<SysGroup> getByUser(String userId);
+
+    List<String> getGroupUser(String groupid);
 }

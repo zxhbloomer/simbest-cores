@@ -19,9 +19,11 @@
     <select id='getByUnique' parameterType='String' resultMap="simpleGroupResult">
         SELECT * FROM sys_group WHERE name = #{name}
     </select>
-    <!-- 登陆认证需要根据用户获取角色，再根据角色获取权限资源，因此使用延迟加载方式 -->
-    <select id='getByUser' parameterType='Integer' resultMap="simpleGroupResult">
-        SELECT r.* FROM sys_group r, sys_user_group ur WHERE r.id=ur.groupid and ur.userid = #{userId}
+    <select id='getByUser' parameterType='String' resultMap="simpleGroupResult">
+        SELECT g.* FROM sys_group g, sys_user_group ug WHERE g.name=ug.groupid and ug.userid = #{userId}
+    </select>
+    <select id='getGroupUser' parameterType='String' resultMap="simpleGroupResult">
+        SELECT ug.userid FROM sys_group g, sys_user_group ug WHERE g.name=ug.groupid and ug.groupid = #{groupid}
     </select>
 
     <select id="getAll" resultMap="simpleGroupResult">

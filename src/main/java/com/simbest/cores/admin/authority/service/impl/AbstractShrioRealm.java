@@ -87,7 +87,7 @@ public abstract class AbstractShrioRealm extends AuthorizingRealm {
 			for (SysRole role : u.getRoleList()) {
 				roleIds.add(role.getId());
 			}
-			Object principal = new ShiroUser(u.getLoginName(), u.getUsername(),
+			Object principal = new ShiroUser(u.getLoginName(), u.getUsername(),u.getUniqueCode(),
 					u.getUserCode(), u.getId(), u.getSysOrg().getId(),
 					u.getSysOrg().getOrgName(), roleIds,
 					u.getHeadimgurl(), u.getAccesstoken(),
@@ -106,7 +106,7 @@ public abstract class AbstractShrioRealm extends AuthorizingRealm {
 				roleIds.add(role.getId());
 			}
 			AuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-					new ShiroUser(u.getLoginName(), u.getUsername(),
+					new ShiroUser(u.getLoginName(), u.getUsername(),u.getUniqueCode(),
 							u.getUserCode(), u.getId(), u.getSysOrg()
 									.getId(), u.getSysOrg().getOrgName(),
 							roleIds, u.getHeadimgurl(), u.getAccesstoken(),

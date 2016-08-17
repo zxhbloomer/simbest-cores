@@ -67,6 +67,7 @@
 			<tx:method name="remove*" propagation="REQUIRED" />
 			<tx:method name="batch*" propagation="REQUIRED" />
 			<tx:method name="sync*" propagation="REQUIRED" />
+            <tx:method name="startProcess*" propagation="REQUIRED" />
 			<tx:method name="nestedCreate" propagation="NESTED" />
 			<tx:method name="nestedUpdate" propagation="NESTED" />
 			<tx:method name="*" propagation="SUPPORTS" read-only="true" />

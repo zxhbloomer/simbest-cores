@@ -16,4 +16,6 @@ public interface SysGroupMapper extends IGenericMapper<SysGroup, String> {
     int createSysUserGroup(@Param(value = "userId") String userId, @Param(value = "groupId") String groupId);
 
     List<SysGroup> getByUser(@Param(value = "userId") String userId);
+
+    List<String> getGroupUser(@Param(value = "groupid") String groupid);
 }

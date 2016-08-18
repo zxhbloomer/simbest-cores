@@ -12,6 +12,8 @@ public class TransactionRollbackException extends AppException{
 	 */
 	private static final long serialVersionUID = 4432025698389231168L;
 
+    public TransactionRollbackException(){}
+
 	public TransactionRollbackException(String errorCode, String errorMessage) {
 		super(errorCode, errorMessage);
 	}

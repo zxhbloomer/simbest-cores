@@ -31,7 +31,7 @@ public class SysOrg extends SystemModel<SysOrg> {
 	
 	@ExcelVOAttribute(name = "组织编码", column = "A")
 	@NotNullColumn(value="组织编码")
-	@Column(name = "orgCode", length = 20, unique = true)
+	@Column(name = "orgCode", length = 80, unique = true)
 	@Unique
 	private String orgCode;
 	

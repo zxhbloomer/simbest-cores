@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.simbest.cores.utils.pages.PageSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -378,4 +379,14 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 		}
 		return dataMap;
 	}
+
+    protected Map<String, Object> wrapQueryResult(PageSupport<?> ps) {
+        Map<String, Object> dataMap = Maps.newHashMap();
+        if (config.getValue("js.framework").equals("zjs")) {
+            dataMap.put("TotalPages", ps.getTotalPages());
+            dataMap.put("TotalRows", ps.getTotalRecords());
+            dataMap.put("Datas", ps.getItems());
+        }
+        return dataMap;
+    }
 }

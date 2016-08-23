@@ -441,15 +441,15 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      */
     @Override
     public List<DynamicUserTreeNode> searchDynamicParentUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId, String loginName, String uniqueCode) {
-        log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s, userId: %s, loginName: %s", orgId,parentId,ownerId,position, userId, loginName));
-        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId+Constants.UNDERLINE+loginName);
+        log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s, userId: %s, loginName: %s, uniqueCode: %s", orgId,parentId,ownerId,position, userId, loginName,uniqueCode));
+        List<DynamicUserTreeNode> data = searchDynamicUserTreeDataHolder.get(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId+Constants.UNDERLINE+loginName+Constants.UNDERLINE+uniqueCode);
         if(data == null){
             if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
                 data = loadDynamicParentUserTreeByCQEngine(orgId,parentId,ownerId,position,userId,loginName,uniqueCode);
             }else{
                 data = loadDynamicParentUserTreeByDatabase(orgId,parentId,ownerId,position,userId,loginName,uniqueCode);
             }
-            searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId, data);
+            searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId+Constants.UNDERLINE+loginName+Constants.UNDERLINE+uniqueCode, data);
         }
         return data;
     }
@@ -469,6 +469,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             userList.add(sysUser);
         }else if(StringUtils.isNotEmpty(uniqueCode)){
             SysUser sysUser = loadByCustom("uniqueCode", uniqueCode);
+            userList.add(sysUser);
         }else {
             SysUser params = new SysUser();
             SysOrg sysOrg = new SysOrg();

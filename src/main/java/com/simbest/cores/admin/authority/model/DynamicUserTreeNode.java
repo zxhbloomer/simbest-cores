@@ -12,9 +12,14 @@ import com.simbest.cores.model.BaseObject;
  *
  */
 public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3484465213103389831l;
 	private Integer id;
 	private String title;
 	private Integer pid;
+	private Integer level;
 	private boolean child;
 	private String type;
 	/**
@@ -77,6 +82,13 @@ public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	public void setType(String type) {
 		this.type = type;
 	}
+	public Integer getLevel() {
+		return level;
+	}
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
+	
 	
 	
 }

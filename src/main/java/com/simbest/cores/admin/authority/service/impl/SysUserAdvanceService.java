@@ -17,6 +17,7 @@ import com.simbest.cores.utils.StringUtil;
 import com.simbest.cores.utils.configs.CoreConfig;
 import com.simbest.cores.utils.enums.SNSLoginType;
 import com.simbest.cores.web.filter.SNSAuthenticationToken;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +28,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -401,6 +403,12 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         rootNode.setId(root.getId());
         rootNode.setPid(root.getParent()==null?null:root.getParent().getId());
         rootNode.setTitle(root.getOrgName());
+        //查询组织相对与跟组织所在的层级，跟组织为0
+        SysOrg sysOrg = sysOrgAdvanceService.loadByKey(root.getId());
+    	int i =0;
+    	i = topTraverse(i,sysOrg);
+    	rootNode.setLevel(i);
+    	
         resultList.add(rootNode);
         return loadUserAndOrg(resultList, orgId, userType);
     }
@@ -510,6 +518,14 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             userNode.setId(user.getSysUser().getId());
             userNode.setPid(user.getSysUser().getSysOrg().getId());
             userNode.setTitle(user.getSysUser().getUsername());
+            //查询组织相对与跟组织所在的层级，跟组织为0,用户相对与本身的组织又加一层级
+            SysOrg sysOrg = sysOrgAdvanceService.loadByKey(user.getSysUser().getSysOrg().getId());
+            int i = 0;
+            i = topTraverse(i,sysOrg);
+            i = i +1;
+            userNode.setLevel(i);
+            
+            
             unduplicatedOrgSet.addAll(user.getHierarchyOrgs());
             resultList.add(userNode);
         }
@@ -615,6 +631,13 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             userNode.setId(user.getSysUser().getId());
             userNode.setPid(user.getSysUser().getSysOrg().getId());
             userNode.setTitle(user.getSysUser().getUsername());
+            //查询组织相对与跟组织所在的层级，跟组织为0,用户相对与本身的组织又加一层级
+            SysOrg sysOrg = sysOrgAdvanceService.loadByKey(user.getSysUser().getSysOrg().getId());
+            int i = 0;
+            i = topTraverse(i,sysOrg);
+            i = i +1;
+            userNode.setLevel(i);
+            
             unduplicatedOrgSet.add(user.getSysUser().getSysOrg());
             userNodeList.add(userNode);
         }
@@ -631,12 +654,36 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             node.setId(user.getId());
             node.setPid(user.getSysOrg().getId());
             node.setTitle(user.getUsername());
+            //查询组织相对与跟组织所在的层级，跟组织为0
+            SysOrg sysOrg = sysOrgAdvanceService.loadByKey(user.getSysOrg().getId());
+            int i = 0;
+            i = topTraverse(i,sysOrg);
+            i = i +1;
+            node.setLevel(i);
             resultList.add(node);
         }
+    }
+    
+    /**
+     * 当前组织查找跟组织遍历了几次，跟组织是0级，
+     * @param i
+     * @param org
+     * @return
+     */
+    private int topTraverse(int i ,SysOrg org){
+    	if(org.getParentId()!=null){
+    		i++;
+    		SysOrg root = sysOrgAdvanceService.loadByKey(org.getParentId());
+    		i = topTraverse(i,root);
+    	}
+    	return i;
     }
 
     private void wrapDynamicOrg(Collection<DynamicUserTreeNode> resultList, Collection<SysOrg> orgList){
         for(SysOrg org : orgList){
+        	SysOrg sysOrg = sysOrgAdvanceService.loadByKey(org.getId());
+        	int i =0;
+        	i = topTraverse(i,sysOrg);
             DynamicUserTreeNode node = new DynamicUserTreeNode();
             Integer children = sysOrgAdvanceService.countByParent(org.getId());
             if(children != null && children>0)
@@ -648,6 +695,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             if (null != org.getParent())
                 node.setPid(org.getParent().getId());
             node.setTitle(org.getOrgName());
+            node.setLevel(i);
             resultList.add(node);
         }
     }

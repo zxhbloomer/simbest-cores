@@ -351,17 +351,18 @@
 	      <if test="sceneCode != null and sceneCode != ''">sceneCode=#{sceneCode},</if>
 	      <if test="sceneValue != null and sceneValue != ''">sceneValue=#{sceneValue},</if>
 	      <if test="tag != null and tag != ''">tag=#{tag},</if>
-	      <if test="userLevel != null and userLevel != ''">userLevel=#{userLevel},</if>
-          <if test="orderBy != null and orderBy != ''">orderBy=#{orderBy},</if>
+	      <if test="userType != null">userType=#{userType},</if>
+          <if test="userLevel != null">userLevel=#{userLevel},</if>
+          <if test="orderBy != null">orderBy=#{orderBy},</if>
           <if test="ownerOrgId != null and ownerOrgId != ''">ownerOrgId=#{ownerOrgId},</if>
           <if test="hierarchyOrgIds != null and hierarchyOrgIds != ''">hierarchyOrgIds=#{hierarchyOrgIds},</if>
 	      <if test="mpNum != null and mpNum != ''">mpNum=#{mpNum},</if>
 	      <if test="mpName != null and mpName != ''">mpName=#{mpName},</if>
 	      <if test="openid != null and openid != ''">openid=#{openid},</if>
 	      <if test="unionid != null and unionid != ''">unionid=#{unionid},</if>
-	      <if test="subscribe != null and subscribe != ''">subscribe=#{subscribe},</if>
+	      <if test="subscribe != null">subscribe=#{subscribe},</if>
 	      <if test="nickname != null and nickname != ''">nickname=#{nickname},</if>
-	      <if test="sex != null and sex != ''">sex=#{sex},</if>
+	      <if test="sex != null">sex=#{sex},</if>
 	      <if test="country != null and country != ''">country=#{country},</if>
 	      <if test="province != null and province != ''">province=#{province},</if>
 	      <if test="city != null and city != ''">city=#{city},</if>

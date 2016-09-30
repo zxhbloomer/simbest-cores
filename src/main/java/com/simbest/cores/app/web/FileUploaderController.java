@@ -3,7 +3,13 @@
  */
 package com.simbest.cores.app.web;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,10 +17,15 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -243,5 +254,29 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 		map.put("message", ret>0 ? "删除成功!":"删除失败!");
 		map.put("responseid", ret>0 ? 1:0);
 		return map;
+	}
+	
+	@RequestMapping(value = "/dowanloadSourceFile", method = RequestMethod.POST)
+	public void dowanloadSourceFile(@RequestParam("filePath") String filePath, HttpServletResponse response) throws IOException {
+		filePath = URLDecoder.decode(filePath, "UTF-8");
+		File file = new File(appFileUtils.getFileLocation()+filePath.substring(filePath.indexOf(appFileUtils.getBaseUrl())+appFileUtils.getBaseUrl().length()));
+		OutputStream outputStream = null;
+		try {
+			String filename = file.getName();
+			filename = filename.replaceAll("\\s*", "");//过滤空格，如果有空格浏览器会转换
+			response.reset();  
+		    response.setContentType("application/octet-stream;charset=UTF-8");  	
+		    response.setHeader("Content-disposition", "attachment; filename=" + new String(filename.getBytes("UTF-8"), "ISO8859-1"));
+		    response.setHeader("Content-Length", String.valueOf(file.length()));
+		    outputStream = new BufferedOutputStream(response.getOutputStream());  	    
+		    outputStream.write(FileUtils.readFileToByteArray(file));  
+		    outputStream.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {  
+	        if (outputStream != null) {  
+	        	outputStream.close();  
+	        }  
+	    } 	
 	}
 }

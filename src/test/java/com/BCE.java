@@ -4,7 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
+import com.simbest.cores.exceptions.Exceptions;
+import com.simbest.cores.utils.Constants;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.baidubce.auth.DefaultBceCredentials;
@@ -18,9 +24,9 @@ import com.simbest.cores.utils.AppFileUtils;
 import com.simbest.cores.utils.Encodes;
 
 public class BCE {
-	private static final String ACCESS_KEY_ID = "e46c7e6c281a4d3da7545c685bb5db1c";
-	private static final String SECRET_ACCESS_KEY = "89d1c208bee145f49ca88ef1bbd12302";
-	private static final String BUCKET = "onegymbucket";
+	private static final String ACCESS_KEY_ID = "aee1ca18d56a47c1845227bd335ed0d4";
+	private static final String SECRET_ACCESS_KEY = "10856598e09b4f9a9536c83a10ed6fa8";
+	private static final String BUCKET = "onegym1011";
 
 	public static void main(String[] args) throws IOException {
 	    String ENDPOINT = "http://bj.bcebos.com";
@@ -28,10 +34,14 @@ public class BCE {
 	    config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID, SECRET_ACCESS_KEY));
 	    config.setEndpoint(ENDPOINT);
 	    BosClient client = new BosClient(config);	    
-	    File targetFile = new File("C:/Users/Li/Desktop/onegym/aaa.jpg");
-	    String storePath = "/static/test/";
-	    putObject(client, targetFile, storePath);
-	    deleteObject(client, "http://bj.bcebos.com/v1/onegymbucket/static/test/aaa.jpg");
+//	    File targetFile = new File("C:\\Users\\lenovo\\Desktop\\清华大学MBA.txt");
+//	    String storePath = "/static/test/";
+//	    putObject(client, targetFile, storePath);
+//	    deleteObject(client, "http://bj.bcebos.com/v1/onegymbucket/static/test/aaa.jpg");
+        //上传url文件
+        String fileurl = "http://bj.bcebos.com/v1/onegymbucket/static/uploadFiles/manager1/2015-10-28/e082e0bfc93d40d29b62afd087ee9f88/logo.jpg";
+        String uploadedUrl =uploadFromUrl(client, BUCKET, fileurl, AppFileUtils.getFileBaseName(fileurl), "/static/uploadFiles/");
+        System.out.println("uploadedUrl is: "+uploadedUrl);
 	}
 	
 	public static void putObject(BosClient client,File targetFile, String storePath) throws FileNotFoundException{		
@@ -64,4 +74,41 @@ public class BCE {
 			e.printStackTrace();
 		}
 	}
+
+    public static String uploadFromUrl(BosClient bosClient, String bucket, String fileUrl, String fileName, String storePath){
+        String savePath = null;
+        HttpURLConnection conn = null;
+        try{
+            String urlStr = FilenameUtils.getFullPath(fileUrl)+Encodes.urlEncode(AppFileUtils.getFileName(fileUrl));
+            URL url = new URL(urlStr);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoInput(true);
+            conn.setRequestMethod(Constants.HTTPGET);
+            conn.connect();
+            storePath += fileName+AppFileUtils.getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(conn.getContentLengthLong());
+            meta.setContentType(conn.getContentType());
+            bosClient.putObject(bucket, storePath, conn.getInputStream(), meta);
+            savePath = bosClient.generatePresignedUrl(bucket, storePath, -1).toString()+"&responseContentDisposition=attachment";
+            int index = savePath.indexOf("?authorization");
+            savePath = savePath.substring(0, index);
+            conn.disconnect();
+        } catch(Exception e){
+            if(conn != null){
+                conn.disconnect();
+                conn = null;
+            }
+            savePath = null;
+        }finally{
+            if(conn != null){
+                conn.disconnect();
+                conn = null;
+            }
+        }
+        if(StringUtils.isNotEmpty(savePath)) {
+            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+        }
+        return savePath;
+    }
 }

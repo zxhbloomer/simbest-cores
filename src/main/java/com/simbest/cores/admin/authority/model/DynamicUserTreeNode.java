@@ -15,6 +15,10 @@ public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 3484465213103389831L;
+	/**
+	 * 
+	 */
 	private Integer id;
 	private String title;
 	private Integer pid;

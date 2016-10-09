@@ -140,10 +140,29 @@
 	<update id="update" parameterType="FileUploader">  
 	    update app_file_upload 
 	    <set>
-	      <if test="receiptId != null and receiptId != ''">receiptId=#{receiptId},</if>
-	      <if test="finalName != null and finalName != ''">finalName=#{finalName},</if>
-	      <if test="filePath != null and filePath != ''">filePath=#{filePath},</if>
-	      <if test="receiptCode != null and receiptCode != ''">receiptCode=#{receiptCode},</if>	      
+	      	<if test="description != null and description != ''">description=#{description},</if>
+			<if test="processTypeId  != null">processTypeId =#{processTypeId},</if>
+			<if test="processHeaderId != null">processHeaderId=#{processHeaderId},</if>
+			<if test="receiptCode  != null and receiptCode  != ''">receiptCode =#{receiptCode},</if>
+			<if test="receiptId != null">receiptId=#{receiptId},</if>
+			<if test="fileClass != null and fileClass != ''">fileClass=#{fileClass},</if>
+			<if test="finalName != null and finalName != ''">finalName=#{finalName},</if>
+			<if test="filePath  != null and filePath  != ''">filePath =#{filePath},</if>
+			<if test="fileSize  != null">fileSize =#{fileSize},</if>
+			<if test="orgId  != null">orgId =#{orgId},</if>
+			<if test="attr1  != null and attr1  != ''">attr1 =#{attr1},</if>
+			<if test="attr2  != null and attr2  != ''">attr2 =#{attr2},</if>
+			<if test="attr3  != null and attr3  != ''">attr3 =#{attr3},</if>
+			<if test="enabled   != null">enabled  =#{enabled},</if>
+			<if test="removed  != null">removed =#{removed},</if>
+			<if test="createUserId != null">createUserId=#{createUserId},</if>
+			<if test="createUserCode  != null and createUserCode  != ''">createUserCode =#{createUserCode},</if>
+			<if test="createUserName != null and createUserName != ''">createUserName=#{createUserName},</if>
+			<if test="createDate  != null">createDate =#{createDate},</if>
+			<if test="updateUserId   != null">updateUserId  =#{updateUserId},</if>
+			<if test="updateUserCode != null and updateUserCode != ''">updateUserCode=#{updateUserCode},</if>
+			<if test="updateUserName != null and updateUserName != ''">updateUserName=#{updateUserName},</if>
+			<if test="updateDate  != null">updateDate =#{updateDate },</if>
 	    </set>
 	    where id=#{id} 
 	</update> 

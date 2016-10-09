@@ -12,6 +12,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -256,9 +257,94 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 		return map;
 	}
 	
-	@RequestMapping(value = "/dowanloadSourceFile", method = RequestMethod.POST)
-	public void dowanloadSourceFile(@RequestParam("filePath") String filePath, HttpServletResponse response) throws IOException {
-		filePath = URLDecoder.decode(filePath, "UTF-8");
+	
+	/**
+	 * 上传文件入口（单个文件）[存储文件，并保存文件记录]
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */	
+	@RequestMapping(value = "uploadFileAndSaveRecord", method = RequestMethod.POST)
+	public void uploadFileAndSaveRecord(HttpServletRequest request, HttpServletResponse response) throws Exception{  
+		response.setContentType("text/html; charset=UTF-8");
+		response.setCharacterEncoding("UTF-8"); 
+		PrintWriter out = response.getWriter();
+		ShiroUser user = appUserSession.getCurrentUser();
+		MultipartFile file = null;
+		String storePath = null;
+		String filename = null;
+		if(StringUtils.isNotEmpty(request.getParameter("imageurl"))){ // 美图秀秀第二次返回剪裁
+			log.debug("imageurl is not null ---------------------"+request.getParameter("imageurl"));
+			filename = StringUtils.substringAfterLast(request.getParameter("imageurl"), "/");
+			switch(location){
+				case Cloud:				
+					storePath = request.getParameter("imageurl");
+			    	storePath = StringUtils.substringAfter(storePath, coreConfig.getValue("bae.bcs.bucket")); //截获bucket以后字符串
+			    	storePath = StringUtils.substringBeforeLast(storePath, "/"); //去掉文件名
+			    	storePath += "/"; //补全路径
+					break;
+				case Disk:			
+					storePath = request.getParameter("imageurl");
+			    	storePath = StringUtils.substringAfter(storePath, "/"+coreConfig.getCtx()); //截获项目名以后字符串
+			    	storePath = StringUtils.substringBeforeLast(storePath, "/"); //去掉文件名
+			    	storePath += "/"; //补全路径
+					break;
+				default:
+					break;
+			}
+		}else{
+			log.debug("imageurl is null ......................"); // 第一次上传文件
+			storePath = "/static/uploadFiles/"+user.getLoginName()+"/"+DateUtil.getToday()+"/"+AppCodeGenerator.nextSystemUUID()+"/";			
+		}
+		MultipartHttpServletRequest mureq = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> files = mureq.getFileMap(); 
+		if (files != null && files.size() != 0) { 
+			for(String key : files.keySet()) {
+		    	file=files.get(key);
+		    	if(StringUtils.isEmpty(request.getParameter("imageurl"))){
+		    		filename = file.getOriginalFilename();
+		    	}
+		    	break;
+	    	}
+			log.debug("storePath is: "+storePath);
+			String savePath = appFileUtils.uploadFromClient(file, filename, storePath);
+			if(!StringUtils.isEmpty(savePath)){	
+				try {
+					
+					FileUploader fUploader = new FileUploader();
+					fUploader.setFilePath(savePath);
+					fUploader.setOrgId(user.getOrgId());
+					fUploader.setCreateUserId(user.getUserId());
+					fUploader.setCreateUserCode(user.getUserCode());
+					fUploader.setCreateUserName(user.getUserName());
+					fUploader.setCreateDate(DateUtil.getCurrent());
+					fUploader.setFileClass(UUID.randomUUID().toString()+"-"+DateUtil.getDate(fUploader.getCreateDate(), DateUtil.timestampPattern1));
+					fUploader.setFinalName(filename);
+					int ret = fileUploaderService.create(fUploader);
+					log.debug(ret);
+					
+					
+					out.println("<script type=\"text/javascript\">parent.imageupload=\"" + savePath +
+							"\";parent.imageOtherInfo={\"filename\":\"" + file.getOriginalFilename() + "\",\"id\":\"" + fUploader.getId() + "\"}</script>"); 
+				} catch (Exception e) {
+					out.println("<script type=\"text/javascript\">parent.imageMessage=\"系统异常\";</script>");
+					out.close();
+				}
+
+			}else{
+				out.println("<script type=\"text/javascript\">parent.imageMessage=\"系统异常\";</script>");
+				out.close();
+			}
+		}else{
+			out.println("<script type=\"text/javascript\">parent.imageMessage=\"未有文件提交上传\";</script>");
+			out.close();
+		}
+	} 
+	
+	@RequestMapping(value = "/dowanloadSourceFile", method = RequestMethod.GET)
+	public void dowanloadSourceFile(Long id, HttpServletResponse response) throws IOException {
+		FileUploader fUploader = fileUploaderService.getById(id);
+		String filePath = fUploader.getFilePath();
 		File file = new File(appFileUtils.getFileLocation()+filePath.substring(filePath.indexOf(appFileUtils.getBaseUrl())+appFileUtils.getBaseUrl().length()));
 		OutputStream outputStream = null;
 		try {

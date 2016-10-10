@@ -342,17 +342,25 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	} 
 	
 	@RequestMapping(value = "/dowanloadSourceFile", method = RequestMethod.GET)
-	public void dowanloadSourceFile(Long id, HttpServletResponse response) throws IOException {
+	public void dowanloadSourceFile(Long id,HttpServletRequest request, HttpServletResponse response) throws IOException {
 		FileUploader fUploader = fileUploaderService.getById(id);
 		String filePath = fUploader.getFilePath();
 		File file = new File(appFileUtils.getFileLocation()+filePath.substring(filePath.indexOf(appFileUtils.getBaseUrl())+appFileUtils.getBaseUrl().length()));
 		OutputStream outputStream = null;
 		try {
 			String filename = file.getName();
-			filename = filename.replaceAll("\\s*", "");//过滤空格，如果有空格浏览器会转换
 			response.reset();  
+			if (request.getHeader( "USER-AGENT" ).toLowerCase().indexOf( "msie" ) >  0 )//ie浏览器空格处理
+            {
+				filename = URLEncoder.encode(filename, "utf-8");
+				filename = filename.replace("+", "%20");// 处理空格变“+”的问题
+				response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            }
+            else
+            {
+                response.setHeader("content-disposition", "attachment;filename=\"" +  new String(filename.getBytes("UTF-8"), "ISO8859-1") + "\"");//其他浏览器空格处理
+            } 
 		    response.setContentType("application/octet-stream;charset=UTF-8");  	
-		    response.setHeader("Content-disposition", "attachment; filename=" + new String(filename.getBytes("UTF-8"), "ISO8859-1"));
 		    response.setHeader("Content-Length", String.valueOf(file.length()));
 		    outputStream = new BufferedOutputStream(response.getOutputStream());  	    
 		    outputStream.write(FileUtils.readFileToByteArray(file));  

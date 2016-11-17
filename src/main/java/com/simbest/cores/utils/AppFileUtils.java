@@ -9,8 +9,10 @@ import com.baidubce.services.bos.BosClientConfiguration;
 import com.baidubce.services.bos.model.*;
 import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.utils.configs.CoreConfig;
+
 import net.mikesu.fastdfs.FastdfsClient;
 import net.mikesu.fastdfs.FastdfsClientFactory;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +31,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -155,6 +158,24 @@ public class AppFileUtils {
             if (conn != null) {
                 conn.disconnect();
             }
+        }
+        return targetFile;
+    }
+    
+    public File downloadFromCloud(String object, String fileName, String storePath) {
+        File targetFile = null;
+        try {
+        	String savePath = getFileLocation() + storePath + fileName;
+        	targetFile = new File(savePath);
+        	if(object.startsWith("http")){
+        		int index = object.indexOf(bucket);
+        		object = object.substring(index+bucket.length(), object.length());
+        	}
+        	GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, object);
+        	bosClient.getObject(getObjectRequest, targetFile);
+        	
+        } catch (Exception e) {
+            
         }
         return targetFile;
     }

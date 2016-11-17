@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +38,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.baidubce.services.bos.BosClient;
+import com.baidubce.services.bos.model.GetObjectRequest;
+import com.baidubce.services.bos.model.ObjectMetadata;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.simbest.cores.admin.authority.model.ShiroUser;
 import com.simbest.cores.app.model.FileUploader;
 import com.simbest.cores.app.service.IFileUploaderService;
+import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.exceptions.InvalidateSNSUserException;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.AppCodeGenerator;
 import com.simbest.cores.utils.AppFileUtils;
 import com.simbest.cores.utils.AppFileUtils.StoreLocation;
+import com.simbest.cores.utils.Constants;
 import com.simbest.cores.utils.DateUtil;
 import com.simbest.cores.utils.Digests;
 import com.simbest.cores.utils.Encodes;
@@ -343,9 +351,27 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	
 	@RequestMapping(value = "/dowanloadSourceFile", method = RequestMethod.GET)
 	public void dowanloadSourceFile(Long id,HttpServletRequest request, HttpServletResponse response) throws IOException {
+		ShiroUser user = appUserSession.getCurrentUser();
 		FileUploader fUploader = fileUploaderService.getById(id);
 		String filePath = fUploader.getFilePath();
-		File file = new File(appFileUtils.getFileLocation()+filePath.substring(filePath.indexOf(appFileUtils.getBaseUrl())+appFileUtils.getBaseUrl().length()));
+		String savePath = "/tempDownOrExport/"+user.getLoginName()+"/"+DateUtil.getToday()+"/";
+		File file = null;
+        switch (location) {
+            case Cloud:
+            	
+            	file = appFileUtils.downloadFromCloud(fUploader.getFilePath(),fUploader.getFinalName(),savePath);
+                break;
+            case Disk:
+            	file = new File(appFileUtils.getFileLocation()+filePath.substring(filePath.indexOf(appFileUtils.getBaseUrl())+appFileUtils.getBaseUrl().length()));
+                break;
+            case FastDFS:
+            	String fileUrl = coreConfig.getValue("fastdfsClient")+filePath;
+            	file = appFileUtils.downloadFromUrl(fileUrl, fUploader.getFinalName(), savePath);
+                break;
+            default:
+                break;
+        }
+		
 		OutputStream outputStream = null;
 		try {
 			String filename = file.getName();

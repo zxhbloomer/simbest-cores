@@ -310,7 +310,8 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 			for(String key : files.keySet()) {
 		    	file=files.get(key);
 		    	if(StringUtils.isEmpty(request.getParameter("imageurl"))){
-		    		filename = file.getOriginalFilename();
+		    		String  suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."), file.getOriginalFilename().length());
+		    		filename = AppCodeGenerator.nextSystemUUID()+suffix;
 		    	}
 		    	break;
 	    	}
@@ -327,7 +328,7 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 					fUploader.setCreateUserName(user.getUserName());
 					fUploader.setCreateDate(DateUtil.getCurrent());
 					fUploader.setFileClass(UUID.randomUUID().toString()+"-"+DateUtil.getDate(fUploader.getCreateDate(), DateUtil.timestampPattern1));
-					fUploader.setFinalName(filename);
+					fUploader.setFinalName(file.getOriginalFilename());
 					int ret = fileUploaderService.create(fUploader);
 					log.debug(ret);
 					
@@ -374,7 +375,7 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 		
 		OutputStream outputStream = null;
 		try {
-			String filename = file.getName();
+			String filename = fUploader.getFinalName();
 			response.reset();  
 			if (request.getHeader( "USER-AGENT" ).toLowerCase().indexOf( "msie" ) >  0 )//ie浏览器空格处理
             {

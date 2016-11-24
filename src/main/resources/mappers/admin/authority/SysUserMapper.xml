@@ -226,7 +226,7 @@
             and u.alipayCode = #{alipayCode}
         </if> 
         <if test="position != null and position !=''">
-            and u.position = #{position}
+            and u.position like "%"#{position}"%"
         </if>
         <if test="ownerOrgId != null and ownerOrgId !=''">
             and u.ownerOrgId = #{ownerOrgId}
@@ -298,7 +298,7 @@
             and u.alipayCode = #{alipayCode}
         </if> 
         <if test="position != null and position !=''">
-            and u.position = #{position}
+            and u.position like "%"#{position}"%"
         </if>
         <if test="ownerOrgId != null and ownerOrgId !=''">
             and u.ownerOrgId = #{ownerOrgId}

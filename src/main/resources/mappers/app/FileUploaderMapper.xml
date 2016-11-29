@@ -36,10 +36,10 @@
         <result column="processStepName" property="processStepName" />                             	
     </resultMap>
 	
-	<select id='getById' parameterType='Long' resultMap="FileUploaderResult">
+	<select id='getById' parameterType='Long' resultMap="FileUploaderResult" flushCache="true">
      	select * from app_file_upload where id = #{id}
 	</select>	
-	<select id="getAll" resultMap="FileUploaderResult">
+	<select id="getAll" resultMap="FileUploaderResult" flushCache="true">
         select * from app_file_upload where removed=0 and enabled=1
 		<if test="processTypeId != null">
             and processTypeId = #{processTypeId}
@@ -76,7 +76,7 @@
         </if>
     </select>
            
-	<insert id="create" parameterType="FileUploader" useGeneratedKeys="true" keyProperty="id" > 
+	<insert id="create" parameterType="FileUploader" useGeneratedKeys="true" keyProperty="id" flushCache="true"> 
         INSERT INTO app_file_upload (description,processTypeId,processHeaderId,receiptCode,receiptId,fileClass,finalName,filePath,fileSize,orgId,attr1,attr2,attr3,createUserId,createUserCode,createUserName,createDate,updateUserId,updateUserCode,updateUserName,updateDate) 
         values (#{description},#{processTypeId},#{processHeaderId},#{receiptCode},#{receiptId},#{fileClass},#{finalName},#{filePath},#{fileSize},#{orgId},#{attr1},#{attr2},#{attr3},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{updateUserId},#{updateUserCode},#{updateUserName},#{updateDate})
         ON DUPLICATE KEY UPDATE updateDate=#{createDate},description=#{description},finalName=#{finalName},filePath=#{filePath},fileSize=#{fileSize},attr1=#{attr1},attr2=#{attr2},attr3=#{attr3},removed=0,enabled=1
@@ -137,7 +137,7 @@
     </delete> 
      
     <!-- 仅供档案性流程置换流程receiptId -->
-	<update id="update" parameterType="FileUploader">  
+	<update id="update" parameterType="FileUploader" flushCache="true">  
 	    update app_file_upload 
 	    <set>
 	      	<if test="description != null and description != ''">description=#{description},</if>

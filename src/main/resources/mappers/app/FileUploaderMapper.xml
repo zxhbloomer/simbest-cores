@@ -36,7 +36,7 @@
         <result column="processStepName" property="processStepName" />                             	
     </resultMap>
 	
-	<select id='getById' parameterType='Long' resultMap="FileUploaderResult" flushCache="true">
+	<select id='getById' parameterType='Long' resultMap="FileUploaderResult">
      	select * from app_file_upload where id = #{id}
 	</select>	
 	<select id="getAll" resultMap="FileUploaderResult" flushCache="true">

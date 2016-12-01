@@ -3,6 +3,8 @@
  */
 package com.simbest.cores.admin.task.distributed;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,15 +16,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MyJob extends DistributedJobExecutor{
+    protected transient final Log log = LogFactory.getLog(getClass());
 
     @Autowired
     private DistributedMasterUtil masterUtil;
 
-    @Scheduled(cron = "0/1 * * * * ?")
+    @Scheduled(cron = "0/5 * * * * ?")
     @Override
     public void execute() {
         if(checkMasterIsMe()) {
-            System.out.println(masterUtil.getServerIP() + ":" + masterUtil.getServerPort() + " running jog------");
+            log.trace(masterUtil.getServerIP() + ":" + masterUtil.getServerPort() + " is running jog------");
         }
     }
 }

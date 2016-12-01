@@ -21,12 +21,8 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.Set;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,10 +53,18 @@ public class DistributedMasterUtil {
     }
 
     public boolean checkMasterIsMe() {
+        log.trace("Host ip: "+getServerIP());
+        log.trace("Master ip: "+jedis.get("clusert_master_ip"));
+        log.trace("Host port: "+getServerPort());
+        log.trace("Master port: "+jedis.get("clusert_master_port"));
+        log.trace("Check result: "+ (getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().equals(jedis.get("clusert_master_port"))));
         return getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().equals(jedis.get("clusert_master_port"));
     }
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    /**
+     * 每隔五分钟调用的表达式为： "0 0/5 * * * ?" 参考 TaskTriggerDefinition
+     */
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void becameMasertIfNotExist() {
         RedisReentrantLock lock = new RedisReentrantLock(jedisPool, "lock_clusert_master");
         try {
@@ -73,20 +77,20 @@ public class DistributedMasterUtil {
                 if (StringUtils.isEmpty(masterIp)) {       //1.没有Master
                     jedis.set("clusert_master_ip", myIp);   //设置我为Master
                     jedis.set("clusert_master_port", myPort);
-                    log.debug(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
+                    log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                 } else {
                     boolean masterIsAvailable = heartTest(masterIp, Integer.valueOf(masterPort));
                     if (!masterIsAvailable) {              //2.Master不可用
                         jedis.set("clusert_master_ip", myIp);   //设置我为Master
                         jedis.set("clusert_master_port", myPort);
-                        log.debug(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
+                        log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                     } else {
-                        log.debug(String.format("Master is already at IP: %s on port %s ...", masterIp, masterPort));
+                        log.trace(String.format("Master is already at IP: %s on port %s ...", masterIp, masterPort));
                     }
                 }
             } else {
                 //TODO 获得锁超时后要做的事
-                log.debug("I couldn't get the redis lock...");
+                log.trace("I couldn't get the redis lock...");
             }
 
         } catch (Exception e) {
@@ -98,11 +102,29 @@ public class DistributedMasterUtil {
 
     }
 
-    public String getServerIP() {
+    private static List<Inet4Address> getInet4Addresses() throws SocketException {
+        List<Inet4Address> ret = new ArrayList();
+        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface netint : Collections.list(nets)) {
+            Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+            for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+                if (inetAddress instanceof Inet4Address && !inetAddress.isLoopbackAddress()) {
+                    ret.add((Inet4Address)inetAddress);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    public static String getServerIP() {
+        List<Inet4Address> inet4;
         try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            Exceptions.printException(e);
+            inet4 = getInet4Addresses();
+            return !inet4.isEmpty()
+                    ? inet4.get(0).getHostAddress()
+                    : "";
+        } catch (SocketException e) {
         }
         return "";
     }
@@ -165,10 +187,8 @@ public class DistributedMasterUtil {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         DistributedMasterUtil a = new DistributedMasterUtil();
-        System.out.println(a.heartTest("10.92.82.35", 8088));
-        System.out.println(a.heartTest("10.92.82.35", 3306));
-        System.out.println(a.heartTest("10.92.82.35", 80));
+
     }
 }

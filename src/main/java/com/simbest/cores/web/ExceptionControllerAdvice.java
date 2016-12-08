@@ -78,7 +78,29 @@ public class ExceptionControllerAdvice {
 		response.setResponseid(0);
 		return response;
 	}
-	
+
+    @ExceptionHandler(CodeLengthOutOfLimitException.class)
+    @ResponseBody
+    public JsonResponse codeLengthOutOfLimitException(HttpServletRequest request, CodeLengthOutOfLimitException e) {
+        log.error(request.getRequestURI());
+        Exceptions.printException(e);
+        JsonResponse response = new JsonResponse();
+        response.setMessage("流程编号长度越界！");
+        response.setResponseid(0);
+        return response;
+    }
+
+    @ExceptionHandler(CodePersistFailedException.class)
+    @ResponseBody
+    public JsonResponse codePersistFailedException(HttpServletRequest request, CodePersistFailedException e) {
+        log.error(request.getRequestURI());
+        Exceptions.printException(e);
+        JsonResponse response = new JsonResponse();
+        response.setMessage("流程编号持久化失败！");
+        response.setResponseid(0);
+        return response;
+    }
+
     @ExceptionHandler({ProcessUnavailableException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody

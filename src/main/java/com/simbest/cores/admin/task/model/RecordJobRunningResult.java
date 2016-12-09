@@ -5,11 +5,7 @@ package com.simbest.cores.admin.task.model;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
@@ -29,7 +25,8 @@ public class RecordJobRunningResult extends GenericModel<RecordJobRunningResult>
 	private static final long serialVersionUID = -7465124274626826203L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="sys_task_record_job_run_seq", sequenceName="sys_task_record_job_run_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_task_record_job_run_seq")
 	private Long id;
 	
 	private String jobName;

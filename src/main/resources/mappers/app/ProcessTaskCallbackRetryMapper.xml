@@ -20,7 +20,7 @@
     </resultMap>
 	
 	<select id="getAll" resultMap="ProcessTaskCallbackRetryResult">
-         SELECT * FROM app_process_task_callback_retry WHERE executeTimes &lt; 5
+         SELECT * FROM app_process_task_callbackretry WHERE executeTimes &lt; 5
         <!--
         <where>
             <if test="executeTimes != null and executeTimes !=''">
@@ -31,16 +31,16 @@
     </select>
 
 	<insert id="create" parameterType="ProcessTaskCallbackRetry" useGeneratedKeys="true" keyProperty="id" > 
-        insert into app_process_task_callback_retry (processServiceClass,lastExecuteDate,executeTimes,taskId,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
+        insert into app_process_task_callbackretry (processServiceClass,lastExecuteDate,executeTimes,taskId,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
         values (#{processServiceClass},#{lastExecuteDate},#{executeTimes},#{taskId},#{typeId},#{headerId},#{receiptId},#{stepId},#{currentUserId},#{callbackType})
     </insert>
 
     <update id="update" parameterType="ProcessTaskCallbackRetry" flushCache="true" statementType="PREPARED">
-        UPDATE app_process_task_callback_retry SET executeTimes=executeTimes+1,lastExecuteDate=#{lastExecuteDate} WHERE id = #{id}
+        UPDATE app_process_task_callbackretry SET executeTimes=executeTimes+1,lastExecuteDate=#{lastExecuteDate} WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="ProcessTaskCallbackRetry" flushCache="true" statementType="PREPARED">
-        DELETE FROM app_process_task_callback_retry WHERE id = #{id}
+        DELETE FROM app_process_task_callbackretry WHERE id = #{id}
     </delete>
 
 </mapper>

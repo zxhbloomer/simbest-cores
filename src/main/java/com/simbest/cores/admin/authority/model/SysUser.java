@@ -42,12 +42,13 @@ public class SysUser extends LogicModel<SysUser> {
 
 	@Id
 	@Column(name="id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+    @SequenceGenerator(name="sys_user_seq", sequenceName="sys_user_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_user_seq")
 	private Integer id;
 	
 	@NotNullColumn(value="登录标识")
-	@Column(name="loginName", length=100, nullable=true, unique=true)
-	@Unique //Redis 缓存唯一标识
+    @Column(nullable = true, length = 100)
+    @Unique //Redis 缓存唯一标识
 	private String loginName;
 	
 	@ExcelVOAttribute(name = "用户姓名", column = "A")
@@ -162,7 +163,7 @@ public class SysUser extends LogicModel<SysUser> {
 	private String accesstoken;
 	
 	//0 会员级用户， 1 系统级用户， 2管理端用户（如俱乐部）
-	@Column(name="userType", nullable=true, columnDefinition="TINYINT default 0")
+	@Column(name="userType", nullable=true, columnDefinition="int default 0")
 	private Integer userType;
 	
 	//用户级别(扩展)

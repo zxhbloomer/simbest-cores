@@ -1,11 +1,6 @@
 package com.simbest.cores.app.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.simbest.cores.model.GenericModel;
@@ -30,7 +25,8 @@ public class ProcessType extends GenericModel<ProcessType> {
 
 	@Id
 	@Column(name = "typeId")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_process_type_seq", sequenceName="app_process_type_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_type_seq")
 	private Integer typeId;
 
 	@NotNullColumn(value="流程类型编码")

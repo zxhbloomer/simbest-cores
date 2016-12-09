@@ -2,12 +2,7 @@ package com.simbest.cores.admin.syslog.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.BaseObject;
@@ -27,8 +22,9 @@ public class SysLoginInfo extends BaseObject<SysLoginInfo> {
 	 * @mbggenerated Mon Aug 18 00:48:04 CST 2014
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
+    @SequenceGenerator(name="sys_logininfo_seq", sequenceName="sys_logininfo_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_logininfo_seq")
 	private Long id;
 
 	/**

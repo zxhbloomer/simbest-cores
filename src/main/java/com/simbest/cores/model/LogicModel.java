@@ -9,11 +9,11 @@ import com.simbest.cores.utils.annotations.ProcessProperty;
 public abstract class LogicModel<T> extends SystemModel<T>{
     private static final long serialVersionUID = 8604271441269463749L;
 	
-	@Column(name = "enabled", nullable = false, columnDefinition = "TINYINT default 1")
+	@Column(name = "enabled", nullable = false, columnDefinition = "int default 1")
 	@ProcessProperty
 	protected Boolean enabled;
 	
-	@Column(name = "removed", nullable = false, columnDefinition = "TINYINT default 0")
+	@Column(name = "removed", nullable = false, columnDefinition = "int default 0")
 	@ProcessProperty
 	protected Boolean removed;
 	

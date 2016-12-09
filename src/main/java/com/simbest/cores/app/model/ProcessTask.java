@@ -25,7 +25,8 @@ public class ProcessTask extends GenericModel<ProcessTask> {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_process_task_seq", sequenceName="app_process_task_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_task_seq")
 	private Long id;
 	
 	@Column(name = "title")

@@ -3,16 +3,7 @@
  */
 package com.simbest.cores.app.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.simbest.cores.model.GenericModel;
@@ -37,7 +28,8 @@ public class ProcessStepCondition extends GenericModel<ProcessStepCondition>{
 	
 	@Id
 	@Column(name = "conditionId")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_condition_seq", sequenceName="app_condition_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_condition_seq")
 	@JsonIgnore
 	private Integer conditionId;
 	

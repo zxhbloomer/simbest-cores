@@ -2,16 +2,7 @@ package com.simbest.cores.app.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -37,7 +28,8 @@ public class ProcessAuditLog extends GenericModel<ProcessAuditLog> {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_process_audit_log_seq", sequenceName="app_process_audit_log_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_audit_log_seq")
 	private Long id;
 	
 	@NotNullColumn(value="处理人部门信息")

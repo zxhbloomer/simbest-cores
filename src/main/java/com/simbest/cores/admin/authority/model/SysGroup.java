@@ -16,10 +16,11 @@ public class SysGroup extends GenericModel<SysGroup> {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @SequenceGenerator(name="sys_group_seq", sequenceName="sys_group_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_group_seq")
     private Integer id;
 
-    @Column(name = "name", nullable = false, unique = true, length = 100)
+    @Column(nullable = false, length = 100)
     @Unique
     private String name;
 

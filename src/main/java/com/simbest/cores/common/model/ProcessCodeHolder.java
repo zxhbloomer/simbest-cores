@@ -18,7 +18,8 @@ public class ProcessCodeHolder extends GenericModel<ProcessCodeHolder> {
     private static final long serialVersionUID = -8026825782285229459L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="sys_process_code_holder_seq", sequenceName="sys_process_code_holder_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_process_code_holder_seq")
     private Long id;
 
     private String prefix; //流程前缀

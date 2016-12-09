@@ -3,16 +3,7 @@ package com.simbest.cores.admin.authority.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.baidubce.util.JsonUtils;
 import com.simbest.cores.model.SystemModel;
@@ -30,7 +21,8 @@ public class SysRole extends SystemModel<SysRole> {
 	private static final long serialVersionUID = 3690197650654049848L;
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="sys_role_seq", sequenceName="sys_role_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_role_seq")
 	private Integer id;
 	
 	@NotNullColumn(value="角色编码")

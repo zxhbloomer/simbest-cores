@@ -1,17 +1,6 @@
 package com.simbest.cores.app.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,7 +26,8 @@ public class ProcessAudit extends GenericModel<ProcessAudit> {
 
 	@Id
 	@Column(name = "auditId")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_process_audit_seq", sequenceName="app_process_audit_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_audit_seq")
 	private Integer auditId;
 		
 	@Column(name = "submitUserId", nullable = true, length = 100) //根据发起人，确定审批配置后，先加载审批对象给前端用户进行选择，然后再根据选择结果触发待办（若为空，再判断组织）

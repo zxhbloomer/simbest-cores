@@ -2,15 +2,7 @@ package com.simbest.cores.app.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,7 +26,8 @@ public class ProcessAgent extends GenericModel<ProcessAgent> {
 
 	@Id
 	@Column(name = "agentId")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_process_agent_seq", sequenceName="app_process_agent_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_agent_seq")
 	private Integer agentId;
 	
 	@NotNullColumn(value="业务类型")
@@ -70,7 +63,7 @@ public class ProcessAgent extends GenericModel<ProcessAgent> {
 	@Column(name = "expires", nullable = true)
 	private Integer expires;
 	
-	@Column(name = "valid", nullable = false, columnDefinition = "TINYINT default 1")
+	@Column(name = "valid", nullable = false, columnDefinition = "int default 1")
 	private Boolean valid;
 	
 	public ProcessAgent() {

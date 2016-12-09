@@ -22,7 +22,8 @@ public class SysOrg extends SystemModel<SysOrg> {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="sys_org_seq", sequenceName="sys_org_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_org_seq")
 	private Integer id;
 	
 	@ExcelVOAttribute(name = "组织全路径", column = "D")

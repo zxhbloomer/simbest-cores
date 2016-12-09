@@ -1,13 +1,6 @@
 package com.simbest.cores.app.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 import com.simbest.cores.model.LogicModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
@@ -29,7 +22,8 @@ public class FileUploader extends LogicModel<FileUploader> {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_file_upload_seq", sequenceName="app_file_upload_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_file_upload_seq")
 	private Long id;
 
 	@Column(name = "description", length = 200)

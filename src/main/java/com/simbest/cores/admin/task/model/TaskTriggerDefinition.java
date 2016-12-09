@@ -3,12 +3,7 @@ package com.simbest.cores.admin.task.model;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.Unique;
@@ -67,7 +62,8 @@ public class TaskTriggerDefinition extends GenericModel<TaskTriggerDefinition> {
 	private static final long serialVersionUID = 1670896687189702800L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="sys_task_trigger_def_seq", sequenceName="sys_task_trigger_def_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_task_trigger_def_seq")
 	private Integer id;
 
 	@Column(length = 100, nullable = false, unique = true)

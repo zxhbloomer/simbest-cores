@@ -14,7 +14,7 @@ import java.util.Date;
  *
  */
 @Entity
-@Table(name = "app_process_task_callback_retry")
+@Table(name = "app_process_task_callbackretry")
 public class ProcessTaskCallbackRetry extends GenericModel<ProcessTaskCallbackRetry>{
 
 
@@ -22,7 +22,8 @@ public class ProcessTaskCallbackRetry extends GenericModel<ProcessTaskCallbackRe
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_callback_retry_seq", sequenceName="app_callback_retry_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_callback_retry_seq")
     private Integer id;
 
     @Column(name = "processServiceClass", nullable = false)

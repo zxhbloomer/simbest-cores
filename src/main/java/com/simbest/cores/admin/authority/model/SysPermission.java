@@ -1,15 +1,6 @@
 package com.simbest.cores.admin.authority.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.simbest.cores.model.SystemModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
@@ -29,7 +20,8 @@ public class SysPermission extends SystemModel<SysPermission> {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="sys_permission_seq", sequenceName="sys_permission_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_permission_seq")
 	private Integer id;
 
 	@NotNullColumn(value="资源描述")

@@ -3,14 +3,7 @@ package com.simbest.cores.app.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.simbest.cores.model.GenericModel;
@@ -35,7 +28,8 @@ public class ProcessHeader extends GenericModel<ProcessHeader> {
 
 	@Id
 	@Column(name = "headerId")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_process_header_seq", sequenceName="app_process_header_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_header_seq")
 	private Integer headerId;
 
 	@NotNullColumn(value="流程编码")
@@ -55,7 +49,7 @@ public class ProcessHeader extends GenericModel<ProcessHeader> {
 	@OneToMany(mappedBy = "header")
 	private List<ProcessStep> steps = new ArrayList<ProcessStep>();
 	
-	@Column(name = "enabled", nullable = false, columnDefinition = "TINYINT default 1")
+	@Column(name = "enabled", nullable = false, columnDefinition = "int default 1")
 	private Boolean enabled;
 	
 	@Column(name = "hversion", nullable = false)

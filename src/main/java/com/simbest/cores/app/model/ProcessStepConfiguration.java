@@ -5,19 +5,7 @@ package com.simbest.cores.app.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.simbest.cores.model.GenericModel;
@@ -49,7 +37,8 @@ public class ProcessStepConfiguration extends GenericModel<ProcessStepConfigurat
 
 	@Id
 	@Column(name = "configurationId")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_configuration_seq", sequenceName="app_configuration_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_configuration_seq")
 	@JsonIgnore
 	private Integer configurationId;
 

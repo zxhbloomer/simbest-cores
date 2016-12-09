@@ -2,12 +2,7 @@ package com.simbest.cores.admin.syslog.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.BaseObject;
@@ -19,8 +14,9 @@ public class SysOperateInfo extends BaseObject<SysOperateInfo> {
 	private static final long serialVersionUID = -3874521401642957554L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
+    @SequenceGenerator(name="sys_operate_info_seq", sequenceName="sys_operate_info_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_operate_info_seq")
 	private Long id;
 	@Column(name = "client_ip")
 	private String clientIp;

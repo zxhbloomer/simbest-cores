@@ -23,7 +23,8 @@ public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog>
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name="app_callback_log_seq", sequenceName="app_callback_log_seq")
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="app_callback_log_seq")
     private Integer id;
 
     private Long taskId;
@@ -42,7 +43,7 @@ public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog>
     @Column(name = "callbackDuration", nullable = false)
     private Long callbackDuration;
 
-    @Column(name = "callbackResult", nullable = false, columnDefinition = "TINYINT default 1")
+    @Column(name = "callbackResult", nullable = false, columnDefinition = "int default 1")
     protected Boolean callbackResult;
 
     @Column(name = "callbackError", nullable = true, length = 2000)

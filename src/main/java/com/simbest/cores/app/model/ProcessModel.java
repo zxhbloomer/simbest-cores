@@ -35,7 +35,7 @@ public class ProcessModel<T> extends LogicModel<T> {
 	protected Long id;
 	
 	@NotNullColumn(value="是否为草稿")
-	@Column(name = "iscg", nullable = false, columnDefinition = "TINYINT default 0")
+	@Column(name = "iscg", nullable = false, columnDefinition = "int default 0")
 	@ProcessProperty
 	protected Boolean iscg;
 	

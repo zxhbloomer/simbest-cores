@@ -722,6 +722,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         int ret = super.create(u);
         if(ret > 0) {
             sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
+            clearCacheHolder();
         }
         log.debug(ret);
         return ret;
@@ -737,6 +738,37 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             for(SysUser u:os){
                 sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
             }
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int update(SysUser o) {
+        int ret = super.update(o);
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int update(Map<String, Object> params) {
+        int ret = super.update(params);
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
+    }
+
+    @Override
+    public int batchUpdate(Collection<SysUser> os) {
+        int ret = super.batchUpdate(os);
+        if(ret > 0){
+            clearCacheHolder();
         }
         log.debug(ret);
         return ret;
@@ -747,6 +779,9 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         int ret = super.delete(id);
         if(ret > 0) {
             sysUserSearch.removeFromIndex(id);
+        }
+        if(ret > 0){
+            clearCacheHolder();
         }
         log.debug(ret);
         return ret;
@@ -760,6 +795,9 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             Collection<Integer> ids = ObjectUtil.getIdVaueList(os);
             sysUserSearch.removeAllFromIndex(ids);
         }
+        if(ret > 0){
+            clearCacheHolder();
+        }
         log.debug(ret);
         return ret;
     }
@@ -769,6 +807,9 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         int ret = super.batchDelete(ids);
         if(ret > 0) {
             sysUserSearch.removeAllFromIndex(ids);
+        }
+        if(ret > 0){
+            clearCacheHolder();
         }
         log.debug(ret);
         return ret;
@@ -781,6 +822,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         if(ret > 0){
             sysUserSearch.removeAllFromIndex(ids);
         }
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
         return ret;
     }
 
@@ -792,8 +837,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             saveOrUpdate(u);
             sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
         }
-		log.debug(ret);
-		return ret;
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
 	}
 	
 	@Override
@@ -804,8 +852,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             saveOrUpdate(u);
             sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
         }
-		log.debug(ret);
-		return ret;
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
 	}
 
 	@Override
@@ -815,8 +866,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             saveOrUpdate(u);
             sysUserSearch.createToIndex(u, sysOrgAdvanceService.getHierarchyOrgs(u.getSysOrg().getId()));
         }
-		log.debug(ret);
-		return ret;
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
 	}
 	
 	@Override
@@ -825,7 +879,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         if(ret > 0) {
             removeValue(u.getId());
         }
-		return ret;
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
 	}
 	
 	@Override
@@ -835,7 +893,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             log.debug("forceDelete userId:" + userId);
             removeValue(userId);
         }
-		return ret;
+        if(ret > 0){
+            clearCacheHolder();
+        }
+        log.debug(ret);
+        return ret;
 	}
 
 	/**
@@ -875,7 +937,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 			sysUser.setNickname(StringUtil.filterEmoji(sysUser.getNickname()));
 			sysUser.setSignature(StringUtil.filterEmoji(sysUser.getSignature()));
 			ret = updateViaAdmin(sysUser);
-			log.debug(ret);
+            if(ret > 0){
+                clearCacheHolder();
+            }
+            log.debug(ret);
 			SNSAuthenticationToken snsToken = new SNSAuthenticationToken(sysUser.getOpenid(), SNSLoginType.weixin);
 			SecurityUtils.getSubject().login(snsToken);	
 			map.put("message", "绑定成功!");
@@ -912,8 +977,11 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 				backendUser.setUsername(StringUtil.filterEmoji(backendUser.getUsername()));
 				backendUser.setNickname(StringUtil.filterEmoji(backendUser.getNickname()));
 				backendUser.setSignature(StringUtil.filterEmoji(backendUser.getSignature()));
-				ret = updateViaAdmin(backendUser);				
-				log.debug(ret);
+				ret = updateViaAdmin(backendUser);
+                if(ret > 0){
+                    clearCacheHolder();
+                }
+                log.debug(ret);
 				if(ret > 0){
 					SNSAuthenticationToken snsToken = new SNSAuthenticationToken(backendUser.getOpenid(), SNSLoginType.weixin);
 					SecurityUtils.getSubject().login(snsToken);	
@@ -931,6 +999,16 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 		return map;
 	}
 
+    /**
+     * 清空按条件筛选的缓存数据
+     */
+    private void clearCacheHolder(){
+        usersTreeDataHolder.delete(usersTreeDataHolder.keys());
+        usersRoleTreeDataHolder.delete(usersRoleTreeDataHolder.keys());
+        permissionsTreeDataHolder.delete(permissionsTreeDataHolder.keys());
+        choseDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys());
+        searchDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys());
+    }
 
 
 	

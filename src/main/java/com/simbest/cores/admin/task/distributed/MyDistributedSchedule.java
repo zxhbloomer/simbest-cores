@@ -10,21 +10,24 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * 用途： 测试任务样例
- * 作者: lishuyi 
- * 时间: 2016-11-30  18:57 
+ * 用途：测试任务样例
+ * 作者: lishuyi
+ * 时间: 2016-11-30  18:57
  */
 @Component
-public class MyJob extends DistributedJobExecutor{
+public class MyDistributedSchedule {
     protected transient final Log log = LogFactory.getLog(getClass());
+
+    @Autowired
+    private DistributedJobExecutor distributedJobExecutor;
+
 
     @Autowired
     private DistributedMasterUtil masterUtil;
 
     @Scheduled(cron = "0/5 * * * * ?")
-    @Override
     public void execute() {
-        if(checkMasterIsMe()) {
+        if (distributedJobExecutor.checkMasterIsMe()) {
             log.trace(masterUtil.getServerIP() + ":" + masterUtil.getServerPort() + " is running jog------");
         }
     }

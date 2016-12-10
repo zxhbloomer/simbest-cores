@@ -3,9 +3,9 @@
  */
 package com.simbest.cores.app.event;
 
-import com.google.common.collect.Maps;
-import com.simbest.cores.app.model.*;
-import com.simbest.cores.app.service.IProcessStatusService;
+import com.simbest.cores.app.model.ProcessTask;
+import com.simbest.cores.app.model.ProcessTaskCallbackLog;
+import com.simbest.cores.app.model.ProcessTaskCallbackRetry;
 import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.service.IGenericService;
 import com.simbest.cores.utils.DateUtil;
@@ -19,7 +19,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @author lishuyi
@@ -37,8 +36,8 @@ public class ProcessTaskCreateCallbackListener implements ApplicationListener<Pr
     @Autowired
     @Qualifier("processTaskCallbackLogService")
     private IGenericService<ProcessTaskCallbackLog, Integer> processTaskCallbackLogService;
-	
-	@Override
+
+    @Override
 	public void onApplicationEvent(ProcessTaskCreateCallbackEvent event) {
         Date callbackStartDate = DateUtil.getCurrent();
         Boolean callbackResult = true;

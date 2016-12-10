@@ -3,15 +3,16 @@
  */
 package com.simbest.cores.admin.task.distributed;
 
-import com.simbest.cores.admin.task.schedule.QuartzJob;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * 用途： 
- * 作者: lishuyi 
- * 时间: 2016-11-30  18:47 
+ * 用途：
+ * 作者: lishuyi
+ * 时间: 2016-11-30  18:47
  */
-public abstract class DistributedJobExecutor implements QuartzJob {
+@Component
+public class DistributedJobExecutor {
 
     @Autowired
     private DistributedMasterUtil masterUtil;

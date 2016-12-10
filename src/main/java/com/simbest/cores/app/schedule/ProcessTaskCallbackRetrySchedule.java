@@ -3,6 +3,7 @@
  */
 package com.simbest.cores.app.schedule;
 
+import com.simbest.cores.admin.task.distributed.DistributedJobExecutor;
 import com.simbest.cores.app.model.ProcessTask;
 import com.simbest.cores.app.model.ProcessTaskCallbackRetry;
 import com.simbest.cores.app.service.IProcessService;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 
 /**
- * 用途：每十分钟检查一次待办生成与待办核销的回调接口执行情况，执行回调失败的任务，一个尝试执行12次
+ * 用途：每十分钟检查一次待办生成与待办核销的回调接口执行情况，执行回调失败的任务，一个尝试执行5次(基于SQL)
  * 作者: lishuyi 
  * 时间: 2016-04-18  18:08 
  */
@@ -36,43 +37,48 @@ public class ProcessTaskCallbackRetrySchedule extends ApplicationObjectSupport {
     @Autowired
     private IProcessTaskService processTaskService;
 
+    @Autowired
+    private DistributedJobExecutor distributedJobExecutor;
+
     @Scheduled(cron = "0 0/10 * * * ?")
     private void checkFailedAndRun() throws ClassNotFoundException {
-        log.debug("ProcessTaskCallbackRetrySchedule Start .....................................");
-        Collection<ProcessTaskCallbackRetry> list = processTaskCallbackRetryService.getAll();
-        for(ProcessTaskCallbackRetry o:list){
-            boolean tryResult = true;
-            try {
-                IProcessService processService = (IProcessService)getApplicationContext().getBean(Class.forName(o.getProcessServiceClass()));
-                if (o.getCallbackType().equals("CreateCallback")) {
-                    if(null != o.getTaskId()){
-                        ProcessTask task = processTaskService.getById(o.getTaskId());
-                        if(null != task)
-                            processService.createProcessTaskCreateCallback().execute(task);
+        if (distributedJobExecutor.checkMasterIsMe()) {
+            log.debug("ProcessTaskCallbackRetrySchedule Start .....................................");
+            Collection<ProcessTaskCallbackRetry> list = processTaskCallbackRetryService.getAll();
+            for (ProcessTaskCallbackRetry o : list) {
+                boolean tryResult = true;
+                try {
+                    IProcessService processService = (IProcessService) getApplicationContext().getBean(Class.forName(o.getProcessServiceClass()));
+                    if (o.getCallbackType().equals("CreateCallback")) {
+                        if (null != o.getTaskId()) {
+                            ProcessTask task = processTaskService.getById(o.getTaskId());
+                            if (null != task)
+                                processService.createProcessTaskCreateCallback().execute(task);
+                        }
+                    } else {
+                        ProcessTask deleteTasks = new ProcessTask();
+                        deleteTasks.setTypeId(o.getTypeId());
+                        deleteTasks.setHeaderId(o.getHeaderId());
+                        deleteTasks.setReceiptId(o.getReceiptId());
+                        deleteTasks.setStepId(o.getStepId());
+                        deleteTasks.setCurrentUserId(o.getCurrentUserId());
+                        processService.createProcessTaskRemoveCallback().execute(deleteTasks);
                     }
-                } else {
-                    ProcessTask deleteTasks = new ProcessTask();
-                    deleteTasks.setTypeId(o.getTypeId());
-                    deleteTasks.setHeaderId(o.getHeaderId());
-                    deleteTasks.setReceiptId(o.getReceiptId());
-                    deleteTasks.setStepId(o.getStepId());
-                    deleteTasks.setCurrentUserId(o.getCurrentUserId());
-                    processService.createProcessTaskRemoveCallback().execute(deleteTasks);
+                } catch (Exception e) {
+                    Exceptions.printException(e);
+                    tryResult = false;
+                } finally {
+                    int ret;
+                    if (tryResult) {
+                        ret = processTaskCallbackRetryService.delete(o.getId());
+                    } else {
+                        o.setLastExecuteDate(DateUtil.getCurrent());
+                        ret = processTaskCallbackRetryService.update(o);
+                    }
+                    log.debug(ret);
                 }
-            }catch (Exception e){
-                Exceptions.printException(e);
-                tryResult = false;
-            }finally {
-                int ret;
-                if(tryResult){
-                    ret = processTaskCallbackRetryService.delete(o.getId());
-                }else{
-                    o.setLastExecuteDate(DateUtil.getCurrent());
-                    ret = processTaskCallbackRetryService.update(o);
-                }
-                log.debug(ret);
             }
+            log.debug("ProcessTaskCallbackRetrySchedule End .....................................");
         }
-        log.debug("ProcessTaskCallbackRetrySchedule End .....................................");
     }
 }

@@ -730,4 +730,14 @@ public class AppFileUtils {
         log.debug("----Info baseUrl is :" + baseUrl);
         return baseUrl;
     }
+
+    public File createTempFile(String filename){
+        File targetFile = new File(System.getProperty("java.io.tmpdir")+Constants.SEPARATOR+filename);
+        try {
+            FileUtils.touch(targetFile); //覆盖文件
+        } catch (IOException e) {
+            Exceptions.printException(e);
+        }
+        return targetFile;
+    }
 }

@@ -431,10 +431,10 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
     }
 
     private List<DynamicUserTreeNode> loadUserAndOrg(List<DynamicUserTreeNode> resultList, Integer orgId, Integer userType){
+    	List<SysOrg> orgList = sysOrgAdvanceService.getByParent(orgId);
+    	wrapDynamicOrg(resultList, orgList);
         List<SysUser> userList = getByOrg(orgId,userType);
         wrapDynamicUser(resultList, userList);
-        List<SysOrg> orgList = sysOrgAdvanceService.getByParent(orgId);
-        wrapDynamicOrg(resultList, orgList);
         return resultList;
     }
 

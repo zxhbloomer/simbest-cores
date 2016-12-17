@@ -74,7 +74,7 @@ public class DistributedMasterUtil {
                 String masterPort = jedis.get("clusert_master_port");
                 String myIp = getServerIP();
                 String myPort = getServerPort();
-                if (StringUtils.isEmpty(masterIp)) {       //1.没有Master
+                if (StringUtils.isEmpty(masterIp) || StringUtils.isEmpty(masterPort)) {       //1.没有Master
                     jedis.set("clusert_master_ip", myIp);   //设置我为Master
                     jedis.set("clusert_master_port", myPort);
                     log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));

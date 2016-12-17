@@ -134,6 +134,7 @@ public class SysUserService extends LogicService<SysUser,Integer> implements ISy
 	
 	@Override
 	public int createViaAdmin(SysUser u) {
+        entryptPassword(u);
 		SysUser admin = getByUnique(config.getValue("app.user.admin"));
 		u.setCreateUserId(admin.getId());
 		u.setCreateUserCode(admin.getUserCode());

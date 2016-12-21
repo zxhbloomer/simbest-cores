@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,8 @@ public class ProcessStepController extends BaseController<ProcessStep, Integer>{
 	 */
 	@RequestMapping(value = "/loadStepsByHeader", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "通过流程头获取所有流程环节", httpMethod = "POST", notes = "通过流程头获取所有流程环节", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> loadStepsByHeader(String headerCode) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		Collection<ProcessStep> list = updateProcessService.loadStepsByHeader(headerCode);		
@@ -85,6 +88,8 @@ public class ProcessStepController extends BaseController<ProcessStep, Integer>{
 
 	@RequestMapping(value = "/saveSteps", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "保存流程环节", httpMethod = "POST", notes = "保存流程环节", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> saveSteps(ProcessStep o) throws Exception {
 		List<ProcessStep> processStepList = JacksonUtils.readListValue(o.getProcess(), new TypeReference<List<ProcessStep>>(){});
 		Map<String, Object> map = Maps.newHashMap();

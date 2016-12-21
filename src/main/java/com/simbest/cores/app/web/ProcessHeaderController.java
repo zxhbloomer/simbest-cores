@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,9 @@ public class ProcessHeaderController extends BaseController<ProcessHeader, Integ
 	private void initService() {
 		setService(service);
 	}
-	
+
+    @ApiOperation(value = "查询流程头信息", httpMethod = "POST", response = Map.class, notes = "查询流程头信息",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	@Override
 	public Map<String, Object> query(ProcessHeader o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
@@ -54,7 +57,9 @@ public class ProcessHeaderController extends BaseController<ProcessHeader, Integ
 		result.put("aaData", list);
 		return result;
 	}
-	
+
+    @ApiOperation(value = "获取流程头详情", httpMethod = "POST", notes = "获取流程头详情", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	@Override
 	public Map<String, Object> get(Integer id) throws Exception{
 		Map<String, Object> map = Maps.newHashMap();
@@ -74,6 +79,8 @@ public class ProcessHeaderController extends BaseController<ProcessHeader, Integ
 	 */
 	@RequestMapping(value = "/updateEnable/{processHeaderCode}/{enabled}", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "启用或者禁用业务流程", httpMethod = "POST", notes = "启用或者禁用业务流程", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> updateEnable(@PathVariable("enabled")Boolean enabled, @PathVariable("processHeaderCode")String processHeaderCode) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {			 

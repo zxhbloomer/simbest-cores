@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.authz.annotation.Logical;
@@ -68,21 +70,21 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 	}
 	
 	@RequestMapping(value = "/get", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-//	@ApiOperation(value = "获取组织", httpMethod = "POST", response = SysOrg.class, notes = "获取单个组织")
 	@ResponseBody
 	@LogAudit
-//	public Map<String, Object> get(@ApiParam(required=true, name="o", value="组织json数据") @RequestBody SysOrg o) throws Exception {
-	public Map<String, Object> get(@RequestBody SysOrg o) throws Exception {	
+    @ApiOperation(value = "获取组织", httpMethod = "POST", notes = "获取组织", response = Map.class,
+            produces="application/json",consumes="application/json")
+	public Map<String, Object> get(@ApiParam(required=true, value="组织json数据") @RequestBody SysOrg o) throws Exception {
 		return super.get(o.getId());
 	}
 	
 	@RequestMapping(value = "/query", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-//	@ApiOperation(value = "查询组织", httpMethod = "POST", response = Map.class, notes = "获取多个组织")
 	@ResponseBody
 	@LogAudit
 	@Override
-//	public Map<String, Object> query(@ApiParam(required=true, name="o", value="组织json数据")@RequestBody SysOrg o) throws Exception {			
-	public Map<String, Object> query(@RequestBody SysOrg o) throws Exception {
+    @ApiOperation(value = "查询组织", httpMethod = "POST", response = Map.class, notes = "获取多个组织",
+            produces="application/json",consumes="application/json")
+    public Map<String, Object> query(@ApiParam(required=true, value="组织json数据")@RequestBody SysOrg o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		Collection<SysOrg> list = sysOrgAdvanceService.getAll(o);
 		Map<String, Object> dataMap = super.wrapQueryResult((List<SysOrg>) list);
@@ -92,27 +94,13 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 		return result;
 	}
 
-	/**
-	 * 面试使用
-	 */
-	@RequestMapping(value = "/queryEmpty", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	@ResponseBody
-	public Map<String, Object> queryEmpty() throws Exception {			
-		Map<String, Object> result = Maps.newHashMap();
-		Collection<SysOrg> list = sysOrgAdvanceService.getAll();
-		Map<String, Object> dataMap = super.wrapQueryResult((List<SysOrg>) list);
-		result.put("data", dataMap);
-		result.put("message", "");
-		result.put("responseid", 1);
-		return result;
-	}
-
-	
 	@RequiresPermissions("admin:authority:sysorg:create")
 	@RequestMapping(value = "/create", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "创建组织", httpMethod = "POST", response = Map.class, notes = "创建组织",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> create(@RequestBody SysOrg o) throws Exception {
 		if(o.getParentId() != null){
 			o.setParent(new SysOrg(o.getParentId()));
@@ -126,7 +114,9 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 	@RequestMapping(value = "/update", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
-	@Override
+    @Override
+    @ApiOperation(value = "更新组织", httpMethod = "POST", response = Map.class, notes = "更新组织",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> update(@RequestBody SysOrg o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		if(o.getId().equals(o.getParentId())){
@@ -146,6 +136,8 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "删除组织", httpMethod = "POST", response = Map.class, notes = "通过主键删除组织",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> delete(@RequestBody SysOrg o) throws Exception {
 		return super.delete(o.getId());
 	}
@@ -155,6 +147,8 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "删除组织", httpMethod = "POST", response = Map.class, notes = "通过主键数组删除组织",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> deletes(@RequestBody Integer[] ids) throws Exception {
 		return super.deletes(ids);
 	}
@@ -167,6 +161,8 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 	 */
 	@RequestMapping(value = "/getSysOrgMap", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "获取组织下拉框", httpMethod = "GET", response = Map.class, notes = "获取组织下拉框,不含根节点",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<Integer, String> getSysOrgMap(SysOrg o) throws Exception {
 		Map<Integer, String> map = Maps.newLinkedHashMap();
 		Collection<SysOrg> list = sysOrgAdvanceService.getAll(o);
@@ -184,6 +180,8 @@ public class SysOrgController extends BaseController<SysOrg, Integer>{
 	 */
 	@RequestMapping(value = "/getFullSysOrgMap", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "获取组织下拉框", httpMethod = "GET", response = Map.class, notes = "获取组织下拉框,含根节点",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<Integer, String> getFullSysOrgMap(SysOrg o) throws Exception {	
 		Map<Integer, String> map = Maps.newLinkedHashMap();
 		SysOrg root = sysOrgAdvanceService.getRoot();

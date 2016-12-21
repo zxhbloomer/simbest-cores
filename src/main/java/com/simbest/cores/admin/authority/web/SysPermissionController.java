@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
@@ -75,6 +76,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	@RequestMapping(value = "/get", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "获取资源权限", httpMethod = "POST", notes = "获取资源权限", response = Map.class,
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> get(@RequestBody SysPermission o) throws Exception {
 		return super.get(o.getId());
 	}
@@ -84,6 +87,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "查询资源权限", httpMethod = "POST", response = Map.class, notes = "获取多个资源权限",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> query(@RequestBody SysPermission o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		Collection<SysPermission> list = sysPermissionAdvanceService.getAll(o);
@@ -99,6 +104,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "创建资源权限", httpMethod = "POST", response = Map.class, notes = "创建资源权限",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> create(@RequestBody SysPermission o) throws Exception {
 		SecurityUtils.getSubject().checkRole("Supervisor");
 		if(o.getParentId() != null){
@@ -114,6 +121,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "更新资源权限", httpMethod = "POST", response = Map.class, notes = "更新资源权限",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> update(@RequestBody SysPermission o) throws Exception {
 		SecurityUtils.getSubject().checkRole("Supervisor");
 		Map<String, Object> map = Maps.newHashMap();
@@ -134,6 +143,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "删除资源权限", httpMethod = "POST", response = Map.class, notes = "通过主键删除资源权限",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> delete(@RequestBody SysPermission o) throws Exception {
 		SecurityUtils.getSubject().checkRole("Supervisor");
 		Map<String, Object> map = super.delete(o.getId());
@@ -145,6 +156,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "删除资源权限", httpMethod = "POST", response = Map.class, notes = "通过主键数组删除资源权限",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> deletes(@RequestBody Integer[] ids) throws Exception {
 		SecurityUtils.getSubject().checkRole("Supervisor");
 		return super.deletes(ids);
@@ -152,6 +165,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 
 	@RequestMapping(value = "/getSysPermission", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "获取资源权限下拉框", httpMethod = "GET", response = Map.class, notes = "获取资源权限下拉框",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<Integer, String> getSysPermission() throws Exception {
 		Map<Integer, String> map = Maps.newLinkedHashMap();
 		Collection<SysPermission> list = sysPermissionAdvanceService.getAll();
@@ -163,6 +178,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	
 	@RequestMapping(value = "/getSysPermissionByRole", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "获取资源权限下拉框", httpMethod = "POST", response = Map.class, notes = "通过角色ID获取资源权限下拉框",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, String> getSysPermissionByRole(@RequestParam("id") Integer roleId) throws Exception {
 		Map<String, String> map = Maps.newHashMap();
 		StringBuffer sb = new StringBuffer();
@@ -176,6 +193,8 @@ public class SysPermissionController extends BaseController<SysPermission, Integ
 	
 	@RequestMapping(value = "/getMenu")
 	@ResponseBody
+    @ApiOperation(value = "获取资源权限下拉框", httpMethod = "GET", response = Map.class, notes = "获取登陆人权限菜单",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> getMenu() throws Exception {
 		ShiroUser user = appUserSession.getCurrentUser();	
 		Map<String, Object> result = Maps.newHashMap();

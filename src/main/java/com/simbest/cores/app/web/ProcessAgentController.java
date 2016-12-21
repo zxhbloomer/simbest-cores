@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,6 +63,8 @@ public class ProcessAgentController extends BaseController<ProcessAgent, Integer
 	@Override
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "新增代理", httpMethod = "POST", notes = "新增代理",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> create(ProcessAgent o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		String agentUserIds = o.getAgentUserIds();
@@ -96,6 +99,8 @@ public class ProcessAgentController extends BaseController<ProcessAgent, Integer
 	}
 	
 	@Override
+    @ApiOperation(value = "查询代理", httpMethod = "POST", notes = "查询代理",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> query(ProcessAgent o) throws Exception {
 		ShiroUser currentUser = appUserSession.getCurrentUser();
 		o.setUserId(currentUser.getUserId());
@@ -109,6 +114,8 @@ public class ProcessAgentController extends BaseController<ProcessAgent, Integer
 	}
 	
 	@Override
+    @ApiOperation(value = "删除代理", httpMethod = "POST", notes = "删除代理",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> delete(Integer agentId) throws Exception {
 		ProcessAgent o = new ProcessAgent();
 		o.setAgentId(agentId);

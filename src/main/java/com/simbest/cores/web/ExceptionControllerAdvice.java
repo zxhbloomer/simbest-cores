@@ -101,6 +101,17 @@ public class ExceptionControllerAdvice {
         return response;
     }
 
+    @ExceptionHandler(RSAFailedException.class)
+    @ResponseBody
+    public JsonResponse rsaFailedException(HttpServletRequest request, RSAFailedException e) {
+        log.error(request.getRequestURI());
+        Exceptions.printException(e);
+        JsonResponse response = new JsonResponse();
+        response.setMessage("密文解密失败！");
+        response.setResponseid(0);
+        return response;
+    }
+
     @ExceptionHandler({ProcessUnavailableException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody

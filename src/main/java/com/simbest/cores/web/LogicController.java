@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,7 @@ import com.simbest.cores.model.LogicModel;
 import com.simbest.cores.service.ILogicService;
 import com.simbest.cores.shiro.AppUserSession;
 import com.simbest.cores.utils.annotations.LogAudit;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 逻辑实体控制层
@@ -50,7 +53,9 @@ public class LogicController<T extends LogicModel<T>, PK extends Serializable>
 	@RequestMapping(value = "/updateEnable", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> updateEnable(boolean enabled,@RequestParam("ids") List<PK> ids) throws Exception {
+    @ApiOperation(value = "逻辑更新实体可用性", httpMethod = "POST", notes = "逻辑更新实体可用性", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> updateEnable(boolean enabled, @RequestParam("ids") List<PK> ids) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {			 
 			int ret = ((ILogicService<?, PK>)getService()).updateEnable(enabled, ids);
@@ -86,7 +91,9 @@ public class LogicController<T extends LogicModel<T>, PK extends Serializable>
 	}
 	
 	@Override
-	public Map<String, Object> update(T o) throws Exception {
+    @ApiOperation(value = "逻辑更新实体", httpMethod = "POST", notes = "逻辑更新实体", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> update(@ApiParam(required=true, value="实体表单")T o) throws Exception {
 		if(!o.validate()){
 			Map<String, Object> map = Maps.newHashMap();
 			map.put("responseid", 0);

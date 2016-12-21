@@ -2,6 +2,8 @@ package com.simbest.cores.web;
 
 import java.util.Map;
 
+import com.simbest.cores.model.JsonResponse;
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,8 @@ public class SMSController {
 	 */
 	@RequestMapping(value = "/sendUserBindCode", method = RequestMethod.POST, produces="application/json;charset=UTF-8")	
 	@ResponseBody
+    @ApiOperation(value = "发送用户绑定验证码", httpMethod = "POST", notes = "发送用户绑定验证码", response = Map.class,
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> sendUserBindCode(@RequestBody Map<String,String> phone) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();		
 		if(StringUtils.isNotEmpty(phone.get("phone"))){
@@ -47,6 +51,8 @@ public class SMSController {
 
 	@RequestMapping(value = "/checkUserBindCode", method = RequestMethod.POST, produces="application/json;charset=UTF-8")	
 	@ResponseBody
+    @ApiOperation(value = "校验用户绑定验证码", httpMethod = "POST", notes = "校验用户绑定验证码", response = Map.class,
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> checkUserBindCode(@RequestBody Map<String,String> phoneAndCode) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();		
 		boolean check = smsUtil.checkUserBindCode(phoneAndCode.get("phone"), phoneAndCode.get("expectCode"));

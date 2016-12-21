@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -105,6 +106,8 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	 */
 	@RequestMapping(value = "/createMd5File", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "通过校验前端提交的MD5值完成文件上传", httpMethod = "POST", response = Map.class, notes = "通过校验前端提交的MD5值完成文件上传，避免相同文件，不同用户文件无法上传",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> createMd5File(HttpServletRequest request, HttpServletResponse response, @RequestParam("accesstoken") String accesstoken,
 			@RequestParam("md5") String md5, @RequestParam("timestamp") String timestamp, @RequestParam("fileClass") String fileClass) throws Exception{  
 		Map<String, Object> map = Maps.newHashMap();
@@ -151,8 +154,10 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	 * @param request
 	 * @return
 	 * @throws Exception
-	 */	
+	 */
 	@RequestMapping(value = "uploadFile", method = RequestMethod.POST)
+    @ApiOperation(value = "文件上传", httpMethod = "POST", response = Map.class, notes = "上传文件人口（单个文件）[只存储文件，不保存文件记录]",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public void uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception{  
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8"); 
@@ -217,7 +222,9 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "uploadFileContent", method = RequestMethod.POST)
-	@ResponseBody  
+	@ResponseBody
+    @ApiOperation(value = "上传NTKO控件文件", httpMethod = "POST", response = Map.class, notes = "上传NTKO控件文件【情报系统】",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String,String> uploadFileContent(HttpServletRequest request) throws Exception{  
 		Map<String,String> map = Maps.newHashMap();
 		String fileName = null;
@@ -255,6 +262,8 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	 */
 	@RequestMapping(value = "/deleteFiles", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "删除文件", httpMethod = "POST", response = Map.class, notes = "既删除文件，又删除数据库记录",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> deleteFiles(String filePath) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		FileUploader o = new FileUploader();
@@ -273,6 +282,8 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	 * @throws Exception
 	 */	
 	@RequestMapping(value = "uploadFileAndSaveRecord", method = RequestMethod.POST)
+    @ApiOperation(value = "上传文件并保存记录", httpMethod = "POST", response = Map.class, notes = "上传文件入口（单个文件）[存储文件，并保存文件记录]",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public void uploadFileAndSaveRecord(HttpServletRequest request, HttpServletResponse response) throws Exception{  
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8"); 
@@ -351,6 +362,7 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	} 
 	
 	@RequestMapping(value = "/dowanloadSourceFile", method = RequestMethod.GET)
+    @ApiOperation(value = "下载文件", httpMethod = "GET", notes = "以流的方式下载文件")
 	public void dowanloadSourceFile(Long id,HttpServletRequest request, HttpServletResponse response) throws IOException {
 		ShiroUser user = appUserSession.getCurrentUser();
 		FileUploader fUploader = fileUploaderService.getById(id);

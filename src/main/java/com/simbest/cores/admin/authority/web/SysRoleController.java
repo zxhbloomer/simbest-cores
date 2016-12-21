@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +68,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@RequestMapping(value = "/get", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "获取角色", httpMethod = "POST", notes = "获取角色", response = Map.class,
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> get(@RequestBody SysRole o) throws Exception {
 		return super.get(o.getId());
 	}
@@ -75,6 +79,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "查询角色", httpMethod = "POST", response = Map.class, notes = "获取多个角色",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> query(@RequestBody SysRole o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();		
 		Collection<SysRole> list = sysRoleAdvanceService.getValues();
@@ -91,6 +97,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "创建角色", httpMethod = "POST", response = Map.class, notes = "创建角色",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> create(@RequestBody SysRole o) throws Exception {
 		return super.create(o);		
 	}
@@ -101,6 +109,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "更新角色", httpMethod = "POST", response = Map.class, notes = "更新角色",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> update(@RequestBody SysRole o) throws Exception {
 		return super.update(o);
 	}
@@ -110,6 +120,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "删除角色", httpMethod = "POST", response = Map.class, notes = "通过主键删除角色",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> delete(@RequestBody SysRole o) throws Exception {
 		return super.delete(o.getId());
 	}
@@ -120,6 +132,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "删除角色", httpMethod = "POST", response = Map.class, notes = "通过主键数组删除角色",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> deletes(@RequestBody Integer[] ids) throws Exception {
 		return super.deletes(ids);
 	}
@@ -129,9 +143,11 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	 * @return
 	 */
 	@RequiresPermissions("admin:authority:sysrole:query")
-	@RequestMapping(value = "/rolePermission/querySysRole")
+	@RequestMapping(value = "/rolePermission/querySysRole", method = RequestMethod.GET)
 	@ResponseBody
-	@LogAudit	
+	@LogAudit
+    @ApiOperation(value = "加载角色列表", httpMethod = "GET", response = Map.class, notes = "加载角色列表",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<Integer, String> querySysRole() {
 		Map<Integer, String> maps = Maps.newLinkedHashMap();
 		Collection<SysRole> rolelists = sysRoleAdvanceService.getValues();
@@ -148,6 +164,8 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	 */
 	@RequiresPermissions(value={"admin:authority:sysrole:create","admin:authority:sysrole:update"},logical=Logical.OR)
 	@RequestMapping(value = "/rolePermissionView", method = RequestMethod.GET)
+    @ApiOperation(value = "打开角色资源授权页面", httpMethod = "GET", response = Map.class, notes = "打开角色资源授权页面",
+            consumes="application/x-www-form-urlencoded")
 	public ModelAndView rolePermissionView() throws Exception {
 		return new ModelAndView("/action/admin/authority/sysrole/rolePermissionView");
 	}
@@ -155,7 +173,9 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	@RequiresPermissions("admin:authority:sysrole:query")
 	@RequestMapping(value = "/querySysRoleByUser", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, String> querySysRoleByUser(@RequestParam("id") Integer userId) throws Exception {
+    @ApiOperation(value = "通过用户Id获取角色，空格分隔", httpMethod = "POST", response = Map.class, notes = "通过用户Id获取角色，空格分隔",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, String> querySysRoleByUser(@ApiParam(required=true, value="用户Id")@RequestParam("id") Integer userId) throws Exception {
 		Map<String, String> map = Maps.newHashMap();
 		StringBuffer sb = new StringBuffer();
 		List<SysRole> list = sysRoleAdvanceService.getByUser(userId);
@@ -173,9 +193,11 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	 * @throws Exception
 	 */
 	@RequiresPermissions("admin:authority:sysrole:query")
-	@RequestMapping(value = "/rolePermission/getPermissionsTreeData/{roleId}")
+	@RequestMapping(value = "/rolePermission/getPermissionsTreeData/{roleId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getPermissionsTreeData(@PathVariable("roleId") Integer roleId) throws Exception {
+    @ApiOperation(value = "构造权限树", httpMethod = "GET", response = Map.class, notes = "构造权限树",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> getPermissionsTreeData(@ApiParam(required=true, value="角色Id")@PathVariable("roleId") Integer roleId) throws Exception {
 		return sysRoleAdvanceService.getPermissionsTreeData(roleId);
 	}
 
@@ -187,9 +209,12 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 	 */
 	@RequiresPermissions("admin:authority:sysuser:userRole:update")
 	@RequiresRoles(value={"Administrator","Supervisor"},logical=Logical.OR)
-	@RequestMapping(value = "/rolePermission/submit")
+	@RequestMapping(value = "/rolePermission/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submit(@RequestParam("roleId") Integer roleId, @RequestParam("permissionIds") String permissionIds) {
+    @ApiOperation(value = "提交保存权限", httpMethod = "POST", response = Map.class, notes = "提交保存权限",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> submit(@ApiParam(required=true, value="角色Id")@RequestParam("roleId") Integer roleId,
+                                      @ApiParam(required=true, value="权限Id数组")@RequestParam("permissionIds") String permissionIds) {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			if (roleId == null) { // 删除角色所有权限

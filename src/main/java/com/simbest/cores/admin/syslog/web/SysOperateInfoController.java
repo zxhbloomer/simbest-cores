@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -38,6 +39,8 @@ public class SysOperateInfoController {
 
 	@RequiresPermissions("admin:syslog:operate:submenu")
 	@RequestMapping(value = "/sysOperateInfoList", method = RequestMethod.GET)
+    @ApiOperation(value = "打开操作日志表单", httpMethod = "GET", notes = "打开操作日志表单",
+            consumes="application/x-www-form-urlencoded")
 	public ModelAndView sysOperateInfoList() throws Exception {
 		ModelAndView mav = new ModelAndView();
 	    mav.addObject("topNav", "sysAdmin"); //topNav: 顶部导航的key
@@ -50,6 +53,8 @@ public class SysOperateInfoController {
 	@RequiresPermissions("admin:syslog:operate:query")	
 	@RequestMapping(value = "/query", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "查询操作日志", httpMethod = "GET", response = Map.class, notes = "查询操作日志",
+            consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> query(SysOperateInfo o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		SysOperateInfoExample ex = new SysOperateInfoExample();

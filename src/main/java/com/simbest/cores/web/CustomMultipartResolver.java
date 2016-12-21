@@ -41,9 +41,11 @@ public class CustomMultipartResolver extends CommonsMultipartResolver {
             try {
                 List<FileItem> fileItems = ((ServletFileUpload) fileUpload).parseRequest(request);
                 for (FileItem item : fileItems) {
-                    log.debug("client want to upload file with type: "+item.getContentType());
-                    if (!fileTypes.contains(AppFileUtils.getFileExtByName(item.getName()))) {
-                        throw new NotAllowUploadFileTypeException("Not allow upload file type exception occur... \r\n");
+                    if(!item.isFormField()) { //必须是文件
+                        log.debug("client want to upload file with type: " + item.getContentType());
+                        if (!fileTypes.contains(AppFileUtils.getFileExtByName(item.getName()))) {
+                            //throw new NotAllowUploadFileTypeException("Not allow upload file type exception occur... \r\n");
+                        }
                     }
                 }
                 return fileItems;

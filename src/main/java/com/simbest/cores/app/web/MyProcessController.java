@@ -3,6 +3,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +59,17 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
 		super(ProcessAuditLog.class, null, null);		
 	}
 	
-	@RequestMapping(value = "/openMyTaskList", method = RequestMethod.POST)
+	@RequestMapping(value = "/openMyTaskList", method = RequestMethod.GET)
+    @ApiOperation(value = "打开我的待办页面", httpMethod = "GET", notes = "打开我的待办页面",
+            consumes="application/x-www-form-urlencoded")
 	public String openMyTaskList() throws Exception {	
 		return "redirect:/html/app/process/processTask.html";
 	}	
 	
 	@RequestMapping(value = "/queryMyTaskCount", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
+    @ApiOperation(value = "查询我的待办数", httpMethod = "POST", notes = "查询我的待办数",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Integer queryMyTaskCount() throws Exception {	
 		ProcessTask o = new ProcessTask();
 		o.setCurrentUserId(appUserSession.getCurrentUser().getUserId());
@@ -74,6 +79,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
 	//我的待办
 	@RequestMapping(value = "/queryMyTask", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询我的待办", httpMethod = "POST", notes = "查询我的待办",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> queryMyTask(ProcessTask task) throws Exception {		
 		ShiroUser user = appUserSession.getCurrentUser();	
 		task.setCurrentUserId(user.getUserId());
@@ -89,6 +96,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
 
     @RequestMapping(value = "/queryMyApplyCount", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
     @ResponseBody
+    @ApiOperation(value = "查询我的申请数", httpMethod = "POST", notes = "查询我的申请数",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
     public Integer queryMyApplyCount() throws Exception {
         ProcessStatus o = new ProcessStatus();
         o.setCreateUserId(appUserSession.getCurrentUser().getUserId());
@@ -98,6 +107,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
     //我的申请
 	@RequestMapping(value = "/queryMyApply", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询我的申请", httpMethod = "POST", notes = "查询我的申请",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> queryMyApply(ProcessStatus status) throws Exception {
 		ShiroUser user = appUserSession.getCurrentUser();
 		status.setCreateUserId(user.getUserId());
@@ -120,6 +131,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
 
     @RequestMapping(value = "/getJoinCount", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
     @ResponseBody
+    @ApiOperation(value = "查询我的参与数", httpMethod = "POST", notes = "查询我的参与数",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
     public Integer getJoinCount() throws Exception {
         return statusService.getJoinCount(appUserSession.getCurrentUser().getUserId());
     }
@@ -127,6 +140,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
 	//我的已办
 	@RequestMapping(value = "/queryMyJoin", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询我的参与", httpMethod = "POST", notes = "查询我的参与",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> queryMyJoin(ProcessStatus status) throws Exception {
 		ShiroUser user = appUserSession.getCurrentUser();
 		List<ProcessStatus> list = statusService.getJoin();
@@ -147,6 +162,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
 
     @RequestMapping(value = "/queryMyDraftCount", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
     @ResponseBody
+    @ApiOperation(value = "查询我的草稿数", httpMethod = "POST", notes = "查询我的草稿数",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
     public Integer queryMyDraftCount() throws Exception {
         ProcessDraft o = new ProcessDraft();
         o.setCreateUserId(appUserSession.getCurrentUser().getUserId());
@@ -156,6 +173,8 @@ public class MyProcessController extends BaseController<ProcessAuditLog, Long>{
     //我的草稿
 	@RequestMapping(value = "/queryMyDraft", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询我的草稿", httpMethod = "POST", notes = "查询我的草稿",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> queryMyDraft(ProcessDraft o) throws Exception {
 		ShiroUser user = appUserSession.getCurrentUser();
 		o.setCreateUserId(user.getUserId());

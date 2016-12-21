@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import com.google.common.collect.Sets;
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,8 @@ public class ProcessAuditLogController extends BaseController<ProcessAuditLog, L
 	 */
 	@RequestMapping(value = "/queryLog", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询审批日志", httpMethod = "POST", response = Map.class, notes = "查询审批日志",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> queryLog(ProcessAuditLog o) throws Exception {
 		if(o.getTypeId() == null || o.getHeaderId()==null || o.getReceiptId()==null)
 			throw new AppException("100", String.format("Query with invilidate paremeters typeId:%s headerId:%s receiptId:%s", o.getTypeId(),o.getHeaderId(),o.getReceiptId()));			
@@ -81,6 +84,8 @@ public class ProcessAuditLogController extends BaseController<ProcessAuditLog, L
 	 */
 	@RequestMapping(value = "/queryLastLogs", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "工作流查询最后一次审批链条各环节审批意见", httpMethod = "POST", response = Map.class, notes = "工作流查询最后一次审批链条各环节审批意见",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> queryLastLogs(ProcessAuditLog o) throws Exception {
 		Map<String, Object> result = queryLog(o);		

@@ -11,8 +11,10 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
  *
  */
 @Entity
-@Table(name = "app_file_upload", uniqueConstraints={@UniqueConstraint(columnNames={"processTypeId", "processHeaderId","receiptId","createUserId","fileClass","finalName"}),
-		@UniqueConstraint(columnNames={"attr1", "receiptId","fileClass"})})
+//@Table(name = "app_file_upload", uniqueConstraints={@UniqueConstraint(columnNames={"processTypeId", "processHeaderId","receiptId","createUserId","fileClass","finalName"}),
+//		@UniqueConstraint(columnNames={"attr1", "receiptId","fileClass"})})
+@Table(name = "app_file_upload", uniqueConstraints={
+        @UniqueConstraint(columnNames={"attr1", "receiptId","fileClass"})})
 public class FileUploader extends LogicModel<FileUploader> {
 
 	/**

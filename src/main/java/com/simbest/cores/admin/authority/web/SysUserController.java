@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,6 +106,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 
 	@RequestMapping(value = "/getCurrentUser", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "获取当前登陆用户", httpMethod = "POST", notes = "获取当前登陆用户", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> getCurrentUser() throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		ShiroUser o = appUserSession.getCurrentUser();
@@ -116,6 +120,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	
 	@RequestMapping(value = "/getCurrentUserDetail", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "获取当前登陆用户详情", httpMethod = "POST", notes = "获取当前登陆用户详情", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> getCurrentUserDetail() throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		ShiroUser o = appUserSession.getCurrentUser();
@@ -130,12 +136,16 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@RequestMapping(value = "/get", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "获取用户", httpMethod = "POST", notes = "获取用户", response = Map.class,
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> get(@RequestBody SysUser o) throws Exception {
 		return super.get(o.getId());
 	}
 	
 	@RequestMapping(value = "/getById", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	@ResponseBody	
+	@ResponseBody
+    @ApiOperation(value = "获取用户", httpMethod = "POST", notes = "获取用户", response = Map.class,
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> getById(@RequestBody SysUser o) throws Exception {
 		return super.get(o.getId());
 	}
@@ -148,6 +158,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	 */
 	@RequestMapping(value = "/createOrGetByPhone", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
+    @ApiOperation(value = "通过手机号码，创建或新增用户", httpMethod = "POST", response = Map.class, notes = "通过手机号码，创建或新增用户",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> createOrGetByPhone(@RequestBody SysUser o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		if(StringUtils.isEmpty(o.getPhone()) || o.getPhone().length() != 11){
@@ -166,7 +178,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 				o.setUsername(nickName);
 				o.setNickname(nickName);
 				o.setUserType(Integer.valueOf(config.getValue("app.usertype.frontend"))); //外部用户类型				
-				o.setSysOrg(sysOrgAdvanceService.loadByKey(Integer.valueOf(config.getValue("app.frontend.org")))); //外部用户组织	
+				o.setSysOrg(sysOrgAdvanceService.loadByKey(Integer.valueOf(config.getValue("app.frontend.org")))); //外部用户用户	
 				o.setAccesstoken(Digests.encryptMD5(AppCodeGenerator.getDevelopToken()+o.toString()));
 				int ret = sysUserAdvanceService.createOrUpdateViaAdmin(o);
 				log.debug(ret);
@@ -196,6 +208,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "查询用户", httpMethod = "POST", response = Map.class, notes = "获取多个用户",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> query(@RequestBody SysUser o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		Collection<SysUser> list = sysUserAdvanceService.getAll(o);
@@ -211,6 +225,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "创建用户", httpMethod = "POST", response = Map.class, notes = "创建用户",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> create(@RequestBody SysUser o) throws Exception {
 		return super.create(o);				
 	}
@@ -220,6 +236,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "更新用户", httpMethod = "POST", response = Map.class, notes = "更新用户",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> update(@RequestBody SysUser o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		if(null == o.getId()){
@@ -236,6 +254,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 
 	@RequestMapping(value = "/updateMyInfo", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
+    @ApiOperation(value = "更新当前登陆人用户信息", httpMethod = "POST", response = Map.class, notes = "更新当前登陆人用户信息",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> updateMyInfo(@RequestBody SysUser o) throws Exception {
 		o.setUsername(StringUtil.filterEmoji(o.getUsername()));
 		o.setNickname(StringUtil.filterEmoji(o.getNickname()));
@@ -249,6 +269,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@RequestMapping(value = "/delete", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "删除用户", httpMethod = "POST", response = Map.class, notes = "通过主键删除用户",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> delete(@RequestBody SysUser o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
@@ -268,6 +290,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@ResponseBody
 	@LogAudit
 	@Override
+    @ApiOperation(value = "删除用户", httpMethod = "POST", response = Map.class, notes = "通过主键数组删除用户",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> deletes(@RequestBody Integer[] ids) throws Exception {
 		return super.deletes(ids);
 	}
@@ -280,6 +304,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	 */
 	@RequestMapping(value = "/submitUpdatePassword", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "用户自己修改密码", httpMethod = "POST", response = Map.class, notes = "用户自己修改密码",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> submitUpdatePassword(
             @RequestParam("yuanPassword") String yuanPassword,
             @RequestParam("newPassword") String newPassword){
@@ -309,6 +335,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	 */
 	@RequestMapping(value = "/saveNewKeys", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "管理员为用户初始化密码", httpMethod = "POST", response = Map.class, notes = "管理员为用户初始化密码",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> saveNewKeys(@RequestParam("id") String id,
             @RequestParam("newpassword") String newpassword){
 		Map<String, Object> map = Maps.newHashMap();
@@ -327,6 +355,8 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	 */
 	@RequiresPermissions(value={"admin:authority:sysuser:create","admin:authority:sysuser:update"},logical=Logical.OR)
 	@RequestMapping(value = "/userRoleView", method = RequestMethod.GET)
+    @ApiOperation(value = "打开用户角色授权页面", httpMethod = "GET", response = Map.class, notes = "打开用户角色授权页面",
+            consumes="application/x-www-form-urlencoded")
 	public ModelAndView userRoleView() throws Exception {
 		return new ModelAndView("/action/admin/authority/sysuser/userRoleView");
 	}
@@ -338,8 +368,10 @@ public class SysUserController extends BaseController<SysUser, Integer>{
      * @return
      * @throws Exception
      */
-	@RequestMapping(value = "/userRole/getUsersTreeData/{userType}")
+	@RequestMapping(value = "/userRole/getUsersTreeData/{userType}", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "穷举遍历递归部门用户树", httpMethod = "GET", response = Map.class, notes = "穷举遍历递归部门用户树",
+            consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> getUsersTreeData(@PathVariable("userType")Integer userType) throws Exception {		
 		return sysUserAdvanceService.getUsersTreeData(userType);
 	}
@@ -352,9 +384,12 @@ public class SysUserController extends BaseController<SysUser, Integer>{
      * @return
      * @throws Exception
      */
-	@RequestMapping(value = "/userRole/getUsersRoleTreeData/{userType}/{roleId}")
+	@RequestMapping(value = "/userRole/getUsersRoleTreeData/{userType}/{roleId}", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getUsersRoleTreeData(@PathVariable("roleId") Integer roleId, @PathVariable("userType") Integer userType) throws Exception {
+    @ApiOperation(value = "穷举遍历递归部门用户树[需要关联角色]", httpMethod = "GET", response = Map.class, notes = "穷举遍历递归部门用户树[需要关联角色]",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> getUsersRoleTreeData(@ApiParam(required=true, value="角色Id")@PathVariable("roleId") Integer roleId,
+                                                    @ApiParam(required=true, value="用户类型")@PathVariable("userType") Integer userType) throws Exception {
 		return sysUserAdvanceService.getUsersRoleTreeData(roleId, userType);
 	}
 
@@ -364,9 +399,11 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	 * @return
 	 */
 	@RequiresPermissions("admin:authority:sysuser:userRole:update")
-	@RequestMapping(value = "/userRole/createUserRole", produces="application/json;charset=UTF-8")
+	@RequestMapping(value = "/userRole/createUserRole", produces="application/json;charset=UTF-8", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> createUserRole(@RequestBody Map<String, String> data) {
+    @ApiOperation(value = "提交保存用户角色", httpMethod = "POST", response = Map.class, notes = "提交保存用户角色",
+            produces="application/json",consumes="application/json")
+	public Map<String, Object> createUserRole(@ApiParam(required=true, value="角色roleId和用户userIds空格分隔")@RequestBody Map<String, String> data) {
 		return createUserRole(Integer.valueOf(data.get("roleId")), data.get("userIds").toString());
 	}
 
@@ -377,9 +414,12 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	 * @return
 	 */
 	@RequiresPermissions("admin:authority:sysuser:userRole:update")
-	@RequestMapping(value = "/userRole/submit")
+	@RequestMapping(value = "/userRole/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> createUserRole(@RequestParam("roleId") Integer roleId, @RequestParam("userIds") String userIds) {
+    @ApiOperation(value = "通过用户Id获取角色，空格分隔", httpMethod = "POST", response = Map.class, notes = "通过用户Id获取角色，空格分隔",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> createUserRole(@ApiParam(required=true, value="角色Id")@RequestParam("roleId") Integer roleId,
+                                              @ApiParam(required=true, value="用户Id数组")@RequestParam("userIds") String userIds) {
 		SecurityUtils.getSubject().checkRole("Administrator");
 		Map<String, Object> map = Maps.newHashMap();
 		try {
@@ -422,9 +462,11 @@ public class SysUserController extends BaseController<SysUser, Integer>{
      * @throws Exception
      */
 	@RequiresPermissions(value={"admin:authority:sysuser:create","admin:authority:sysuser:update"},logical=Logical.OR)
-	@RequestMapping(value = "/userPermission/getPermissionsTreeData/{userId}")
+	@RequestMapping(value = "/userPermission/getPermissionsTreeData/{userId}", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> getUserPermissionsTreeData(@PathVariable("userId") Integer userId) throws Exception {
+    @ApiOperation(value = "穷举遍历用户权限树，用于对用户直接授权", httpMethod = "POST", response = Map.class, notes = "穷举遍历用户权限树，用于对用户直接授权",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> getUserPermissionsTreeData(@ApiParam(required=true, value="用户Id")@PathVariable("userId") Integer userId) throws Exception {
 		SecurityUtils.getSubject().checkRole("Administrator");
 		return sysUserAdvanceService.getUserPermissionsTreeData(userId);
 		
@@ -434,7 +476,10 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	@RequestMapping(value = "/createSysUserPermission", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> createSysUserPermission(@RequestParam("id") Integer userId, @RequestParam("permissionIds") String permissionIds) throws Exception {
+    @ApiOperation(value = "创建用户权限", httpMethod = "POST", response = Map.class, notes = "创建用户权限",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> createSysUserPermission(@ApiParam(required=true, value="用户Id")@RequestParam("id") Integer userId,
+                                                       @ApiParam(required=true, value="权限Id数组")@RequestParam("permissionIds") String permissionIds) throws Exception {
 		SecurityUtils.getSubject().checkRole("Administrator");
 		String[] permissionStrings = permissionIds.split(Constants.SPACE);
 		if (userId != null && permissionStrings != null && permissionStrings.length > 0) {
@@ -454,7 +499,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	}
 
     /**
-     * 四. 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单（含首节点）
+     * 四. 根据所选用户，动态自定义构建用户成员及下级用户的树形菜单（含首节点）
      * @param orgId
      * @param userType
      * @return
@@ -462,7 +507,10 @@ public class SysUserController extends BaseController<SysUser, Integer>{
      */
     @RequestMapping(value = "/getFirstDynamicUserTree/{orgId}/{userType}", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> getFirstDynamicUserTree(@PathVariable("orgId")Integer orgId, @PathVariable("userType")Integer userType) throws Exception {
+    @ApiOperation(value = "根据所选用户，动态自定义构建用户成员及下级用户的树形菜单（含首节点）", httpMethod = "POST", response = Map.class, notes = "根据所选用户，动态自定义构建用户成员及下级用户的树形菜单（含首节点）",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+    public Map<String, Object> getFirstDynamicUserTree(@ApiParam(required=true, value="用户Id")@PathVariable("orgId")Integer orgId,
+                                                       @ApiParam(required=true, value="用户类型")@PathVariable("userType")Integer userType) throws Exception {
         Map<String, Object> result = Maps.newHashMap();
         List<DynamicUserTreeNode> resultList = sysUserAdvanceService.getFirstDynamicUserTree(orgId, userType);
         Map<String, Object> dataMap = super.wrapQueryResult(resultList);
@@ -473,7 +521,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
     }
 
     /**
-     * 四. 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单
+     * 四. 根据所选用户，动态自定义构建用户成员及下级用户的树形菜单
      * @param orgId
      * @param userType
      * @return
@@ -481,7 +529,10 @@ public class SysUserController extends BaseController<SysUser, Integer>{
      */
     @RequestMapping(value = "/getChoseDynamicUserTree/{orgId}/{userType}", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> getChoseDynamicUserTree(@PathVariable("orgId")Integer orgId, @PathVariable("userType")Integer userType) throws Exception {
+    @ApiOperation(value = "根据所选用户，动态自定义构建用户成员及下级用户的树形菜单", httpMethod = "POST", response = Map.class, notes = "根据所选用户，动态自定义构建用户成员及下级用户的树形菜单",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+    public Map<String, Object> getChoseDynamicUserTree(@ApiParam(required=true, value="用户Id")@PathVariable("orgId")Integer orgId,
+                                                       @ApiParam(required=true, value="用户类型")@PathVariable("userType")Integer userType) throws Exception {
         Map<String, Object> result = Maps.newHashMap();
         List<DynamicUserTreeNode> resultList = sysUserAdvanceService.getChoseDynamicUserTree(orgId, userType);
         Map<String, Object> dataMap = super.wrapQueryResult(resultList);
@@ -492,7 +543,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
     }
 
 //    /**
-//     * 五.动态搜索用户属性，构建当前登录人组织成员及父类所有组织树
+//     * 五.动态搜索用户属性，构建当前登录人用户成员及父类所有用户树
 //     * @param u
 //     * @return
 //     * @throws Exception

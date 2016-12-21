@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ public class ProcessAuditController extends BaseController<ProcessAudit, Integer
 	/**
 	 * 显示各流程审批配置
 	 */
+    @ApiOperation(value = "查询所有审批人", httpMethod = "POST", notes = "查询所有审批人", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> query(ProcessAudit o) throws Exception {		
 		Map<String, Object> result = Maps.newHashMap();
 		List<ProcessAudit> list = new ArrayList<ProcessAudit>(processAuditCache.getValues());

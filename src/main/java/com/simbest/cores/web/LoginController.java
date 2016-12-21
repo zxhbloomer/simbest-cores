@@ -1,10 +1,13 @@
 package com.simbest.cores.web;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,6 +71,8 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "登陆页", httpMethod = "GET", notes = "登陆页", response = String.class,
+            consumes="application/x-www-form-urlencoded")
 	public String openLoginView() {		
 		Subject currentUser = SecurityUtils.getSubject();
 		ShiroUser principal = (ShiroUser)currentUser.getPrincipal();
@@ -81,7 +86,10 @@ public class LoginController {
 
 	@RequestMapping(value="submit",method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse login(String username, String password) throws Exception {
+    @ApiOperation(value = "登陆", httpMethod = "POST", notes = "登陆", response = JsonResponse.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public JsonResponse login(@ApiParam(required=true, value="用户名")String username,
+                              @ApiParam(required=true, value="密码")String password) throws Exception {
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password.toCharArray());
 		JsonResponse res = new JsonResponse();		
 		try{
@@ -108,7 +116,10 @@ public class LoginController {
 	
 	@RequestMapping(value="ssologin",method = RequestMethod.POST)
 	@ResponseBody
-	public JsonResponse ssologin(String username, String token) throws Exception {
+    @ApiOperation(value = "单点登陆", httpMethod = "POST", notes = "单点登陆", response = JsonResponse.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public JsonResponse ssologin(@ApiParam(required=true, value="用户名")String username,
+                                 @ApiParam(required=true, value="密钥")String token) throws Exception {
 		JsonResponse res = new JsonResponse();	
 		String source = username+coreConfig.getCtx();				
 		String actual =Digests.encryptMD5(source);
@@ -142,6 +153,8 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "登陆失败返回", httpMethod = "POST", notes = "登陆失败返回", response = String.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public String onLoginFailed(HttpServletRequest request,RedirectAttributes redirectAttributes) {
 		String exceptionClassName = (String)request.getAttribute("shiroLoginFailure");
 		 String error = null;

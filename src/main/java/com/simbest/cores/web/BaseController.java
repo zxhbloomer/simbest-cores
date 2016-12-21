@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.simbest.cores.utils.pages.PageSupport;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,14 +83,18 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 		binder.registerCustomEditor(String.class, new StringNullEditor());
 		binder.registerCustomEditor(Date.class, new DateEditor());
 	}
-	
+
+    @ApiOperation(value = "打开列表表单", httpMethod = "GET", notes = "打开列表表单", response = Map.class,
+            consumes="application/x-www-form-urlencoded")
 	public ModelAndView openListView(Date ssDate, Date eeDate) throws Exception {
 		ModelAndView mav = new ModelAndView(listPage);
         mav.addObject("ssDate", ssDate==null?DateUtil.getCurrMonthFirstDay():DateUtil.getDate(ssDate));
       	mav.addObject("eeDate", eeDate==null?DateUtil.getNextMonthFirstDay():DateUtil.getDate(eeDate));
         return mav;
 	}
-	
+
+    @ApiOperation(value = "打开编辑表单", httpMethod = "GET", notes = "打开编辑表单", response = Map.class,
+            consumes="application/x-www-form-urlencoded")
 	public ModelAndView openFormView(Date ssDate, Date eeDate) throws Exception {
 		ModelAndView mav = new ModelAndView(formPage);
         mav.addObject("ssDate", ssDate==null?DateUtil.getCurrMonthFirstDay():DateUtil.getDate(ssDate));
@@ -99,7 +105,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/get", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> get(PK id) throws Exception {
+    @ApiOperation(value = "获取记录详情", httpMethod = "POST", notes = "获取记录详情", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> get(@ApiParam(required=true, value="实体主键")PK id) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		T o = getService().getById(id);
 		map.put("message", o != null ? "":"没有记录!");
@@ -111,7 +119,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/getOne", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public JsonResponse getOne(T param) throws Exception {
+    @ApiOperation(value = "获取单个记录详情", httpMethod = "POST", notes = "获取记录详情", response = JsonResponse.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public JsonResponse getOne(@ApiParam(required=true, value="实体表单传参")T param) throws Exception {
 		JsonResponse response = new JsonResponse();
 		T o = getService().getOne(param);
 		response.setMessage(o != null ? "":"没有记录!");
@@ -123,7 +133,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/query", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> query(T o) throws Exception {
+    @ApiOperation(value = "查询记录列表", httpMethod = "POST", notes = "获取记录详情", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> query(@ApiParam(required=true, value="实体表单传参")T o) throws Exception {
 		Collection<T> list = getService().getAll(o);
 		Map<String, Object> dataMap = wrapQueryResult((List<T>) list);
 		Map<String, Object> result = Maps.newHashMap();
@@ -136,7 +148,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> create(T o) throws Exception {
+    @ApiOperation(value = "创建记录", httpMethod = "POST", notes = "创建记录", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> create(@ApiParam(required=true, value="实体表单传参")T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			int ret = getService().create(o);
@@ -182,7 +196,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> update(T o) throws Exception {
+    @ApiOperation(value = "更新记录", httpMethod = "POST", notes = "更新记录", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> update(@ApiParam(required=true, value="实体表单传参")T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			int ret = getService().update(o);
@@ -227,7 +243,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> delete(@RequestParam("id") PK id) throws Exception {
+    @ApiOperation(value = "通过主键删除记录", httpMethod = "POST", notes = "通过主键删除记录", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> delete(@ApiParam(required=true, value="实体主键")@RequestParam("id") PK id) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			int ret = getService().delete(id);
@@ -265,7 +283,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/deleteObj", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> deleteObj(T o) throws Exception {
+    @ApiOperation(value = "通过实体属性删除记录", httpMethod = "POST", notes = "通过实体属性删除记录", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> deleteObj(@ApiParam(required=true, value="实体表单传参")T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			int ret = getService().delete(o);
@@ -303,7 +323,9 @@ public class BaseController<T extends GenericModel<T>, PK extends Serializable> 
 	@RequestMapping(value = "/deletes", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
 	@LogAudit
-	public Map<String, Object> deletes(@RequestBody PK[] ids) throws Exception {
+    @ApiOperation(value = "通过主键数组删除记录", httpMethod = "POST", notes = "通过主键数组删除记录", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
+	public Map<String, Object> deletes(@ApiParam(required=true, value="实体主键数组")@RequestBody PK[] ids) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			Set<PK> idSet = new HashSet<PK>(Arrays.asList(ids));

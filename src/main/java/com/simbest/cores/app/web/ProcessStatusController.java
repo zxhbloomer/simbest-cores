@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -78,8 +79,10 @@ public class ProcessStatusController extends BaseController<ProcessStatus, Long>
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/handleProcess/{action}/{processTypeId}/{processHeaderId}/{processStepId}/{receiptId}")	
+	@RequestMapping(value = "/handleProcess/{action}/{processTypeId}/{processHeaderId}/{processStepId}/{receiptId}", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "处理各流程", httpMethod = "POST", notes = "处理各流程", response = Map.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> handleProcess(@PathVariable("action") String action,
 			@PathVariable("processTypeId") Integer processTypeId,@PathVariable("processHeaderId") Integer processHeaderId,
 			@PathVariable("processStepId") Integer processStepId,@PathVariable("receiptId") Long receiptId) throws Exception {		
@@ -150,6 +153,8 @@ public class ProcessStatusController extends BaseController<ProcessStatus, Long>
 	 */
 	@RequestMapping(value = "/checkProcessRunning/{processHeaderCode}", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "检查是否还有在途流程正在执行中", httpMethod = "POST", notes = "检查是否还有在途流程正在执行中", response = Boolean.class,
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Boolean checkProcessRunning(@PathVariable("processHeaderCode") String processHeaderCode) throws Exception {
 		ProcessHeader h = processHeaderAdvanceService.loadByUnique(processHeaderCode);
 		return processStatusService.checkProcessRunning(h.getTypeId(), h.getHeaderId(), h.getHversion());

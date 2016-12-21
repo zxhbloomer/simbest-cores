@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -40,6 +41,8 @@ public class SysLoginInfoController {
 
 	@RequiresPermissions("admin:syslog:login:submenu")
 	@RequestMapping(value = "/syslogininfoList", method = RequestMethod.GET)
+    @ApiOperation(value = "打开登陆日志表单", httpMethod = "GET", notes = "打开登陆日志表单",
+            consumes="application/x-www-form-urlencoded")
 	public ModelAndView syslogininfoList() throws Exception {
 		ModelAndView mav = new ModelAndView();
 	    mav.addObject("topNav", "sysAdmin"); //topNav: 顶部导航的key
@@ -52,6 +55,8 @@ public class SysLoginInfoController {
 	@RequiresPermissions("admin:syslog:login:query")
 	@RequestMapping(value = "/query", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "查询登陆日志", httpMethod = "GET", response = Map.class, notes = "查询登陆日志",
+            consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> query() throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		SysLoginInfoExample ex = new SysLoginInfoExample();

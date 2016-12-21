@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.simbest.cores.model.JsonResponse;
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
@@ -44,6 +46,8 @@ public class LogoutController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "登出", httpMethod = "GET", notes = "登出", response = String.class,
+            consumes="application/x-www-form-urlencoded")
 	public String doLogout() {
 		Subject currentUser = SecurityUtils.getSubject();
 		ShiroUser principal = (ShiroUser)currentUser.getPrincipal();

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.simbest.cores.model.JsonResponse;
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
      */
     @RequestMapping(value="getProcessSeqCode",method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation(value = "获取流程下一序列号", httpMethod = "POST", notes = "获取流程下一序列号",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
     public JsonResponse getProcessSeqCode(){
         Map<String, Object> map = Maps.newHashMap();
         map.put("code",service.getProcessSeqCode());
@@ -89,6 +92,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 
 	@RequestMapping(value = "/createArchive", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "创建归档流程", httpMethod = "POST", notes = "创建归档流程",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> createArchive(T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		T ret;
@@ -137,6 +142,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/updateArchive", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "修改归档流程", httpMethod = "POST", notes = "修改归档流程",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> updateArchive(T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		T ret;
@@ -185,6 +192,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/updateArchiveStep", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "审批归档流程", httpMethod = "POST", notes = "审批归档流程",
+            produces="application/json",consumes="application/x-www-form-urlencoded")
 	public Map<String, Object> updateArchiveStep(@RequestParam("id")PK id, @RequestParam("result")ProcessEnum result, 
 			@RequestParam("opinion")String opinion, String auditUser, String auditRole) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
@@ -219,6 +228,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/updateArchiveStepJson", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
+    @ApiOperation(value = "审批归档流程", httpMethod = "POST", notes = "审批归档流程",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> updateArchiveStepJson(@RequestBody ProcessJsonData<T, PK> data) throws Exception {	
 		T returnProcess = null;
 		Map<String, Object> map = Maps.newHashMap();		
@@ -249,6 +260,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/createOnce", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "创建流水流程", httpMethod = "POST", notes = "创建流水流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> createOnce(T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		T ret;
@@ -297,6 +310,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/updateOnce", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "修改流水流程", httpMethod = "POST", notes = "修改流水流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> updateOnce(T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		T ret;
@@ -345,6 +360,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/updateOnceStep", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "审批流水流程", httpMethod = "POST", notes = "审批流水流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> updateOnceStep(@RequestParam("id")PK id, @RequestParam("result")ProcessEnum result, 
 			@RequestParam("opinion")String opinion, String auditUser, String auditRole) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
@@ -378,6 +395,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	
 	@RequestMapping(value = "/updateOnceStepJson", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
 	@ResponseBody
+    @ApiOperation(value = "审批流水流程", httpMethod = "POST", notes = "审批流水流程",
+            produces="application/json",consumes="application/json")
 	public Map<String, Object> updateOnceStepJson(@RequestBody ProcessJsonData<T, PK> data) throws Exception {	
 		T returnProcess = null;
 		Map<String, Object> map = Maps.newHashMap();		
@@ -409,6 +428,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	@SuppressWarnings("deprecation")
     @RequestMapping(value = "/queryAll", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询所有流程", httpMethod = "POST", notes = "查询所有流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> queryAll(T o) throws Exception {
 		return queryArchive(o);
 	}
@@ -416,6 +437,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
     @SuppressWarnings("deprecation")
 	@RequestMapping(value = "/queryMy", method = RequestMethod.POST)
 	@ResponseBody
+    @ApiOperation(value = "查询我的流程", httpMethod = "POST", notes = "查询我的流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> queryMy(T o) throws Exception {
 		ShiroUser currentUser = appUserSession.getCurrentUser();
 		o.setCreateUserId(currentUser.getUserId());// 只查个人单据	
@@ -427,6 +450,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 */
 	@Override
 	@Deprecated
+    @ApiOperation(value = "查询我的流程", httpMethod = "POST", notes = "查询我的流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> query(T o) throws Exception {
 		return queryMy(o);
 	}
@@ -440,6 +465,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	@RequestMapping(value = "/queryArchive", method = RequestMethod.POST)
 	@ResponseBody
 	@Deprecated
+    @ApiOperation(value = "查询所有归档流程", httpMethod = "POST", notes = "查询所有归档流程",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> queryArchive(T o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		if(null != o.getIscg()){
@@ -466,6 +493,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * 重载父类，加载流程相关其他数据
 	 */
 	@Override
+    @ApiOperation(value = "查询流程详情", httpMethod = "POST", notes = "查询流程详情",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> get(PK id) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		T o = getService().getById(id);
@@ -480,6 +509,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * 重载父类，只更新业务流程时，不更改任何流程相关数据
 	 */
 	@Override
+    @ApiOperation(value = "修改流程详情", httpMethod = "POST", notes = "修改流程详情",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> update(T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
@@ -528,6 +559,7 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * 重载父类，不支持直接创建业务数据
 	 */
 	@Override
+    @ApiOperation(value = "不可直接新增流程", httpMethod = "POST", notes = "不可直接新增流程")
 	public Map<String, Object> create(T o) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		map.put("responseid", 0);
@@ -539,6 +571,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * 重载父类，撤销申请时，删除业务数据及流程相关信息
 	 */
 	@Override
+    @ApiOperation(value = "删除流程详情", httpMethod = "POST", notes = "撤销申请时，删除业务数据及流程相关信息",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> delete(@RequestParam("id") PK id) throws Exception{
 		Map<String, Object> map = Maps.newHashMap();
 		try {
@@ -577,6 +611,8 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	@RequestMapping(value = "/deleteDraft", method = RequestMethod.POST)
 	@ResponseBody
 	@LogAudit
+    @ApiOperation(value = "删除草稿", httpMethod = "POST", notes = "删除草稿",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> deleteDraft(@RequestParam("id") PK id) throws Exception{
 		Map<String, Object> map = Maps.newHashMap();
 		try {
@@ -618,8 +654,10 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/getAuditUsers")
+	@RequestMapping(value = "/getAuditUsers", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "获取待办审批人", httpMethod = "GET", notes = "获取待办审批人",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> getAuditUsers(@RequestParam("id")PK id) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
 		Collection<KeyValue<Integer,String>> optionsList = service.getAuditUsers(id);
@@ -636,8 +674,10 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/getAuditUsersTree")
+	@RequestMapping(value = "/getAuditUsersTree", method = RequestMethod.GET)
 	@ResponseBody
+    @ApiOperation(value = "选择审批人信息", httpMethod = "GET", notes = "选择审批人信息(树形菜单形式)",
+            produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> getAuditUsersTree(@RequestParam("id")PK id) throws Exception {
 		return service.getAuditUsersTree(id);
 	}

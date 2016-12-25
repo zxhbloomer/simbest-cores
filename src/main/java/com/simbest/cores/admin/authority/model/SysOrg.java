@@ -3,6 +3,8 @@ package com.simbest.cores.admin.authority.model;
 import com.google.common.collect.ComparisonChain;
 import com.simbest.cores.model.SystemModel;
 import com.simbest.cores.utils.annotations.*;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import javax.persistence.*;
 @Table(name = "sys_org")
 @ReferenceTables(joinTables={ @ReferenceTable(table="sys_org", value="上级组织"), 
 		@ReferenceTable(table="sys_user", value="组织与用户")})
+@ApiModel
 public class SysOrg extends SystemModel<SysOrg> {
 
 	private static final long serialVersionUID = -1447427183198771078L;
@@ -24,25 +27,30 @@ public class SysOrg extends SystemModel<SysOrg> {
 	@Column(name = "id")
     @SequenceGenerator(name="sys_org_seq", sequenceName="sys_org_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_org_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer id;
 	
 	@ExcelVOAttribute(name = "组织全路径", column = "D")
 	@Column(name = "description", length = 200)
+    @ApiModelProperty(value="组织全路径")
 	private String description;
 	
 	@ExcelVOAttribute(name = "组织编码", column = "A")
 	@NotNullColumn(value="组织编码")
 	@Column(name = "orgCode", length = 80, unique = true)
 	@Unique
+    @ApiModelProperty(value="组织编码")
 	private String orgCode;
 	
 	@ExcelVOAttribute(name = "组织名称", column = "C")
 	@NotNullColumn(value="组织名称")
 	@Column(name = "orgName", nullable = false, length = 100)
+    @ApiModelProperty(value="组织名称")
 	private String orgName;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="parent_id", nullable=true) //根节点允许为空
+    @ApiModelProperty(value="父级组织")
 	private SysOrg parent; 
 
 	@ExcelVOAttribute(name = "父组织编码", column = "B")
@@ -54,26 +62,32 @@ public class SysOrg extends SystemModel<SysOrg> {
 	
 	@NotNullColumn(value="组织级别")
 	@Column(nullable = true)
+    @ApiModelProperty(value="组织级别")
 	private Integer orgLevel; 
 	
 	@NotNullColumn(value="组织分类")
 	@Column(nullable = true)
+    @ApiModelProperty(value="组织分类")
 	private Integer orgCategory;
 
     @NotNullColumn(value="组织类型")
     @Column(nullable = true)
+    @ApiModelProperty(value="组织类型")
     private Integer orgType;
 
     @ExcelVOAttribute(name = "显示顺序", column = "E")
 	@Column(nullable = true)
+    @ApiModelProperty(value="显示顺序")
 	private Integer orderBy; 
 	
 	@ExcelVOAttribute(name = "简称", column = "G")
 	@Column(nullable = true)
+    @ApiModelProperty(value="简称")
 	private String shortName; 
 	
 	@ExcelVOAttribute(name = "备注描述", column = "F")	
 	@Column(nullable = true)
+    @ApiModelProperty(value="备注描述")
 	private String remark; 
 	
 	public SysOrg() {

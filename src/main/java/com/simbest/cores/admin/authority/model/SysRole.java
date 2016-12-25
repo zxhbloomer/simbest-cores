@@ -12,33 +12,41 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.annotations.ReferenceTable;
 import com.simbest.cores.utils.annotations.ReferenceTables;
 import com.simbest.cores.utils.annotations.Unique;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "sys_role")
 @ReferenceTables(joinTables={ @ReferenceTable(table="sys_user_role", value="用户与角色"),
 		@ReferenceTable(table="sys_role_permission", value="角色与权限")})
+@ApiModel
 public class SysRole extends SystemModel<SysRole> {
 	private static final long serialVersionUID = 3690197650654049848L;
 	@Id
 	@Column(name = "id")
     @SequenceGenerator(name="sys_role_seq", sequenceName="sys_role_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_role_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer id;
 	
 	@NotNullColumn(value="角色编码")
 	@Column(nullable = false, unique = true, length = 100)
 	@Unique
+    @ApiModelProperty(value="角色编码")
 	private String name;
 	
 	@Column(length = 200)
+    @ApiModelProperty(value="角色名称")
 	private String description;
 	
 	@NotNullColumn(value="角色类型")
 	@Column(nullable = false, length = 50)
+    @ApiModelProperty(value="角色类型")
 	private String type;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "sys_role_permission", joinColumns = { @JoinColumn(name = "role_id") }, inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @ApiModelProperty(value="相关权限")
 	private List<SysPermission> permissionList = new ArrayList<SysPermission>(); // 有序的关联对象集合
 	
 	public static void main(String[] args) {

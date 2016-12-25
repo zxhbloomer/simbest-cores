@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 业务审批代理
@@ -18,6 +20,7 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
 @Entity
 @Table(name = "app_process_agent")
 @XmlRootElement
+@ApiModel
 public class ProcessAgent extends GenericModel<ProcessAgent> {
 	/**
 	 * 
@@ -28,42 +31,52 @@ public class ProcessAgent extends GenericModel<ProcessAgent> {
 	@Column(name = "agentId")
     @SequenceGenerator(name="app_process_agent_seq", sequenceName="app_process_agent_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_agent_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer agentId;
 	
 	@NotNullColumn(value="业务类型")
 	@Column(name = "typeId", nullable = false)
+    @ApiModelProperty(value="业务类型Id")
 	private Integer typeId;
 	
-	@NotNullColumn(value="业务单据")
+	@NotNullColumn(value="业务描述")
 	@Column(name = "headerId", nullable = false)
+    @ApiModelProperty(value="业务描述Id")
 	private Integer headerId;
 	
 	@Transient
 	private String headerDesc;
 	
 	@Column(name = "userId", nullable = false)
+    @ApiModelProperty(value="用户Id")
 	private Integer userId; 
 	 
 	@Column(name = "agentUserId", nullable = false)
+    @ApiModelProperty(value="代理Id")
 	private Integer agentUserId;
 	
 	@Transient
 	private String agentUserIds;
 	
 	@Column(name = "agentUserCode", nullable = false)
+    @ApiModelProperty(value="代理编码")
 	private String agentUserCode;
 	
 	@Column(name = "agentUserName", nullable = false)
+    @ApiModelProperty(value="代理名称")
 	private String agentUserName;
 	
 	@Temporal(TemporalType.DATE) 
 	@Column(name = "beginDate", nullable = false)
+    @ApiModelProperty(value="生效时间")
 	private Date beginDate;
 	
 	@Column(name = "expires", nullable = true)
+    @ApiModelProperty(value="到期时效")
 	private Integer expires;
 	
 	@Column(name = "valid", nullable = false, columnDefinition = "int default 1")
+    @ApiModelProperty(value="是否有效")
 	private Boolean valid;
 	
 	public ProcessAgent() {

@@ -9,6 +9,8 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * @author Li
@@ -16,6 +18,7 @@ import com.simbest.cores.model.GenericModel;
  */
 @Entity
 @Table(name = "sys_task_record_job_running")
+@ApiModel
 public class RecordJobRunningResult extends GenericModel<RecordJobRunningResult>{
 
 	
@@ -27,20 +30,28 @@ public class RecordJobRunningResult extends GenericModel<RecordJobRunningResult>
 	@Id
     @SequenceGenerator(name="sys_task_record_job_run_seq", sequenceName="sys_task_record_job_run_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_task_record_job_run_seq")
+    @ApiModelProperty(value="主键Id")
 	private Long id;
-	
+
+    @ApiModelProperty(value="任务名称")
 	private String jobName;
-	
+
+    @ApiModelProperty(value="任务启动时间")
 	private Date runStartTime;
-	
+
+    @ApiModelProperty(value="任务结束时间")
 	private Date runEndTime;
-	
+
+    @ApiModelProperty(value="用时/秒")
 	private Integer useSeconds;
-	
+
+    @ApiModelProperty(value="运行情况")
 	private String content;
 
+    @ApiModelProperty(value="记录写入时间")
 	private Date createDate;
-	
+
+    @ApiModelProperty(value="运行结果")
 	private Boolean result;
 	
 	/**

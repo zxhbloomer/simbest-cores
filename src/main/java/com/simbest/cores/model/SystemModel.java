@@ -12,19 +12,24 @@ import javax.persistence.TemporalType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.exceptions.AppException;
 import com.simbest.cores.utils.annotations.ProcessProperty;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @MappedSuperclass
+@ApiModel
 public abstract class SystemModel<T> extends GenericModel<T>{
     private static final long serialVersionUID = -1643479703949912244L;
 	
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "createDate", nullable = false)
 	@ProcessProperty
+    @ApiModelProperty(value="创建时间")
 	protected Date createDate;
 
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "updateDate")
 	@ProcessProperty
+    @ApiModelProperty(value="更新时间")
 	protected Date updateDate;
 	
 	/**

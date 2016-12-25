@@ -3,6 +3,8 @@ package com.simbest.cores.app.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,6 +17,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "app_process_task_callbackretry")
+@ApiModel
 public class ProcessTaskCallbackRetry extends GenericModel<ProcessTaskCallbackRetry>{
 
 
@@ -24,41 +27,47 @@ public class ProcessTaskCallbackRetry extends GenericModel<ProcessTaskCallbackRe
     @Column(name = "id")
     @SequenceGenerator(name="app_callback_retry_seq", sequenceName="app_callback_retry_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_callback_retry_seq")
+    @ApiModelProperty(value="主键Id")
     private Integer id;
 
     @Column(name = "processServiceClass", nullable = false)
+    @ApiModelProperty(value="流程服务Bean")
 	private String processServiceClass;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "lastExecuteDate", nullable = false)
+    @ApiModelProperty(value="最后执行时间")
     private Date lastExecuteDate;
 
     @Column(name = "executeTimes", nullable = false)
+    @ApiModelProperty(value="执行次数")
     private Integer executeTimes;
 
     @Column(name = "callbackType", nullable = false)
+    @ApiModelProperty(value="回调类型")
     private String callbackType;
 
+    @ApiModelProperty(value="任务Id")
     private Long taskId;
 
-    @NotNullColumn(value="业务类型")
     @Column(name = "typeId", nullable = false)
+    @ApiModelProperty(value="流程类型Id")
     private Integer typeId;
 
-    @NotNullColumn(value="业务单据")
     @Column(name = "headerId", nullable = false)
+    @ApiModelProperty(value="流程头Id")
     private Integer headerId;
 
-    @NotNullColumn(value="业务单据Id")
     @Column(name = "receiptId", nullable = false)
+    @ApiModelProperty(value="业务单据Id")
     private Long receiptId;
 
-    @NotNullColumn(value="业务当前环节")
     @Column(name = "stepId", nullable = false)
+    @ApiModelProperty(value="当前环节Id")
     private Integer stepId;
 
-    @NotNullColumn(value="受理人")
     @Column(name = "currentUserId", nullable = true, length = 50)
+    @ApiModelProperty(value="受理人Id")
     private Integer currentUserId;
 
 

@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.Unique;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 
 /**
@@ -54,6 +56,7 @@ import com.simbest.cores.utils.annotations.Unique;
  */
 @Entity
 @Table(name = "sys_task_trigger_def")
+@ApiModel
 public class TaskTriggerDefinition extends GenericModel<TaskTriggerDefinition> {
 
 	/**
@@ -64,20 +67,27 @@ public class TaskTriggerDefinition extends GenericModel<TaskTriggerDefinition> {
 	@Id
     @SequenceGenerator(name="sys_task_trigger_def_seq", sequenceName="sys_task_trigger_def_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_task_trigger_def_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer id;
 
 	@Column(length = 100, nullable = false, unique = true)
 	@Unique
+    @ApiModelProperty(value="任务名称")
 	private String jobname;
 
+    @ApiModelProperty(value="月份")
 	private String whenmonth;
-	
+
+    @ApiModelProperty(value="日期")
 	private String whenday;
-	
+
+    @ApiModelProperty(value="小时")
 	private String whenhour;
-	
+
+    @ApiModelProperty(value="分钟")
 	private String whenminute;
-	
+
+    @ApiModelProperty(value="最大尝试次数")
 	@Column(name = "maxFireTimes", nullable = true)
 	private Integer maxFireTimes;
 	

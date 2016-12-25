@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.admin.authority.model.SysOrg;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,6 +18,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "app_process_task_callback_log")
+@ApiModel
 public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog> {
 
 
@@ -25,28 +28,36 @@ public class ProcessTaskCallbackLog extends GenericModel<ProcessTaskCallbackLog>
     @Column(name = "id")
     @SequenceGenerator(name="app_callback_log_seq", sequenceName="app_callback_log_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_callback_log_seq")
+    @ApiModelProperty(value="主键Id")
     private Integer id;
 
+    @ApiModelProperty(value="任务Id")
     private Long taskId;
 
     @Column(name = "callbackType", nullable = false)
+    @ApiModelProperty(value="回调类型")
 	private String callbackType;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "callbackStartDate", nullable = false)
+    @ApiModelProperty(value="回调开始时间")
 	private Date callbackStartDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "callbackEndDate", nullable = false)
+    @ApiModelProperty(value="回调结束时间")
     private Date callbackEndDate;
 
     @Column(name = "callbackDuration", nullable = false)
+    @ApiModelProperty(value="回调持续时间")
     private Long callbackDuration;
 
     @Column(name = "callbackResult", nullable = false, columnDefinition = "int default 1")
+    @ApiModelProperty(value="回调结果")
     protected Boolean callbackResult;
 
     @Column(name = "callbackError", nullable = true, length = 2000)
+    @ApiModelProperty(value="回调错误信息")
     private String callbackError;
 
 

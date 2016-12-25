@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.enums.ProcessEnum;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 业务审批组织对应(一个ProcessAudit对应多个ProcessStep)
@@ -17,6 +19,7 @@ import com.simbest.cores.utils.enums.ProcessEnum;
 @Entity
 @Table(name = "app_process_audit", uniqueConstraints={@UniqueConstraint(columnNames={"submitUserId", "submitOrgId", "processStepId", "aversion"})})
 @XmlRootElement
+@ApiModel
 public class ProcessAudit extends GenericModel<ProcessAudit> {
 
 	/**
@@ -28,10 +31,12 @@ public class ProcessAudit extends GenericModel<ProcessAudit> {
 	@Column(name = "auditId")
     @SequenceGenerator(name="app_process_audit_seq", sequenceName="app_process_audit_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_audit_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer auditId;
 		
 	@Column(name = "submitUserId", nullable = true, length = 100) //根据发起人，确定审批配置后，先加载审批对象给前端用户进行选择，然后再根据选择结果触发待办（若为空，再判断组织）
 	@JsonIgnore
+    @ApiModelProperty(value="发起人Id")
 	private String submitUserId; 
 	
 	@Transient
@@ -43,27 +48,32 @@ public class ProcessAudit extends GenericModel<ProcessAudit> {
 	 */		
 	@Column(name = "submitOrgId", nullable = true, length = 100) //根据发起部门，确定审批配置后，直接触发待办（若为空，则所有部门均为此审批配置）
 	@JsonIgnore
+    @ApiModelProperty(value="发起部门Id")
 	private String submitOrgId; 
 	
 	@Transient
 	private String submitOrgIds;
 	
-	@NotNullColumn(value="审批类型 ") //audit_role("基于角色"), audit_user("基于用户"), audit_both("分支审批, subjects可为空")
+	@NotNullColumn(value="审批类型") //audit_role("基于角色"), audit_user("基于用户"), audit_both("分支审批, subjects可为空")
 	@Column(name = "subjectType", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="审批类型")
 	private ProcessEnum subjectType;
 	
 	@NotNullColumn(value="审批对象")  //支持保存多个SysRoleId 或者 多个SysUserId
 	@Column(name = "subjects", nullable = true)
+    @ApiModelProperty(value="审批对象")
 	private String subjects;
     
     @NotNullColumn(value="流程环节")
 	@ManyToOne
 	@JoinColumn(name = "processStepId", nullable = false)
+    @ApiModelProperty(value="流程环节")
 	private ProcessStep processStep;
 	
 	@Column(name = "aversion", nullable = false)
     @JsonIgnore
+    @ApiModelProperty(value="版本号")
     private Integer aversion;
 		
 	@Transient	

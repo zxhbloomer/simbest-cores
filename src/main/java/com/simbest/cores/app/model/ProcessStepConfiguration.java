@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.enums.ProcessEnum;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 流程环节跃迁附加配置
@@ -25,6 +27,7 @@ import com.simbest.cores.utils.enums.ProcessEnum;
  */
 @Entity
 @Table(name = "app_process_step_configuration")
+@ApiModel
 public class ProcessStepConfiguration extends GenericModel<ProcessStepConfiguration> {
 	/**
 	 * 
@@ -40,31 +43,38 @@ public class ProcessStepConfiguration extends GenericModel<ProcessStepConfigurat
     @SequenceGenerator(name="app_configuration_seq", sequenceName="app_configuration_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_configuration_seq")
 	@JsonIgnore
+    @ApiModelProperty(value="主键Id")
 	private Integer configurationId;
 
 	@Column(name = "logic", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="配置逻辑")
 	private logical logic;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "configuration")
+    @ApiModelProperty(value="配置条件")
 	private List<ProcessStepCondition> conditions;
 
-	@NotNullColumn(value="审批类型 ") //audit_role("基于角色"), audit_user("基于用户")
+	@NotNullColumn(value="审批类型") //audit_role("基于角色"), audit_user("基于用户")
 	@Column(name = "subjectType", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="审批类型")
 	private ProcessEnum subjectType;
 	
 	@NotNullColumn(value="审批对象")  //支持保存多个SysRoleId 或者 多个SysUserId
 	@Column(name = "subjects", nullable = false)
+    @ApiModelProperty(value="审批对象")
 	private String subjects;
 
 	@ManyToOne
 	@JoinColumn(name = "processStepId", nullable = false)
 	@JsonIgnore
+    @ApiModelProperty(value="环节Id")
 	private ProcessStep processStep;
 	
 	@Column(name = "cversion", nullable = false)
 	@JsonIgnore
+    @ApiModelProperty(value="版本号")
     private Integer cversion;
 	
 	public ProcessStepConfiguration() {

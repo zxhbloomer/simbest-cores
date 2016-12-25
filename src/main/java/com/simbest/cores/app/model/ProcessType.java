@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.annotations.Unique;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 业务流程分类
@@ -16,6 +18,7 @@ import com.simbest.cores.utils.annotations.Unique;
 @Entity
 @Table(name = "app_process_type")
 @XmlRootElement
+@ApiModel
 public class ProcessType extends GenericModel<ProcessType> {
 
 	/**
@@ -27,15 +30,18 @@ public class ProcessType extends GenericModel<ProcessType> {
 	@Column(name = "typeId")
     @SequenceGenerator(name="app_process_type_seq", sequenceName="app_process_type_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_type_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer typeId;
 
 	@NotNullColumn(value="流程类型编码")
 	@Column(name = "typeCode", unique=true, nullable = false, length = 20)
 	@Unique
+    @ApiModelProperty(value="流程类型编码")
 	private String typeCode;
 
 	@NotNullColumn(value="流程类型描述")
 	@Column(name = "typeDesc", nullable = false, length = 200)
+    @ApiModelProperty(value="流程类型描述")
 	private String typeDesc;
 
 	/**

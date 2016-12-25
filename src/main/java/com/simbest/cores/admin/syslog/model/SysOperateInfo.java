@@ -6,9 +6,12 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.BaseObject;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "sys_operate_info")
+@ApiModel
 public class SysOperateInfo extends BaseObject<SysOperateInfo> {
 
 	private static final long serialVersionUID = -3874521401642957554L;
@@ -17,30 +20,45 @@ public class SysOperateInfo extends BaseObject<SysOperateInfo> {
 	@Column(name = "id")
     @SequenceGenerator(name="sys_operate_info_seq", sequenceName="sys_operate_info_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_operate_info_seq")
+    @ApiModelProperty(value="主键Id")
 	private Long id;
+
+
 	@Column(name = "client_ip")
+    @ApiModelProperty(value="客户端IP")
 	private String clientIp;
+
 	@Column(name = "fun_code")
+    @ApiModelProperty(value="功能编码")
 	private String funCode;
+
 	@Column(name = "fun_name")
-	private String funName;
+    @ApiModelProperty(value="功能名称")
+    private String funName;
 
 	@Column(name = "loginname", nullable = false, length = 50)
+    @ApiModelProperty(value="登陆标识")
 	private String loginname;
 
 	@Column(name = "moudle_code")
+    @ApiModelProperty(value="模块编码")
 	private String moudleCode;
 
 	@Column(name = "moudle_name")
+    @ApiModelProperty(value="模块名称")
 	private String moudleName;
 
 	@Column(name = "operatetime")
+    @ApiModelProperty(value="操作Id")
 	private Date operatetime;
 
 	@Column(name = "sessionid", nullable = false, length = 100)
+    @ApiModelProperty(value="回话Id")
 	private String sessionid;
+
 	@Column(name = "username", nullable = false, length = 50)
-	private String username;
+    @ApiModelProperty(value="用户名称")
+    private String username;
 
 	public SysOperateInfo(Long id, String clientIp, String funCode,
 			String funName, String loginname, String moudleCode,

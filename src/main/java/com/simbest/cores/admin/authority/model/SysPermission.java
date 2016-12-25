@@ -7,11 +7,14 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.annotations.ReferenceTable;
 import com.simbest.cores.utils.annotations.ReferenceTables;
 import com.simbest.cores.utils.annotations.Unique;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "sys_permission")
 @ReferenceTables(joinTables={ @ReferenceTable(table="sys_permission", value="上级权限"), 
 		@ReferenceTable(table="sys_role_permission", value="角色与权限")})
+@ApiModel
 public class SysPermission extends SystemModel<SysPermission> {
 	/**
 	 * 
@@ -22,32 +25,40 @@ public class SysPermission extends SystemModel<SysPermission> {
 	@Column(name = "id")
     @SequenceGenerator(name="sys_permission_seq", sequenceName="sys_permission_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_permission_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer id;
 
 	@NotNullColumn(value="资源描述")
 	@Column(length = 200, nullable = false)
+    @ApiModelProperty(value="资源描述")
 	private String description;
 
 	@NotNullColumn(value="资源编码")
 	@Column(length = 100, nullable = false, unique = true)
 	@Unique
+    @ApiModelProperty(value="资源编码")
 	private String name;
 
 	@NotNullColumn(value="访问地址")
 	@Column(length = 1000, unique = false)
+    @ApiModelProperty(value="访问地址")
 	private String url;
 	
 	@NotNullColumn(value="资源类型")
 	@Column(length = 10, nullable = false)
+    @ApiModelProperty(value="资源类型")
 	private String type;
 	
 	@Column(length = 100)
+    @ApiModelProperty(value="字体图标")
 	private String icon;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="parent_id", nullable=true) //根节点允许为空
-	private SysPermission parent; 
-	public static enum TYPE{system, module, menu, submenu, button};
+    @ApiModelProperty(value="父级资源")
+	private SysPermission parent;
+
+	public enum TYPE{system, module, menu, submenu, button};
 
 	@Transient
 	private Integer parentId;

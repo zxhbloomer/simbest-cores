@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.annotations.Unique;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 业务流程头
@@ -19,6 +21,7 @@ import com.simbest.cores.utils.annotations.Unique;
 @Entity
 @Table(name = "app_process_header")
 @XmlRootElement
+@ApiModel
 public class ProcessHeader extends GenericModel<ProcessHeader> {
 
 	/**
@@ -30,29 +33,35 @@ public class ProcessHeader extends GenericModel<ProcessHeader> {
 	@Column(name = "headerId")
     @SequenceGenerator(name="app_process_header_seq", sequenceName="app_process_header_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_header_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer headerId;
 
 	@NotNullColumn(value="流程编码")
 	@Column(name = "headerCode", unique=true, nullable = false, length = 50)
 	@Unique
+    @ApiModelProperty(value="流程编码")
 	private String headerCode;
 
 	@NotNullColumn(value="流程描述")
 	@Column(name = "headerDesc", nullable = false, length = 200)
+    @ApiModelProperty(value="流程描述")
 	private String headerDesc;
-    
-	//流程分类
+
 	@NotNullColumn(value="流程类型")
 	@Column(name = "typeId", nullable = false)
+    @ApiModelProperty(value="流程类型Id")
     private Integer typeId;
 	
 	@OneToMany(mappedBy = "header")
-	private List<ProcessStep> steps = new ArrayList<ProcessStep>();
+    @ApiModelProperty(value="环节信息")
+    private List<ProcessStep> steps = new ArrayList<ProcessStep>();
 	
 	@Column(name = "enabled", nullable = false, columnDefinition = "int default 1")
-	private Boolean enabled;
+    @ApiModelProperty(value="是否可用")
+    private Boolean enabled;
 	
 	@Column(name = "hversion", nullable = false)
+    @ApiModelProperty(value="版本号")
     private Integer hversion;
 	
     @Transient

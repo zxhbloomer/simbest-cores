@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.simbest.cores.model.GenericModel;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 流程环节跃迁附加条件
@@ -16,6 +18,7 @@ import com.simbest.cores.model.GenericModel;
  */
 @Entity
 @Table(name = "app_process_step_condition")
+@ApiModel
 public class ProcessStepCondition extends GenericModel<ProcessStepCondition>{
 	/**
 	 * 
@@ -31,20 +34,25 @@ public class ProcessStepCondition extends GenericModel<ProcessStepCondition>{
     @SequenceGenerator(name="app_condition_seq", sequenceName="app_condition_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_condition_seq")
 	@JsonIgnore
+    @ApiModelProperty(value="主键Id")
 	private Integer conditionId;
 	
 	@Column(name = "name", nullable = false, length = 20)
+    @ApiModelProperty(value="条件名称")
 	private String name;
 	
 	@Column(name = "opt", nullable = false, length = 10)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="条件操作符")
 	private operation opt;
-	
+
+    @ApiModelProperty(value="条件值")
 	private Object value;
 	
 	@ManyToOne
     @JoinColumn(name = "configurationId", nullable=false)
 	@JsonIgnore
+    @ApiModelProperty(value="条件配置")
 	private ProcessStepConfiguration configuration;
 	 
 	public ProcessStepCondition() {

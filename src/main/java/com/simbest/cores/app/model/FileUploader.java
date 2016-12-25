@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 import com.simbest.cores.model.LogicModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 文档信息
@@ -15,6 +17,7 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
 //		@UniqueConstraint(columnNames={"attr1", "receiptId","fileClass"})})
 @Table(name = "app_file_upload", uniqueConstraints={
         @UniqueConstraint(columnNames={"attr1", "receiptId","fileClass"})})
+@ApiModel
 public class FileUploader extends LogicModel<FileUploader> {
 
 	/**
@@ -26,49 +29,61 @@ public class FileUploader extends LogicModel<FileUploader> {
 	@Column(name = "id")
     @SequenceGenerator(name="app_file_upload_seq", sequenceName="app_file_upload_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_file_upload_seq")
+    @ApiModelProperty(value="主键Id")
 	private Long id;
 
 	@Column(name = "description", length = 200)
+    @ApiModelProperty(value="文件描述")
 	private String description;
 
 	@NotNullColumn(value="流程类型")
-	@Column(name = "processTypeId") 
+	@Column(name = "processTypeId")
+    @ApiModelProperty(value="流程类型Id")
 	private Integer processTypeId;
 
 	@Transient
 	private String processTypeName;
 	
 	@NotNullColumn(value="流程描述")
-	@Column(name = "processHeaderId") 
+	@Column(name = "processHeaderId")
+    @ApiModelProperty(value="流程描述Id")
 	private Integer processHeaderId;	
 	
 	@Transient
 	private String processHeaderName;
 	
 	@Column(name = "receiptId")
-	private Long receiptId;          //适用于工作流实体
+    @ApiModelProperty(value="单据Id")
+    private Long receiptId;          //适用于工作流实体
 	
 	@Column(name = "receiptCode")    //适用于其他主键非Long型的实体
-	private String receiptCode;
+    @ApiModelProperty(value="单据编码")
+    private String receiptCode;
 	
-	@NotNullColumn(value="文件用途分类 ")
+	@NotNullColumn(value="文件分类")
 	@Column(name = "fileClass", nullable=false, length = 100)
+    @ApiModelProperty(value="文件分类")
 	private String fileClass;
 	
 	@Column(name = "finalName", length = 100) //先记录MD5不存储文件，因此该字段可能没值
+    @ApiModelProperty(value="文件名")
 	private String finalName;
 	
 	@Column(name = "filePath", length = 255) //先记录MD5不存储文件，因此该字段可能没值
-	private String filePath;
+    @ApiModelProperty(value="存储路径")
+    private String filePath;
 	
 	@Column(name = "fileSize", length = 50)
+    @ApiModelProperty(value="文件大小")
 	private Long fileSize;
 	
 	@NotNullColumn(value="提交部门信息")
 	@Column(name = "orgId")
+    @ApiModelProperty(value="提交部门信息Id")
 	private Integer orgId; 	 
 	
 	@Column(name = "attr1", length = 100) //MD5校验值
+    @ApiModelProperty(value="文件MD5校验值")
 	private String attr1;
 	
 	@Column(name = "attr2", length = 100)

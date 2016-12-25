@@ -4,6 +4,8 @@
 package com.simbest.cores.admin.authority.model;
 
 import com.simbest.cores.model.BaseObject;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 根据所选组织，动态自定义构建组织成员及下级组织的树形菜单
@@ -11,6 +13,7 @@ import com.simbest.cores.model.BaseObject;
  * @author Li
  *
  */
+@ApiModel
 public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	/**
 	 * 
@@ -19,11 +22,17 @@ public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	/**
 	 * 
 	 */
+    @ApiModelProperty(value="组织或用户Id")
 	private Integer id;
+    @ApiModelProperty(value="组织或用户名称")
 	private String title;
+    @ApiModelProperty(value="组织父级Id")
 	private Integer pid;
+    @ApiModelProperty(value="用户级别")
 	private Integer level;
+    @ApiModelProperty(value="是否有儿子")
 	private boolean child;
+    @ApiModelProperty(value="标识组织或类型")
 	private String type;
 	/**
 	 * @return the id

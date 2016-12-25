@@ -3,6 +3,8 @@ package com.simbest.cores.app.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,6 +17,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "app_process_task", uniqueConstraints={@UniqueConstraint(columnNames={"typeId","headerId","receiptId","currentUserId"})})
+@ApiModel
 public class ProcessTask extends GenericModel<ProcessTask> {
 
 
@@ -27,93 +30,108 @@ public class ProcessTask extends GenericModel<ProcessTask> {
 	@Column(name = "id")
     @SequenceGenerator(name="app_process_task_seq", sequenceName="app_process_task_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_task_seq")
+    @ApiModelProperty(value="主键Id")
 	private Long id;
 	
 	@Column(name = "title")
-	private String title;
-	
-	@NotNullColumn(value="业务类型")
+    @ApiModelProperty(value="标题")
+    private String title;
+
 	@Column(name = "typeId", nullable = false)
+    @ApiModelProperty(value="流程类型Id")
 	private Integer typeId;
 
-	@NotNullColumn(value="业务单据")
 	@Column(name = "headerId", nullable = false)
+    @ApiModelProperty(value="流程头Id")
 	private Integer headerId;
 	
 	//所有业务单据的主键必须统一类型，否则无法写入待办和审批记录
-	@NotNullColumn(value="业务单据Id")
 	@Column(name = "receiptId", nullable = false)
+    @ApiModelProperty(value="业务单据Id")
 	private Long receiptId;
-	
-	@NotNullColumn(value="业务当前环节")
+
 	@Column(name = "stepId", nullable = false)
+    @ApiModelProperty(value="当前环节Id")
 	private Integer stepId;
 	
 	@Column(name = "stepCode", nullable = false, length = 20)
+    @ApiModelProperty(value="当前环节编码")
 	private String stepCode;
 
-	
-	@NotNullColumn(value="受理部门")
+
 	@Column(name = "currentOrgId", nullable = false)
+    @ApiModelProperty(value="当前组织Id")
 	private Integer currentOrgId; 
 	
 	@Column(name = "currentOrgName", nullable = false)
+    @ApiModelProperty(value="当前组织")
 	private String currentOrgName; 
-	
-	@NotNullColumn(value="受理人")
+
 	@Column(name = "currentUserId", nullable = false, length = 50)
+    @ApiModelProperty(value="当前用户Id")
 	private Integer currentUserId;	
 	
 	@Column(name = "currentUserCode", nullable = true, length = 50)
+    @ApiModelProperty(value="当前用户编码")
 	private String currentUserCode;	
 	
 	@Column(name = "currentUserName", nullable = false, length = 50)
+    @ApiModelProperty(value="当前用户Id")
 	private String currentUserName; 
-	
-	@NotNullColumn(value="创建部门")
+
 	@Column(name = "createOrgId", nullable = false)
+    @ApiModelProperty(value="创建组织Id")
 	private Integer createOrgId; 
 	
 	@Column(name = "createOrgName", nullable = false)
+    @ApiModelProperty(value="创建组织")
 	private String createOrgName; 
-	
-	@NotNullColumn(value="创建人")
+
 	@Column(name = "createUserId", nullable = false, length = 50)
+    @ApiModelProperty(value="创建用户Id")
 	private Integer createUserId;	
 	
 	@Column(name = "createUserCode", nullable = true, length = 50)
+    @ApiModelProperty(value="创建用户编码")
 	private String createUserCode;	
 	
 	@Column(name = "createUserName", nullable = false, length = 50)
+    @ApiModelProperty(value="创建用户")
 	private String createUserName; 
 	
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "createDate", nullable = false)
+    @ApiModelProperty(value="创建时间")
 	private Date createDate;
 
-	@NotNullColumn(value="已受理部门")
 	@Column(name = "previousOrgId", nullable = false)
+    @ApiModelProperty(value="上一办理组织Id")
 	private Integer previousOrgId; 
 	
 	@Column(name = "previousOrgName", nullable = false)
+    @ApiModelProperty(value="上一办理组织Id")
 	private String previousOrgName; 
-	
-	@NotNullColumn(value="已受理人")
+
 	@Column(name = "previousUserId", nullable = false, length = 50)
+    @ApiModelProperty(value="上一办理用户Id")
 	private Integer previousUserId;	
 	
 	@Column(name = "previousUserCode", nullable = true, length = 50)
+    @ApiModelProperty(value="上一办理用户编码")
 	private String previousUserCode;	
 	
 	@Column(name = "previousUserName", nullable = false, length = 50)
+    @ApiModelProperty(value="上一办理用户")
 	private String previousUserName; 
 	
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "previousDate", nullable = false)
+    @ApiModelProperty(value="上一办理时间")
 	private Date previousDate;
 	
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "generateDate")
+    @ApiModelProperty(value="生成时间")
 	private Date generateDate;
 	
 	@Transient

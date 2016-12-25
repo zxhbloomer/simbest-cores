@@ -4,41 +4,52 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import com.simbest.cores.utils.annotations.ProcessProperty;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 @MappedSuperclass
+@ApiModel
 public abstract class LogicModel<T> extends SystemModel<T>{
     private static final long serialVersionUID = 8604271441269463749L;
 	
 	@Column(name = "enabled", nullable = false, columnDefinition = "int default 1")
 	@ProcessProperty
+    @ApiModelProperty(value="是否可用")
 	protected Boolean enabled;
 	
 	@Column(name = "removed", nullable = false, columnDefinition = "int default 0")
 	@ProcessProperty
+    @ApiModelProperty(value="是否逻辑删除")
 	protected Boolean removed;
 	
 	@Column(name = "createUserId", nullable = false)
 	@ProcessProperty
+    @ApiModelProperty(value="创建人Id")
 	protected Integer createUserId;	
 	
 	@Column(name = "createUserCode", nullable = true, length = 50)
 	@ProcessProperty
+    @ApiModelProperty(value="创建人编号")
 	protected String createUserCode;	
 	
 	@Column(name = "createUserName", nullable = false, length = 50)
 	@ProcessProperty
+    @ApiModelProperty(value="创建人")
 	protected String createUserName; 
 
 	@Column(name = "updateUserId")
 	@ProcessProperty
+    @ApiModelProperty(value="更新人Id")
 	protected Integer updateUserId;	
 	
 	@Column(name = "updateUserCode", length = 50)
 	@ProcessProperty
+    @ApiModelProperty(value="更新人编号")
 	protected String updateUserCode;	
 	
 	@Column(name = "updateUserName", length = 50)
 	@ProcessProperty
+    @ApiModelProperty(value="更新人")
 	protected String updateUserName; 
 
 	/**

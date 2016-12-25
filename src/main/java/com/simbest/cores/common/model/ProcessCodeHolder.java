@@ -4,6 +4,8 @@
 package com.simbest.cores.common.model;
 
 import com.simbest.cores.model.GenericModel;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 
@@ -14,20 +16,26 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "sys_process_code_holder")
+@ApiModel
 public class ProcessCodeHolder extends GenericModel<ProcessCodeHolder> {
     private static final long serialVersionUID = -8026825782285229459L;
 
     @Id
     @SequenceGenerator(name="sys_process_code_holder_seq", sequenceName="sys_process_code_holder_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_process_code_holder_seq")
+    @ApiModelProperty(value="主键Id")
     private Long id;
 
+    @ApiModelProperty(value="流程前缀")
     private String prefix; //流程前缀
 
+    @ApiModelProperty(value="流程日期")
     private String processDate; //流程日期
 
+    @ApiModelProperty(value="计数编码")
     private Integer countCode; //计数编码
 
+    @ApiModelProperty(value="计数位数")
     private Integer countLength; //计数位数
 
     public ProcessCodeHolder() {

@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 并行流程跟踪
@@ -15,6 +17,7 @@ import com.simbest.cores.utils.annotations.NotNullColumn;
 @Entity
 @Table(name = "app_process_track")
 @XmlRootElement
+@ApiModel
 public class ProcessTrack extends GenericModel<ProcessTrack> {
 
 	/**
@@ -26,25 +29,28 @@ public class ProcessTrack extends GenericModel<ProcessTrack> {
 	@Column(name = "id")
     @SequenceGenerator(name="app_process_track_seq", sequenceName="app_process_track_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_track_seq")
+    @ApiModelProperty(value="主键Id")
 	private Long id;
-	
-	@NotNullColumn(value="业务类型")
+
 	@Column(name = "typeId", nullable = false)
+    @ApiModelProperty(value="业务类型Id")
 	private Integer typeId;
 
-	@NotNullColumn(value="业务单据")
 	@Column(name = "headerId", nullable = false)
+    @ApiModelProperty(value="流程头Id")
 	private Integer headerId;
 	
 	//所有业务单据的主键必须统一类型，否则无法写入待办和审批记录
-	@NotNullColumn(value="业务单据Id")
 	@Column(name = "receiptId", nullable = false)
+    @ApiModelProperty(value="业务单据Id")
 	private Long receiptId;
 		
 	@Column(name = "forkFromId", nullable = true) //分支来源环节
+    @ApiModelProperty(value="分支来源环节Id")
 	private String forkFromId; 
 		
 	@Column(name = "currentStepCode", nullable = false)
+    @ApiModelProperty(value="当前流程编码")
 	private String currentStepCode;
 	
 	@Transient

@@ -10,6 +10,8 @@ import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.annotations.Unique;
 import com.simbest.cores.utils.enums.ProcessEnum;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 业务流程明细
@@ -19,6 +21,7 @@ import com.simbest.cores.utils.enums.ProcessEnum;
  */
 @Entity
 @Table(name = "app_process_step", uniqueConstraints={@UniqueConstraint(columnNames={"stepCode", "sversion"})})
+@ApiModel
 public class ProcessStep extends GenericModel<ProcessStep> {
 	
 	/**
@@ -30,72 +33,88 @@ public class ProcessStep extends GenericModel<ProcessStep> {
 	@Column(name = "stepId")
     @SequenceGenerator(name="app_process_step_seq", sequenceName="app_process_step_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_step_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer stepId;
 	
 	@JsonProperty("id")
 	@Column(name = "stepCode", length = 20, nullable = false)
 	@Unique
+    @ApiModelProperty(value="环节编码")
 	private String stepCode;
 	
 	@NotNullColumn(value="环节类型")
 	@Column(name = "stepType", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="环节类型")
 	private ProcessEnum stepType;
 	
 	@NotNullColumn(value="环节分类")
 	@Column(name = "stepClass", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="环节分类")
 	private ProcessEnum stepClass;
 	
 	@NotNullColumn(value="环节状态")
 	@Column(name = "stepDesc", nullable = false, length = 50)
-	private String stepDesc;
+    @ApiModelProperty(value="环节状态")
+    private String stepDesc;
 	
 	@Column(name = "passId", nullable = true) //通过环节
-	private String passId; 
+    @ApiModelProperty(value="通过环节Id")
+    private String passId;
 	
 	@Transient
 	private String passStep; 
 	
 	@Column(name = "failId", nullable = true) //驳回环节
-	private String failId; 
+    @ApiModelProperty(value="驳回环节Id")
+    private String failId;
 	
 	@Transient
 	private String failStep; 
 	
 	@Column(name = "stopId", nullable = true) //终止环节
-	private String stopId; 
+    @ApiModelProperty(value="终止环节Id")
+    private String stopId;
 	
 	@Transient
 	private String stopStep;
 	
 	@Column(name = "forkFromId", nullable = true) //分支来源环节
-	private String forkFromId; 
+    @ApiModelProperty(value="分支来源环节Id")
+    private String forkFromId;
 	
 	@NotNullColumn(value="流程头")
     @ManyToOne
 	@JoinColumn(name = "headerId")
 	@JsonIgnore
+    @ApiModelProperty(value="流程头")
     private ProcessHeader header;	
     
 	@NotNullColumn(value="流程类型")
 	@Column(name = "typeId")
+    @ApiModelProperty(value="流程类型Id")
     private Integer typeId;
     
 	@Column(name = "ltop", nullable=true)
+    @ApiModelProperty(value="垂直坐标")
     private String ltop;
 	
 	@Column(name = "lleft", nullable=true)
+    @ApiModelProperty(value="水平坐标")
     private String lleft;
 	
 	@Column(name = "sversion", nullable = false)
 	@JsonIgnore
+    @ApiModelProperty(value="版本号")
     private Integer sversion;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="processStep")
-	private List<ProcessAudit> audits;
+    @ApiModelProperty(value="环节审批信息")
+    private List<ProcessAudit> audits;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="processStep")
+    @ApiModelProperty(value="环节配置信息")
 	private List<ProcessStepConfiguration> configurations;
 	
 	@Transient

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.simbest.cores.model.GenericModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.enums.ProcessEnum;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 业务流程审批记录
@@ -19,6 +21,7 @@ import com.simbest.cores.utils.enums.ProcessEnum;
 @Entity
 @Table(name = "app_process_audit_log")
 @XmlRootElement
+@ApiModel
 public class ProcessAuditLog extends GenericModel<ProcessAuditLog> {
 
 	/**
@@ -30,70 +33,89 @@ public class ProcessAuditLog extends GenericModel<ProcessAuditLog> {
 	@Column(name = "id")
     @SequenceGenerator(name="app_process_audit_log_seq", sequenceName="app_process_audit_log_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="app_process_audit_log_seq")
+    @ApiModelProperty(value="主键Id")
 	private Long id;
 	
 	@NotNullColumn(value="处理人部门信息")
 	@Column(name = "orgId", nullable = false) //不允许为空
+    @ApiModelProperty(value="处理人部门Id")
 	private Integer orgId; 
 
 	@Column(name = "orgName", nullable = false) //不允许为空
+    @ApiModelProperty(value="处理人部门")
 	private String orgName;
 	
 	//所有业务单据的主键必须统一类型，否则无法写入待办和审批记录
 	@NotNullColumn(value="业务单据Id")
 	@Column(name = "receiptId", nullable = false)
+    @ApiModelProperty(value="业务单据Id")
 	private Long receiptId;
 
 	@NotNullColumn(value="流程类型")
 	@Column(name = "typeId", nullable = false)
+    @ApiModelProperty(value="流程类型Id")
 	private Integer typeId;
 
 	@NotNullColumn(value="流程头")
 	@Column(name = "headerId", nullable = false)
+    @ApiModelProperty(value="流程头Id")
 	private Integer headerId;
 	
 	@NotNullColumn(value="流程环节")
 	@Column(name = "stepId", nullable = false, length = 20)
+    @ApiModelProperty(value="流程环节Id")
 	private Integer stepId;
 	
 	@NotNullColumn(value="已处理环节")
 	@Column(name = "previousStepId", nullable = false, length = 20)
+    @ApiModelProperty(value="已处理环节Id")
 	private Integer previousStepId;
 	
 	@NotNullColumn(value="审批结果")
 	@Column(name = "result", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
+    @ApiModelProperty(value="审批结果")
 	private ProcessEnum result;
 		
 	private String resultDesc;
 	
 	@Column(name = "opinion", length = 200)
-	private String opinion;	
+    @ApiModelProperty(value="审批意见")
+	private String opinion;
 
-	private String typeDesc;
+    @ApiModelProperty(value="流程类型")
+    private String typeDesc;
 
+    @ApiModelProperty(value="流程头")
 	private String headerDesc;
-		
+
+    @ApiModelProperty(value="上一环节")
 	private String previousStepDesc;
-		
+
+    @ApiModelProperty(value="当前环节")
 	private String stepDesc;
 	
 	@Column(name = "createUserId", nullable = false, length = 50)
+    @ApiModelProperty(value="创建人Id")
 	protected Integer createUserId;	
 	
 	@Column(name = "createUserCode", nullable = true, length = 50)
+    @ApiModelProperty(value="创建人编码")
 	protected String createUserCode;	
 	
 	@Column(name = "createUserName", nullable = false, length = 50)
+    @ApiModelProperty(value="创建人名称")
 	protected String createUserName; 
 	
 	@Temporal(TemporalType.TIMESTAMP) 
 	@Column(name = "createDate", nullable = false)
+    @ApiModelProperty(value="创建时间")
 	protected Date createDate;
 
 	public ProcessAuditLog() {
 		super();
 	}
+
 	public ProcessAuditLog(Long id) {
 		super();
 		this.id = id;

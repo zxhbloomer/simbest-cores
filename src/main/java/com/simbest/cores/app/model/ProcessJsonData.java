@@ -5,6 +5,8 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.simbest.cores.utils.enums.ProcessEnum;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * Json数据提交模型
@@ -14,9 +16,15 @@ import com.simbest.cores.utils.enums.ProcessEnum;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.DEFAULT) 
 @JsonIgnoreProperties(ignoreUnknown=true)
+@ApiModel
 public class ProcessJsonData<T extends ProcessModel<?>, PK extends Serializable> {
+    @ApiModelProperty(value="审批结果")
 	private ProcessEnum result;
+
+    @ApiModelProperty(value="审批意见")
 	private String opinion;
+
+    @ApiModelProperty(value="流程实体")
 	private T businessData;
 
 	public ProcessJsonData() {

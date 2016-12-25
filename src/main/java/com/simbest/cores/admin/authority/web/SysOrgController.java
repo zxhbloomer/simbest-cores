@@ -29,8 +29,7 @@ import com.simbest.cores.admin.authority.service.ISysOrgAdvanceService;
 import com.simbest.cores.utils.annotations.LogAudit;
 import com.simbest.cores.utils.editors.SysOrgEditor;
 import com.simbest.cores.web.BaseController;
-//import com.wordnik.swagger.annotations.ApiOperation;
-//import com.wordnik.swagger.annotations.ApiParam;
+
 
 @Controller
 @RequestMapping(value = {"/action/sso/admin/authority/sysorg", //SSO跳转，Shrio不拦截

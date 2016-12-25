@@ -7,6 +7,8 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.simbest.cores.model.LogicModel;
 import com.simbest.cores.utils.annotations.*;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.persistence.*;
@@ -37,6 +39,7 @@ import java.util.List;
 
 @ReferenceTables(joinTables={ @ReferenceTable(table="sys_user_role", value="用户与角色"),
 		@ReferenceTable(table="sys_user_permission", value="用户与权限")})
+@ApiModel
 public class SysUser extends LogicModel<SysUser> {
 	private static final long serialVersionUID=3832626162173359411L;
 
@@ -44,29 +47,35 @@ public class SysUser extends LogicModel<SysUser> {
 	@Column(name="id")
     @SequenceGenerator(name="sys_user_seq", sequenceName="sys_user_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_user_seq")
+    @ApiModelProperty(value="主键Id")
 	private Integer id;
 	
 	@NotNullColumn(value="登录标识")
     @Column(nullable = true, length = 100)
     @Unique //Redis 缓存唯一标识
+    @ApiModelProperty(value="登录标识")
 	private String loginName;
 	
 	@ExcelVOAttribute(name = "用户姓名", column = "A")
 	@NotNullColumn(value="用户姓名")
 	@Column(name="username", length=50)
+    @ApiModelProperty(value="用户姓名")
 	private String username;
 	
 	@ExcelVOAttribute(name = "用户编号", column = "B")
 	@NotNullColumn(value="用户编号")
-	@Column(name="userCode", length=100, nullable=true, unique=true) 
+	@Column(name="userCode", length=100, nullable=true, unique=true)
+    @ApiModelProperty(value="用户编号")
 	private String userCode;
 
-    @ExcelVOAttribute(name = "用户编码", column = "J")
+    @ExcelVOAttribute(name = "用户唯一编码", column = "J")
     @NotNullColumn(value="用户编码")
     @Column(name="uniqueCode", length=255, nullable=true, unique=true)
+    @ApiModelProperty(value="用户唯一编码")
     private String uniqueCode;
 
     @Column(nullable=true)
+    @ApiModelProperty(value="密码")
 	private String password; 	
 	
 	@JsonIgnore
@@ -75,146 +84,178 @@ public class SysUser extends LogicModel<SysUser> {
 
     @ExcelVOAttribute(name = "组织编号", column = "C")
     @Transient
+    @ApiModelProperty(value="组织编号")
     private String orgCode;
 
     @ExcelVOAttribute(name = "显示顺序", column = "D")
     @Column(nullable = true)
+    @ApiModelProperty(value="显示顺序")
     private Integer orderBy;
 
     @ExcelVOAttribute(name = "邮箱地址", column = "E")
     @NotNullColumn(value="邮箱地址")
     @Column(name="email", length=80)
+    @ApiModelProperty(value="邮箱地址")
     private String email;
 
 	@ExcelVOAttribute(name = "手机号码", column = "F")
 	@NotNullColumn(value="手机号码")
 	@Column(name="phone", length=20)
+    @ApiModelProperty(value="手机号码")
 	private String phone;
 	
 	@ExcelVOAttribute(name = "职位", column = "G")
 	@Column(name="position")
+    @ApiModelProperty(value="职位")
 	private String position;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "birthDate")
+    @ApiModelProperty(value="生日")
     private Date birthDate;
 
     // 性别(1是男性，2是女性，0是未知)
     @ExcelVOAttribute(name = "性别", column = "H")
     @Column(nullable=true)
+    @ApiModelProperty(value="1男2女")
     private Integer sex;
 
     @ExcelVOAttribute(name = "生日", column = "I")
     @Transient
     private String birthDateStr;
 		
-	@NotNullColumn(value="组织信息")
+	@NotNullColumn(value="所属组织")
     @ManyToOne
 	@JoinColumn(name="org_id", nullable=false)
+    @ApiModelProperty(value="所属组织")
     private SysOrg sysOrg;
 
 
     @Column(name="officePhone")
+    @ApiModelProperty(value="办公电话")
     private String officePhone;
 
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="sys_user_role", joinColumns={ @JoinColumn(name="user_id") }, inverseJoinColumns=@JoinColumn(name="role_id"))
+    @ApiModelProperty(value="关联角色")
 	private List<SysRole> roleList=Lists.newLinkedList(); // 有序的关联对象集合
 	
 	@ManyToMany(fetch=FetchType.EAGER)
+    @ApiModelProperty(value="关联权限")
 	@JoinTable(name="sys_user_permission", joinColumns={ @JoinColumn(name="user_id") }, inverseJoinColumns=@JoinColumn(name="permission_id"))
 	private List<SysPermission> permissionList=Lists.newLinkedList(); // 有序的关联对象集合
 
     @ManyToMany(fetch=FetchType.EAGER)
+    @ApiModelProperty(value="关联分组")
     @JoinTable(name="sys_user_group", joinColumns={ @JoinColumn(name="user_id",referencedColumnName="loginName") }, inverseJoinColumns=@JoinColumn(name="group_id",referencedColumnName="name"))
     private List<SysGroup> groupList=Lists.newLinkedList(); // 有序的关联对象集合
 
 	@NotNullColumn(value="QQ号")
 	@Column(name="qqCode", length=40, nullable=true)
+    @ApiModelProperty(value="QQ号")
 	private String qqCode;
 	
 	@NotNullColumn(value="微信号")
 	@Column(name="weChatCode", length=40, nullable=true)
+    @ApiModelProperty(value="微信号")
 	private String weChatCode;
 	
 	@NotNullColumn(value="微博号")
 	@Column(name="weiboCode", length=40, nullable=true)
+    @ApiModelProperty(value="微博号")
 	private String weiboCode;
 	
 	@NotNullColumn(value="支付宝账号")
 	@Column(name="alipayCode", length=40, nullable=true)
+    @ApiModelProperty(value="支付宝账号")
 	private String alipayCode;
 	
 	//用户推广来源
-	
 	@NotNullColumn(value="场景代码")
 	@Column(name="sceneCode", length=20, nullable=true)
+    @ApiModelProperty(value="场景代码")
 	private String sceneCode;
 	
 	@Column(name="sceneValue", length=20, nullable=true)
-	private String sceneValue; //场景值
+    @ApiModelProperty(value="场景值")
+    private String sceneValue; //场景值
 	
 	//用户标签
 	@NotNullColumn(value="用户标签")
 	@Column(length=50, nullable=true)
-	private String tag;
+    @ApiModelProperty(value="用户标签")
+    private String tag;
 	
 	@Column(name="accesstoken", length=40, nullable=true, unique=true)
-	private String accesstoken;
+    @ApiModelProperty(value="访问令牌")
+    private String accesstoken;
 	
 	//0 会员级用户， 1 系统级用户， 2管理端用户（如俱乐部）
 	@Column(name="userType", nullable=true, columnDefinition="int default 0")
-	private Integer userType;
+    @ApiModelProperty(value="用户类型")
+    private Integer userType;
 	
 	//用户级别(扩展)
 	@Column(name="userLevel", nullable=true)
-	private Integer userLevel;
+    @ApiModelProperty(value="用户级别(")
+    private Integer userLevel;
 	
 	
 	@Column(name="mpNum", length=20, nullable=true)
-	private String mpNum; //微信服务号
+    @ApiModelProperty(value="微信服务号Id")
+    private String mpNum; //微信服务号
 	
 	@NotNullColumn(value="服务号名称")
 	@Column(name="mpName", length=50, nullable=true)
-	private String mpName; 
+    @ApiModelProperty(value="服务号名称")
+    private String mpName;
 	
 	@Column(name="openid", length=40, nullable=true, unique=true)
+    @ApiModelProperty(value="openid")
 	private String openid;
 	
 	//mysql unique字段最多长度255 
 	@Column(name="unionid", length=40, nullable=true)//不能唯一, 用户可能既关注前端公众号，又关注后端公众号unique字段最多长度255
+    @ApiModelProperty(value="unionid")
 	private String unionid;
 	
 	//是否关注，值为0时，代表此用户没有关注该公众号，拉取不到其余信息
+    @ApiModelProperty(value="是否关注")
 	private Integer subscribe;
 	
 	@NotNullColumn(value="用户昵称")
 	@Column(length=50, nullable=true)
+    @ApiModelProperty(value="用户昵称")
 	private String nickname;
 	
 	// 国家
 	@NotNullColumn(value="所在国家")
 	@Column(length=20, nullable=true)
-	private String country;
+    @ApiModelProperty(value="所在国家")
+    private String country;
 	
 	// 省份
 	@NotNullColumn(value="所在省份")
 	@Column(length=20, nullable=true)
+    @ApiModelProperty(value="所在省份")
 	private String province;
 	
 	// 城市
 	@NotNullColumn(value="所在城市")
 	@Column(length=20, nullable=true)
+    @ApiModelProperty(value="所在城市")
 	private String city;
 	
 	// 语言
 	@NotNullColumn(value="使用语言")
 	@Column(length=20, nullable=true)
+    @ApiModelProperty(value="使用语言")
 	private String language;
 	
 	// 用户头像链接
 	@NotNullColumn(value="头像链接")
 	@Column(length=255, nullable=true)
+    @ApiModelProperty(value="头像链接")
 	private String headimgurl;
 	
 	// 用户特权信息（JSON数组，需要应用自行转换）
@@ -225,30 +266,37 @@ public class SysUser extends LogicModel<SysUser> {
 	// 用户关注时间 单位秒
 	@NotNullColumn(value="关注时间")
 	@Column(nullable=true)
+    @ApiModelProperty(value="关注时间")
 	private Long subscribe_time;
 
 	//公众号运营者对粉丝的备注，公众号运营者可在微信公众平台用户管理界面对粉丝添加备注
 	@NotNullColumn(value="用户备注")
 	@Column(length=250, nullable=true)
+    @ApiModelProperty(value="用户备注")
 	private String remark;
 	
 	//用户微信分组
-	@NotNullColumn(value="所在分组")
+	@NotNullColumn(value="微信分组")
 	@Column(nullable=true)
+    @ApiModelProperty(value="微信分组")
 	private Integer groupid;
 	
 	@NotNullColumn(value="背景链接")
 	@Column(length=255, nullable=true)
+    @ApiModelProperty(value="背景链接")
 	private String backgroundurl;
-	
+
+    @ApiModelProperty(value="个性签名")
 	private String signature; //个性签名
 	
 	@Transient
 	@JsonIgnore
 	private String sessionId;
 
+    @ApiModelProperty(value="所属组织Id")
     private Integer ownerOrgId;
 
+    @ApiModelProperty(value="组织层级主键空格分隔")
     private String hierarchyOrgIds;
 
 	/**

@@ -3,26 +3,43 @@ package com.simbest.cores.admin.authority.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * 自定义Authentication对象，使得Subject除了携带用户的登录名外还可以携带更多信息.
  */
+@ApiModel
 public class ShiroUser implements Serializable {
 	private static final long serialVersionUID = -1373760761780840081L;
+    @ApiModelProperty(value="登陆名")
 	public String loginName;
+    @ApiModelProperty(value="用户名称")
 	public String userName;
+    @ApiModelProperty(value="用户唯一编码")
 	public String uniqueCode;
+    @ApiModelProperty(value="用户编码")
     public String userCode;
+    @ApiModelProperty(value="用户Id")
 	public Integer userId;
+    @ApiModelProperty(value="组织Id")
 	public Integer orgId;
+    @ApiModelProperty(value="组织名称")
 	public String orgName;
+    @ApiModelProperty(value="头像")
 	public String headUrl;
+    @ApiModelProperty(value="访问令牌")
 	public String accesstoken;
+    @ApiModelProperty(value="微信openid")
 	public String openid;
+    @ApiModelProperty(value="微信unionid")
 	public String unionid;
+    @ApiModelProperty(value="手机号码")
 	public String phone;
+    @ApiModelProperty(value="所属组织Id")
     private Integer ownerOrgId;
+    @ApiModelProperty(value="相关角色")
 	public List<Integer> roleIds;
 
 	public ShiroUser(String loginName, String userName, String uniqueCode, String userCode,

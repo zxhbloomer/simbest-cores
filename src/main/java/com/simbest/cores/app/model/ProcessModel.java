@@ -13,6 +13,8 @@ import com.simbest.cores.model.LogicModel;
 import com.simbest.cores.utils.annotations.NotNullColumn;
 import com.simbest.cores.utils.annotations.ProcessProperty;
 import com.simbest.cores.utils.enums.ProcessEnum;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 
 /**
@@ -21,6 +23,7 @@ import com.simbest.cores.utils.enums.ProcessEnum;
  *
  */
 @MappedSuperclass
+@ApiModel
 public class ProcessModel<T> extends LogicModel<T> {
 	/**
 	 * 
@@ -32,26 +35,31 @@ public class ProcessModel<T> extends LogicModel<T> {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@ProcessProperty
+    @ApiModelProperty(value="业务单据主键Id")
 	protected Long id;
 	
 	@NotNullColumn(value="是否为草稿")
 	@Column(name = "iscg", nullable = false, columnDefinition = "int default 0")
 	@ProcessProperty
+    @ApiModelProperty(value="是否为草稿")
 	protected Boolean iscg;
 	
 	@NotNullColumn(value="单据编号")
 	@Column(name = "code", nullable = false,length = 100)
 	@ProcessProperty
+    @ApiModelProperty(value="单据编号")
 	protected String code;
 
 	@NotNullColumn(value="单据名称")
 	@Column(name = "title", nullable = false, length = 500)
 	//@ProcessProperty 可以让编辑修改流程时，修改申请标题
+    @ApiModelProperty(value="单据名称")
 	protected String title;
 	
 	@NotNullColumn(value="流程类型")
 	@Column(name = "processTypeId", nullable = false) 
 	@ProcessProperty
+    @ApiModelProperty(value="流程类型Id")
 	protected Integer processTypeId;
 
 	@Transient
@@ -60,6 +68,7 @@ public class ProcessModel<T> extends LogicModel<T> {
 	@NotNullColumn(value="流程描述")
 	@Column(name = "processHeaderId", nullable = false) 
 	@ProcessProperty
+    @ApiModelProperty(value="流程描述Id")
 	protected Integer processHeaderId;
 
 	@Transient
@@ -71,11 +80,13 @@ public class ProcessModel<T> extends LogicModel<T> {
 	@NotNullColumn(value="流程环节")
 	@Column(name = "processStepId", nullable = false) 
 	@ProcessProperty
+    @ApiModelProperty(value="流程环节Id")
 	protected Integer processStepId;
 	
 	@NotNullColumn(value="流程环节")
 	@Column(name = "processStepCode", nullable = false)
 	@ProcessProperty
+    @ApiModelProperty(value="流程环节编码")
 	protected String processStepCode;
 	
 	@Transient
@@ -84,12 +95,14 @@ public class ProcessModel<T> extends LogicModel<T> {
 	@NotNullColumn(value="审批对象")
 	@Column(name = "subjects", nullable = true) //分支环节可以为空
 	@ProcessProperty
+    @ApiModelProperty(value="审批对象")
 	protected String subjects;
 	
 	@NotNullColumn(value="审批对象")
 	@Column(name = "subjectType", nullable = false)
 	@Enumerated(EnumType.STRING)
 	@ProcessProperty
+    @ApiModelProperty(value="审批对象类型")
 	protected ProcessEnum subjectType;
 	
 	@Transient
@@ -98,10 +111,12 @@ public class ProcessModel<T> extends LogicModel<T> {
 	@NotNullColumn(value="发起部门")
 	@Column(name = "orgId", nullable = false)
 	@ProcessProperty
+    @ApiModelProperty(value="发起部门Id")
 	protected Integer orgId; 
 	 
 	@Column(name = "orgName", nullable = false)
 	@ProcessProperty
+    @ApiModelProperty(value="发起部门名称")
 	protected String orgName;
 
 	@Transient

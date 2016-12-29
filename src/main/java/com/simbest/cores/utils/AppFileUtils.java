@@ -325,10 +325,15 @@ public class AppFileUtils {
                     //直接将Context路径下的文件转换为Http访问路径
                     String baseUrl = getBaseUrl();
                     savePath = baseUrl + storePath + targetFile.getName();
+                case FastDFS:
+                    String fileId = fastdfsClient.upload(targetFile,targetFile.getName());
+                    savePath = fileId;
+                    log.debug(fileId);
+                    break;
                 default:
                     break;
             }
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             savePath = null;
             log.error(Exceptions.getStackTraceAsString(e));
         } finally {
@@ -395,6 +400,7 @@ public class AppFileUtils {
             param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             param.setCompressionQuality(quality);
             baos = new ByteArrayOutputStream(32768);
+            log.debug("uploadCompressImage location is :" + location);
             switch (location) {
                 case Cloud:
                     storePath += "compressed" + imageFile.getName();
@@ -428,10 +434,30 @@ public class AppFileUtils {
                     String baseUrl = getBaseUrl();
                     savePath = baseUrl + storePath + compressedFile.getName();
                     break;
+                case FastDFS:
+                    ios = ImageIO.createImageOutputStream(baos);
+                    File tmpFile = File.createTempFile("tmp", "."+getFileExtByName(imageFile.getName()));
+                    output = new FileImageOutputStream(tmpFile);
+                    writer.setOutput(output);
+                    writer.write(null, new IIOImage(image, null, null), param);
+                    output.flush();
+                    writer.dispose();
+                    ios.flush();
+                    ios.close();
+                    baos.close();
+                    output = null;
+                    writer = null;
+                    ios = null;
+                    baos = null;
+                    String fileId = fastdfsClient.upload(tmpFile,tmpFile.getName());
+                    savePath = fileId;
+                    log.debug(fileId);
+                    tmpFile.deleteOnExit();
+                    break;
                 default:
                     break;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             savePath = null;
             Exceptions.printException(e);
         } finally {
@@ -442,9 +468,9 @@ public class AppFileUtils {
                     e1.printStackTrace();
                 }
         }
-        if (StringUtils.isNotEmpty(savePath)) {
-            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
-        }
+//        if (StringUtils.isNotEmpty(savePath)) {
+//            savePath = StringUtils.replace(savePath, Constants.SEPARATOR, "/");
+//        }
         log.debug("savePath:" + savePath);
         return savePath;
     }

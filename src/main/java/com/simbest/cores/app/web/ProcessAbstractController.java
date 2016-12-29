@@ -654,9 +654,9 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/getAuditUsers", method = RequestMethod.GET)
+	@RequestMapping(value = "/getAuditUsers", method = RequestMethod.POST)
 	@ResponseBody
-    @ApiOperation(value = "获取待办审批人", httpMethod = "GET", notes = "获取待办审批人",
+    @ApiOperation(value = "获取待办审批人", httpMethod = "POST", notes = "获取待办审批人",
             produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> getAuditUsers(@RequestParam("id")PK id) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();
@@ -674,9 +674,9 @@ public abstract class ProcessAbstractController<T extends ProcessModel<T>, PK ex
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/getAuditUsersTree", method = RequestMethod.GET)
+	@RequestMapping(value = "/getAuditUsersTree", method = RequestMethod.POST)
 	@ResponseBody
-    @ApiOperation(value = "选择审批人信息", httpMethod = "GET", notes = "选择审批人信息(树形菜单形式)",
+    @ApiOperation(value = "选择审批人信息", httpMethod = "POST", notes = "选择审批人信息(树形菜单形式)",
             produces="application/json",consumes="application/application/x-www-form-urlencoded")
 	public Map<String, Object> getAuditUsersTree(@RequestParam("id")PK id) throws Exception {
 		return service.getAuditUsersTree(id);

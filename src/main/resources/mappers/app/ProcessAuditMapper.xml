@@ -47,18 +47,31 @@
 		 SELECT a.*,s.stepId,s.stepCode FROM app_process_audit a,app_process_step s,app_process_header h WHERE a.processStepId=s.stepId AND s.headerId=h.headerId AND a.aversion=h.hversion AND a.processStepId = #{processStepId}
 	</select>
 	
-    <insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20">
+    <insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20" databaseId="mysql">
         insert into app_process_audit (submitUserId,submitOrgId,subjectType,subjects,aversion,processStepId)  values 
         <foreach collection="list" index="index" item="item" separator=",">   
 	        (#{item.submitUserId},#{item.submitOrgId},#{item.subjectType},#{item.subjects},#{item.aversion},#{item.processStep.stepId})    
 	    </foreach> 
-    </insert> 
-    
-	<insert id="create" parameterType="ProcessAudit" useGeneratedKeys="true" keyProperty="auditId" >         
+    </insert>
+    <insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20" databaseId="oracle">
+        insert into app_process_audit (auditId,submitUserId,submitOrgId,subjectType,subjects,aversion,processStepId)  values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (app_process_audit_seq.nextval,#{item.submitUserId},#{item.submitOrgId},#{item.subjectType},#{item.subjects},#{item.aversion},#{item.processStep.stepId})
+        </foreach>
+    </insert>
+
+    <insert id="create" parameterType="ProcessAudit" useGeneratedKeys="true" keyProperty="auditId" databaseId="mysql">
     	insert into app_process_audit(submitUserId,submitOrgId,subjectType,subjects,aversion,processStepId) values 
     	(#{submitUserId},#{submitOrgId},#{subjectType},#{subjects},#{aversion},#{processStep.stepId})
 	</insert>
-	
+    <insert id="create" parameterType="ProcessAudit" useGeneratedKeys="false" keyProperty="auditId" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="auditId" order="BEFORE">
+            select app_process_audit_seq.nextval as auditId from dual
+        </selectKey>
+        insert into app_process_audit(auditId,submitUserId,submitOrgId,subjectType,subjects,aversion,processStepId) values
+        (#{auditId},#{submitUserId},#{submitOrgId},#{subjectType},#{subjects},#{aversion},#{processStep.stepId})
+    </insert>
+
 	<update id="update" parameterType="ProcessAudit" flushCache="true" statementType="PREPARED" timeout="20">
         update app_process_audit set submitUserId=#{submitUserId},submitOrgId=#{submitOrgId},subjectType=#{subjectType},subjects=#{subjects},aversion=#{aversion},processStepId=#{processStep.stepId} where auditId=#{auditId}
     </update>

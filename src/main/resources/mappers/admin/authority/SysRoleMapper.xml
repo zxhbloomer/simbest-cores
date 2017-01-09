@@ -55,10 +55,16 @@
     </select> 
 	<!-- 关联查询方式，适用于集合列表实体对象  End -->
 	    
-    <insert id="create" parameterType="SysRole" useGeneratedKeys="true" keyProperty="id" >         
+    <insert id="create" parameterType="SysRole" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
     	insert into sys_role(createDate,updateDate,description,name,type) values (#{createDate},#{updateDate},#{description},#{name},#{type})
 	</insert>
-	
+    <insert id="create" parameterType="SysRole" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select sys_role_seq.nextval as id from dual
+        </selectKey>
+        insert into sys_role(id,createDate,updateDate,description,name,type) values (#{id},#{createDate},#{updateDate},#{description},#{name},#{type})
+    </insert>
+
 	<update id="update" parameterType="SysRole" flushCache="true" statementType="PREPARED" timeout="20">
         update sys_role set updateDate=#{updateDate},description=#{description},name=#{name},type=#{type} where id=#{id}
     </update>

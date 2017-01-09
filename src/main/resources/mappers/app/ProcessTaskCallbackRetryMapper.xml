@@ -30,9 +30,16 @@
         -->
     </select>
 
-	<insert id="create" parameterType="ProcessTaskCallbackRetry" useGeneratedKeys="true" keyProperty="id" > 
+	<insert id="create" parameterType="ProcessTaskCallbackRetry" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         insert into app_process_task_callbackretry (processServiceClass,lastExecuteDate,executeTimes,taskId,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
         values (#{processServiceClass},#{lastExecuteDate},#{executeTimes},#{taskId},#{typeId},#{headerId},#{receiptId},#{stepId},#{currentUserId},#{callbackType})
+    </insert>
+    <insert id="create" parameterType="ProcessTaskCallbackRetry" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select app_callback_retry_seq.nextval as id from dual
+        </selectKey>
+        insert into app_process_task_callbackretry (id,processServiceClass,lastExecuteDate,executeTimes,taskId,typeId,headerId,receiptId,stepId,currentUserId,callbackType)
+        values (#{id},#{processServiceClass},#{lastExecuteDate},#{executeTimes},#{taskId},#{typeId},#{headerId},#{receiptId},#{stepId},#{currentUserId},#{callbackType})
     </insert>
 
     <update id="update" parameterType="ProcessTaskCallbackRetry" flushCache="true" statementType="PREPARED">

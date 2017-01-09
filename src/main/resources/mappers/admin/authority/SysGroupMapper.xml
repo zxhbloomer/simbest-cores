@@ -36,8 +36,14 @@
     </select>
     <!-- 关联查询方式，适用于集合列表实体对象  End -->
 
-    <insert id="create" parameterType="SysGroup" useGeneratedKeys="true" keyProperty="id">
+    <insert id="create" parameterType="SysGroup" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         insert into sys_group(description,name,type) values (#{description},#{name},#{type})
+    </insert>
+    <insert id="create" parameterType="SysGroup" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select sys_group_seq.nextval as id from dual
+        </selectKey>
+        insert into sys_group(id,description,name,type) values (#{id},#{description},#{name},#{type})
     </insert>
 
     <update id="update" parameterType="SysGroup" flushCache="true" statementType="PREPARED" timeout="20">

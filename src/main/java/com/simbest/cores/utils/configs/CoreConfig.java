@@ -13,13 +13,6 @@ import com.simbest.cores.exceptions.Exceptions;
 import com.simbest.cores.utils.DateUtil;
 import com.simbest.cores.utils.PropertiesUtils;
 
-/**
- * 读取系统配置属性
- * 
- * @author lishuyi
- *
- */
-
 @Component
 public class CoreConfig extends AbstractConfig{
 	
@@ -29,6 +22,8 @@ public class CoreConfig extends AbstractConfig{
 	static {
         CoreConfig.initRestartTimes();
 		CoreConfig.loadConfigFile("classpath:config.properties");
+        CoreConfig.loadConfigFile("classpath:jdbc.properties");
+        CoreConfig.loadConfigFile("classpath:redis.properties");
 		CoreConfig.loadConfigFile("classpath:mail.properties");
 		baiduMapAk = getProp().getProperty("bae.lbs.map.ak");
 	}

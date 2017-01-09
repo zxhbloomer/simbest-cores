@@ -3,19 +3,32 @@
  */
 package com.simbest.cores.shiro;
 
+import com.simbest.cores.utils.configs.CoreConfig;
 import io.longyuan.shiro.redissession.service.impl.ShiroSessionRepositoryImpl;
 import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * 用途： 
- * 作者: lishuyi 
- * 时间: 2016-12-29  21:41 
- */
+@Component(value="shiroSessionRepository")
 public class SimbestShiroSessionRepositoryImpl extends ShiroSessionRepositoryImpl {
+
+    @Autowired
+    private RedisTemplate<String, Session> redisTemplate;
+
+    @Autowired
+    private CoreConfig config;
+
+    @PostConstruct
+    private void init(){
+        this.setRedisTemplate(redisTemplate);
+        this.setRedisShiroSessionTimeout(Integer.valueOf(config.getValue("redis.session.timeout")));
+    }
 
     @Override
     public Collection<Session> getAllSessions() {

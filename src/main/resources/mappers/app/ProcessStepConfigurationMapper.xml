@@ -23,8 +23,15 @@
 		 SELECT c.*,s.stepId,s.stepCode FROM app_process_step_configuration c,app_process_step s,app_process_header h WHERE c.processStepId=s.stepId AND s.headerId=h.headerId AND c.cversion=h.hversion AND c.processStepId = #{processStepId}
 	</select>
 
-	<insert id="create" parameterType="ProcessStepConfiguration" flushCache="true" statementType="PREPARED" timeout="20">
+	<insert id="create" parameterType="ProcessStepConfiguration" flushCache="true" statementType="PREPARED" timeout="20" useGeneratedKeys="true" keyProperty="configurationId" databaseId="mysql">
         insert into app_process_step_configuration (logic,subjectType,subjects,cversion,processStepId)  values 
         (#{logic},#{subjectType},#{subjects},#{cversion},#{processStep.stepId})
-    </insert> 
+    </insert>
+    <insert id="create" parameterType="ProcessStepConfiguration" flushCache="true" statementType="PREPARED" timeout="20" useGeneratedKeys="false" keyProperty="configurationId" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="configurationId" order="BEFORE">
+            select app_configuration_seq.nextval as configurationId from dual
+        </selectKey>
+        insert into app_process_step_configuration (configurationId,logic,subjectType,subjects,cversion,processStepId)  values
+        (#{configurationId},#{logic},#{subjectType},#{subjects},#{cversion},#{processStep.stepId})
+    </insert>
 </mapper>

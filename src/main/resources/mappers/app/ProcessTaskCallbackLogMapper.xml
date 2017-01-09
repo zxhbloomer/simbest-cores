@@ -20,9 +20,15 @@
          SELECT * FROM app_process_task_callback_log
     </select>
 
-	<insert id="create" parameterType="ProcessTaskCallbackLog" useGeneratedKeys="true" keyProperty="id" > 
+	<insert id="create" parameterType="ProcessTaskCallbackLog" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         insert into app_process_task_callback_log (callbackType,callbackStartDate,callbackEndDate,callbackDuration,callbackResult,callbackError,taskId)
         values (#{callbackType},#{callbackStartDate},#{callbackEndDate},#{callbackDuration},#{callbackResult},#{callbackError},#{taskId})
     </insert>
-    
+    <insert id="create" parameterType="ProcessTaskCallbackLog" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select app_callback_log_seq.nextval as id from dual
+        </selectKey>
+        insert into app_process_task_callback_log (id,callbackType,callbackStartDate,callbackEndDate,callbackDuration,callbackResult,callbackError,taskId)
+        values (#{id},#{callbackType},#{callbackStartDate},#{callbackEndDate},#{callbackDuration},#{callbackResult},#{callbackError},#{taskId})
+    </insert>
 </mapper>

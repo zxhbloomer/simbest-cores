@@ -32,9 +32,16 @@
         ORDER BY id DESC
     </select>
 
-	<insert id="create" parameterType="ProcessCodeHolder" useGeneratedKeys="true" keyProperty="id" >
+	<insert id="create" parameterType="ProcessCodeHolder" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         insert into sys_process_code_holder (prefix,processDate,countCode,countLength)
         values (#{prefix},#{processDate},#{countCode},#{countLength})
+    </insert>
+    <insert id="create" parameterType="ProcessCodeHolder" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            select sys_process_code_holder_seq.nextval as id from dual
+        </selectKey>
+        insert into sys_process_code_holder (id,prefix,processDate,countCode,countLength)
+        values (#{id},#{prefix},#{processDate},#{countCode},#{countLength})
     </insert>
 
     <update id="update" parameterType="ProcessCodeHolder" useGeneratedKeys="true" keyProperty="id" >

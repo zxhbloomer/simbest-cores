@@ -169,13 +169,19 @@
     </resultMap>    
     
     <!-- 只查询未被删除的业务应用的用户信息， 禁用/启用的用户可以查询，系统用户不可查询 -->
-    <select id='getByRole' parameterType='Integer' resultMap="simpleUserResult">
+    <select id='getByRole' parameterType='Integer' resultMap="simpleUserResult" databaseId="mysql">
 	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
+	</select>
+	<select id='getByRole' parameterType='Integer' resultMap="simpleUserResult" databaseId="oracle">
+	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
 	</select>	
-	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult">
+	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
-    </select>    	
-	<select id="getAll" resultMap="simpleUserResult">
+    </select>    
+	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult" databaseId="oracle">
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+    </select>   	
+	<select id="getAll" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id
 		<if test="loginName!=null and loginName!=''">  
             and u.loginName = #{loginName}
@@ -243,11 +249,79 @@
         <if test="orderByClause == null or orderByClause ==''" >
             ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
         </if>
-
+    </select>
+	<select id="getAll" resultMap="simpleUserResult" databaseId="oracle">
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id
+		<if test="loginName!=null and loginName!=''">  
+            and u.loginName = #{loginName}
+        </if>
+		<if test="username!=null and username!=''">  
+            and u.username = #{username}
+        </if>
+		<if test="enabled != null">
+            and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
+        </if>  
+        <if test="mpNum != null and mpNum !=''">
+            and u.mpNum = #{mpNum}
+        </if>    
+        <if test="groupid != null">
+            and u.groupid = #{groupid}
+        </if>
+		<if test="userType != null">
+            and u.userType = #{userType}
+        </if>
+        <if test="uniqueCode != null">
+            and u.uniqueCode = #{uniqueCode}
+        </if>
+        <if test="openid!=null and openid!=''">
+            and u.openid = #{openid}
+        </if>
+		<if test="accesstoken!=null and accesstoken!=''">  
+            and u.accesstoken = #{accesstoken}
+        </if>
+		<if test="userCode!=null and userCode!=''">  
+            and u.userCode = #{userCode}
+        </if>          
+        <if test="phone != null and phone !=''">
+            and u.phone = #{phone}
+        </if>   
+        <if test="email != null and email !=''">
+            and u.email = #{email}
+        </if> 
+        <if test="qqCode != null and qqCode !=''">
+            and u.qqCode = #{qqCode}
+        </if> 
+        <if test="weChatCode != null and weChatCode !=''">
+            and u.weChatCode = #{weChatCode}
+        </if> 
+        <if test="weiboCode != null and weiboCode !=''">
+            and u.weiboCode = #{weiboCode}
+        </if> 
+        <if test="alipayCode != null and alipayCode !=''">
+            and u.alipayCode = #{alipayCode}
+        </if> 
+        <if test="position != null and position !=''">
+            and u.position = #{position}
+        </if>
+        <if test="ownerOrgId != null and ownerOrgId !=''">
+            and u.ownerOrgId = #{ownerOrgId}
+        </if>
+        <if test="sysOrg != null and sysOrg.id != null">
+            and u.org_id = #{sysOrg.id}
+        </if>
+        <if test="sysOrg != null and sysOrg.parent != null and sysOrg.parent.id != null">
+            and o.parent_id = #{sysOrg.parent.id}
+        </if>
+        <if test="orderByClause != null and orderByClause !=''" >
+            ORDER BY ${orderByClause}
+        </if>
+        <if test="orderByClause == null or orderByClause ==''" >
+            ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+        </if>
     </select>
     <!-- 关联查询方式，适用于集合列表实体对象  End --> 
 
-	<select id="queryAnyway" resultMap="simpleUserResult">
+	<select id="queryAnyway" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where o.id=u.org_id
 		<if test="loginName!=null and loginName!=''">  
             and u.loginName = #{loginName}
@@ -313,16 +387,88 @@
             ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
         </if>
     </select>
-               
-	<insert id="create" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" >         
+    <select id="queryAnyway" resultMap="simpleUserResult" databaseId="oracle">
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where o.id=u.org_id
+		<if test="loginName!=null and loginName!=''">  
+            and u.loginName = #{loginName}
+        </if>
+		<if test="username!=null and username!=''">  
+            and u.username = #{username}
+        </if>
+		<if test="enabled != null">
+            and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
+        </if>  
+        <if test="mpNum != null and mpNum !=''">
+            and u.mpNum = #{mpNum}
+        </if>    
+        <if test="groupid != null">
+            and u.groupid = #{groupid}
+        </if>    
+		<if test="userType != null">
+            and u.userType = #{userType}
+        </if>
+        <if test="uniqueCode != null">
+            and u.uniqueCode = #{uniqueCode}
+        </if>
+		<if test="openid!=null and openid!=''">  
+            and u.openid = #{openid}
+        </if>
+		<if test="accesstoken!=null and accesstoken!=''">  
+            and u.accesstoken = #{accesstoken}
+        </if>
+		<if test="userCode!=null and userCode!=''">  
+            and u.userCode = #{userCode}
+        </if>        
+        <if test="phone != null and phone !=''">
+            and u.phone = #{phone}
+        </if>   
+        <if test="email != null and email !=''">
+            and u.email = #{email}
+        </if> 
+        <if test="qqCode != null and qqCode !=''">
+            and u.qqCode = #{qqCode}
+        </if> 
+        <if test="weChatCode != null and weChatCode !=''">
+            and u.weChatCode = #{weChatCode}
+        </if> 
+        <if test="weiboCode != null and weiboCode !=''">
+            and u.weiboCode = #{weiboCode}
+        </if> 
+        <if test="alipayCode != null and alipayCode !=''">
+            and u.alipayCode = #{alipayCode}
+        </if> 
+        <if test="position != null and position !=''">
+            and u.position = #{position}
+        </if>
+        <if test="ownerOrgId != null and ownerOrgId !=''">
+            and u.ownerOrgId = #{ownerOrgId}
+        </if>
+        <if test="sysOrg != null and sysOrg.id != null">
+            and u.org_id = #{sysOrg.id}
+        </if>
+        <if test="orderByClause != null and orderByClause !=''" >
+            ORDER BY ${orderByClause}
+        </if>
+        <if test="orderByClause == null or orderByClause ==''" >
+            ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+        </if>
+    </select>
+	
+	<insert id="create" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
 	    insert into sys_user (loginName,userCode,username,uniqueCode,password,salt,phone,email,position,officePhone,qqCode,weChatCode,weiboCode,alipayCode,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,org_id,backgroundurl,signature,birthDate,updateDate)
 	    values (#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{position},#{officePhone},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
     </insert>
-    
+    <insert id="create" parameterType="SysUser" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select sys_user_seq.nextval as id from dual
+        </selectKey>
+        insert into sys_user (id,loginName,userCode,username,uniqueCode,password,salt,phone,email,position,officePhone,qqCode,weChatCode,weiboCode,alipayCode,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,org_id,backgroundurl,signature,birthDate,updateDate)
+        values (#{id},#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{position},#{officePhone},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
+    </insert>
     <!-- SysUserController.createOrGetByPhone 和   MpAccountAdvanceService.createFrontendUserOnSubscribedOrAccess -->
-    <insert id="createOrUpdateViaAdmin" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" >         
-	    insert into sys_user (loginName,userCode,username,uniqueCode,password,salt,phone,email,position,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
-	    values (#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{position},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
+    <insert id="createOrUpdateViaAdmin" parameterType="SysUser" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
+	    insert into sys_user (loginName,userCode,username,uniqueCode,password,salt,phone,email,qqCode,weChatCode,weiboCode,alipayCode,position,officePhone,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
+	    values (#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{position},#{officePhone},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
 	    ON DUPLICATE KEY UPDATE updateDate=#{createDate},updateUserId=#{createUserId},updateUserCode=#{createUserCode},updateUserName=#{createUserName},
 	    sceneCode=#{sceneCode},sceneValue=#{sceneValue},subscribe=#{subscribe},nickname=#{nickname},sex=#{sex},country=#{country},province=#{province},city=#{city},language=#{language},headimgurl=#{headimgurl},subscribe_time=#{subscribe_time},tag=#{tag},
 	    removed=0,enabled=1
@@ -332,7 +478,33 @@
 	    	如果行作为新记录被插入，则受影响行的值为1；如果原有的记录被更新，则受影响行的值为2
 	    -->
     </insert>
-            	
+    <insert id="createOrUpdateViaAdmin" parameterType="SysUser" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select sys_user_seq.nextval as id from dual
+        </selectKey>
+        MERGE INTO sys_user dest
+        USING (SELECT #{phone} phone, #{userType} userType, 0 removed, #{email} email, #{qqCode} qqCode, #{weChatCode} weChatCode, #{weiboCode} weiboCode, #{alipayCode} alipayCode,#{loginName} loginName,#{userCode} userCode,#{uniqueCode} uniqueCode FROM dual) src
+        ON (
+            (dest.loginName = src.loginName) OR (dest.userCode = src.userCode) OR (dest.uniqueCode = src.uniqueCode)
+            OR (dest.phone = src.phone AND dest.userType = src.userType AND dest.removed = src.removed)
+            OR (dest.email = src.email AND dest.userType = src.userType AND dest.removed = src.removed)
+            OR (dest.qqCode = src.qqCode AND dest.userType = src.userType AND dest.removed = src.removed)
+            OR (dest.weChatCode = src.weChatCode AND dest.userType = src.userType AND dest.removed = src.removed)
+            OR (dest.weiboCode = src.weiboCode AND dest.userType = src.userType AND dest.removed = src.removed)
+            OR (dest.alipayCode = src.alipayCode AND dest.userType = src.userType AND dest.removed = src.removed)
+        )
+        WHEN MATCHED THEN
+            UPDATE SET updateDate=#{createDate},updateUserId=#{createUserId},updateUserCode=#{createUserCode},updateUserName=#{createUserName},
+            sceneCode=#{sceneCode},sceneValue=#{sceneValue},subscribe=#{subscribe},nickname=#{nickname},sex=#{sex},country=#{country},province=#{province},city=#{city},language=#{language},headimgurl=#{headimgurl},subscribe_time=#{subscribe_time},tag=#{tag},
+            removed=0,enabled=1
+        WHEN NOT MATCHED THEN
+          INSERT (id,loginName,userCode,username,uniqueCode,password,salt,phone,email,qqCode,weChatCode,weiboCode,alipayCode,position,officePhone,sceneCode,sceneValue,tag,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate)
+          VALUES (#{id},#{loginName},#{userCode},#{username},#{uniqueCode},#{password},#{salt},#{phone},#{email},#{qqCode},#{weChatCode},#{weiboCode},#{alipayCode},#{position},#{officePhone},#{sceneCode},#{sceneValue},#{tag},#{accesstoken},#{userType},#{userLevel},#{orderBy},#{ownerOrgId},#{hierarchyOrgIds},#{mpNum},#{mpName},#{subscribe},#{openid},#{nickname},#{sex},#{country},#{province},#{city},#{language},#{headimgurl},#{subscribe_time},#{unionid},#{remark},#{groupid},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{sysOrg.id},#{backgroundurl},#{signature},#{birthDate},#{updateDate})
+        <!--
+            1. MySQL ON DUPLICATE 无论新增或是删除，都可以获取对象主键，而Oracle MERGE新增和删除主键都是序列nextval，因此如果是命中更新，那么对象的主键依旧是nextval，并非原来真实的主键。因此慎用数据库的update-if-exists-else-insert
+            Oracle 联合唯一索引中不能出现两次都是NULL值的索引
+        -->
+    </insert>
     <!-- userType password salt accesstoken不更新-->
 	<update id="update" parameterType="SysUser" flushCache="true" statementType="PREPARED" timeout="20" >
 		update sys_user
@@ -414,10 +586,16 @@
         DELETE FROM sys_user WHERE id=#{id}
     </delete>	
     
-	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20">
+	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20" databaseId="mysql">
        insert into sys_user (phone,loginName,username,uniqueCode,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate) values
         <foreach collection="list" index="index" item="item" separator=",">   
 	        (#{item.phone},#{item.loginName},#{item.username},#{uniqueCode},#{item.sceneCode},#{item.sceneValue},#{item.accesstoken},#{item.userType},#{item.userLevel},#{item.orderBy},#{item.ownerOrgId},#{item.hierarchyOrgIds},#{item.mpNum},#{item.mpName},#{item.subscribe},#{item.openid},#{item.nickname},#{item.sex},#{item.country},#{item.province},#{item.city},#{item.language},#{item.headimgurl},#{item.subscribe_time},#{item.unionid},#{item.remark},#{item.groupid},#{item.createUserId},#{item.createUserCode},#{item.createUserName},#{item.createDate},#{item.sysOrg.id},#{item.backgroundurl},#{item.signature},#{item.birthDate},#{item.updateDate})
 	    </foreach> 
-    </insert>     
+    </insert>
+    <insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20" databaseId="oracle">
+        insert into sys_user (id,phone,loginName,username,uniqueCode,sceneCode,sceneValue,accesstoken,userType,userLevel,orderBy,ownerOrgId,hierarchyOrgIds,mpNum,mpName,subscribe,openid,nickname,sex,country,province,city,language,headimgurl,subscribe_time,unionid,remark,groupid,createUserId,createUserCode,createUserName,createDate,ORG_ID,backgroundurl,signature,birthDate,updateDate) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (sys_user_seq.nextval,#{item.phone},#{item.loginName},#{item.username},#{uniqueCode},#{item.sceneCode},#{item.sceneValue},#{item.accesstoken},#{item.userType},#{item.userLevel},#{item.orderBy},#{item.ownerOrgId},#{item.hierarchyOrgIds},#{item.mpNum},#{item.mpName},#{item.subscribe},#{item.openid},#{item.nickname},#{item.sex},#{item.country},#{item.province},#{item.city},#{item.language},#{item.headimgurl},#{item.subscribe_time},#{item.unionid},#{item.remark},#{item.groupid},#{item.createUserId},#{item.createUserCode},#{item.createUserName},#{item.createDate},#{item.sysOrg.id},#{item.backgroundurl},#{item.signature},#{item.birthDate},#{item.updateDate})
+        </foreach>
+    </insert>
 </mapper>

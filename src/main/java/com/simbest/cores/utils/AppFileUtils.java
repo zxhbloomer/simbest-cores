@@ -325,6 +325,7 @@ public class AppFileUtils {
                     //直接将Context路径下的文件转换为Http访问路径
                     String baseUrl = getBaseUrl();
                     savePath = baseUrl + storePath + targetFile.getName();
+                    break;
                 case FastDFS:
                     String fileId = fastdfsClient.upload(targetFile,targetFile.getName());
                     savePath = fileId;

@@ -85,10 +85,25 @@
  WHERE i.processHeaderId=h.headerId AND i.processStepId=s.stepId AND i.processHeaderId = #{processHeaderId} AND i.receiptId = #{receiptId}
 	</select>
 	
-	<insert id="create" parameterType="ProcessDraft" useGeneratedKeys="true" keyProperty="id" > 
+	<insert id="create" parameterType="ProcessDraft" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         insert into app_process_draft (receiptId,title,code,processTypeId,processHeaderId,processStepId,processStepCode,subjects,subjectType,orgId,orgName,createUserId,createUserCode,createUserName,createDate) 
         values (#{receiptId},#{title},#{code},#{processTypeId},#{processHeaderId},#{processStepId},#{processStepCode},#{subjects},#{subjectType},#{orgId},#{orgName},#{createUserId},#{createUserCode},#{createUserName},#{createDate})
     	ON DUPLICATE KEY UPDATE updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate},title=#{title},processStepId=#{processStepId},processStepCode=#{processStepCode},subjects=#{subjects},subjectType=#{subjectType}
+    </insert>
+    <insert id="create" parameterType="ProcessDraft" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            select app_process_draft_seq.nextval as id from dual
+        </selectKey>
+        MERGE INTO app_process_draft dest
+        USING (SELECT #{processTypeId} processTypeId, #{processHeaderId} processHeaderId, #{receiptId} receiptId FROM dual) src
+        ON (
+        (dest.processTypeId = src.processTypeId AND dest.processHeaderId = src.processHeaderId AND dest.receiptId = src.receiptId)
+        )
+        WHEN MATCHED THEN
+        UPDATE SET updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate},title=#{title},processStepId=#{processStepId},processStepCode=#{processStepCode},subjects=#{subjects},subjectType=#{subjectType}
+        WHEN NOT MATCHED THEN
+        INSERT (receiptId,title,code,processTypeId,processHeaderId,processStepId,processStepCode,subjects,subjectType,orgId,orgName,createUserId,createUserCode,createUserName,createDate)
+        VALUES (#{receiptId},#{title},#{code},#{processTypeId},#{processHeaderId},#{processStepId},#{processStepCode},#{subjects},#{subjectType},#{orgId},#{orgName},#{createUserId},#{createUserCode},#{createUserName},#{createDate})
     </insert>
 
     <delete id="delete" parameterType="ProcessDraft" flushCache="true" statementType="PREPARED" timeout="20">

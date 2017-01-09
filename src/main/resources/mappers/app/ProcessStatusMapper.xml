@@ -96,10 +96,25 @@
 		 WHERE i.processHeaderId=h.headerId AND i.processStepId=s.stepId AND i.processHeaderId=ls.headerId AND i.receiptId=ls.receiptId ORDER BY i.updateDate DESC            
 	</select>
 	
-	<insert id="create" parameterType="ProcessStatus" useGeneratedKeys="true" keyProperty="id" > 
+	<insert id="create" parameterType="ProcessStatus" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         INSERT INTO app_process_status (receiptId,title,code,processTypeId,processHeaderId,processStepId,processStepCode,processStepType,processStepVersion,subjects,subjectType,orgId,orgName,createUserId,createUserCode,createUserName,createDate) 
         VALUES (#{receiptId},#{title},#{code},#{processTypeId},#{processHeaderId},#{processStepId},#{processStepCode},#{processStepType},#{processStepVersion},#{subjects},#{subjectType},#{orgId},#{orgName},#{createUserId},#{createUserCode},#{createUserName},#{createDate})
     	ON DUPLICATE KEY UPDATE title=#{title},updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate},processStepId=#{processStepId},processStepCode=#{processStepCode},processStepType=#{processStepType},processStepVersion=#{processStepVersion},subjects=#{subjects},subjectType=#{subjectType}
+    </insert>
+    <insert id="create" parameterType="ProcessStatus" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            select app_process_status_seq.nextval as id from dual
+        </selectKey>
+        MERGE INTO app_process_status dest
+        USING (SELECT #{processTypeId} processTypeId, #{processHeaderId} processHeaderId, #{receiptId} receiptId FROM dual) src
+        ON (
+        (dest.processTypeId = src.processTypeId AND dest.processHeaderId = src.processHeaderId AND dest.receiptId = src.receiptId)
+        )
+        WHEN MATCHED THEN
+        UPDATE SET title=#{title},updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate},processStepId=#{processStepId},processStepCode=#{processStepCode},processStepType=#{processStepType},processStepVersion=#{processStepVersion},subjects=#{subjects},subjectType=#{subjectType}
+        WHEN NOT MATCHED THEN
+        INSERT (id,receiptId,title,code,processTypeId,processHeaderId,processStepId,processStepCode,processStepType,processStepVersion,subjects,subjectType,orgId,orgName,createUserId,createUserCode,createUserName,createDate)
+        VALUES (#{id},#{receiptId},#{title},#{code},#{processTypeId},#{processHeaderId},#{processStepId},#{processStepCode},#{processStepType},#{processStepVersion},#{subjects},#{subjectType},#{orgId},#{orgName},#{createUserId},#{createUserCode},#{createUserName},#{createDate})
     </insert>
 
     <delete id="delete" parameterType="ProcessStatus" flushCache="true" statementType="PREPARED" timeout="20">

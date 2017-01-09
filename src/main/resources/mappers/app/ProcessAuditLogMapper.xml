@@ -57,11 +57,18 @@
          ORDER BY l.createDate DESC
     </select>
      
-    <insert id="create" parameterType="ProcessAuditLog" useGeneratedKeys="true" keyProperty="id" > 
+    <insert id="create" parameterType="ProcessAuditLog" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         insert into app_process_audit_log (orgId,orgName,receiptId,typeId,headerId,previousStepId,stepId,result,resultDesc,opinion,createUserId,createUserCode,createUserName,createDate,typeDesc,headerDesc,previousStepDesc,stepDesc) 
         values (#{orgId},#{orgName},#{receiptId},#{typeId},#{headerId},#{previousStepId},#{stepId},#{result},#{resultDesc},#{opinion},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{typeDesc},#{headerDesc},#{previousStepDesc},#{stepDesc})
     </insert>
-    
+    <insert id="create" parameterType="ProcessAuditLog" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            select app_process_audit_log_seq.nextval as id from dual
+        </selectKey>
+        insert into app_process_audit_log (id,orgId,orgName,receiptId,typeId,headerId,previousStepId,stepId,result,resultDesc,opinion,createUserId,createUserCode,createUserName,createDate,typeDesc,headerDesc,previousStepDesc,stepDesc)
+        values (#{id},#{orgId},#{orgName},#{receiptId},#{typeId},#{headerId},#{previousStepId},#{stepId},#{result},#{resultDesc},#{opinion},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{typeDesc},#{headerDesc},#{previousStepDesc},#{stepDesc})
+    </insert>
+
     <delete id="delete" parameterType="ProcessAuditLog" flushCache="true" statementType="PREPARED" timeout="20">
      	DELETE FROM app_process_audit_log WHERE typeId = #{typeId} AND headerId=#{headerId} AND receiptId=#{receiptId}
     </delete>

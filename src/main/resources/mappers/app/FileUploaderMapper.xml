@@ -76,12 +76,27 @@
         </if>
     </select>
            
-	<insert id="create" parameterType="FileUploader" useGeneratedKeys="true" keyProperty="id" flushCache="true"> 
+	<insert id="create" parameterType="FileUploader" useGeneratedKeys="true" keyProperty="id" flushCache="true" databaseId="mysql">
         INSERT INTO app_file_upload (description,processTypeId,processHeaderId,receiptCode,receiptId,fileClass,finalName,filePath,fileSize,orgId,attr1,attr2,attr3,createUserId,createUserCode,createUserName,createDate,updateUserId,updateUserCode,updateUserName,updateDate) 
         values (#{description},#{processTypeId},#{processHeaderId},#{receiptCode},#{receiptId},#{fileClass},#{finalName},#{filePath},#{fileSize},#{orgId},#{attr1},#{attr2},#{attr3},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{updateUserId},#{updateUserCode},#{updateUserName},#{updateDate})
         ON DUPLICATE KEY UPDATE updateDate=#{createDate},description=#{description},finalName=#{finalName},filePath=#{filePath},fileSize=#{fileSize},attr1=#{attr1},attr2=#{attr2},attr3=#{attr3},removed=0,enabled=1
     </insert>
-    
+    <insert id="create" parameterType="FileUploader" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select app_file_upload_seq.nextval as id from dual
+        </selectKey>
+        MERGE INTO app_file_upload dest
+          USING (SELECT #{attr1} attr1, #{receiptId} receiptId, #{fileClass} fileClass FROM dual) src
+          ON (
+              (dest.attr1 = src.attr1 AND dest.receiptId = src.receiptId AND dest.fileClass = src.fileClass)
+          )
+          WHEN MATCHED THEN
+              UPDATE SET updateDate=#{createDate},description=#{description},finalName=#{finalName},filePath=#{filePath},fileSize=#{fileSize},attr1=#{attr1},attr2=#{attr2},attr3=#{attr3},removed=0,enabled=1
+          WHEN NOT MATCHED THEN
+            INSERT (id,description,processTypeId,processHeaderId,receiptCode,receiptId,fileClass,finalName,filePath,fileSize,orgId,attr1,attr2,attr3,createUserId,createUserCode,createUserName,createDate,updateUserId,updateUserCode,updateUserName,updateDate)
+            VALUES (#{id},#{description},#{processTypeId},#{processHeaderId},#{receiptCode},#{receiptId},#{fileClass},#{finalName},#{filePath},#{fileSize},#{orgId},#{attr1},#{attr2},#{attr3},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{updateUserId},#{updateUserCode},#{updateUserName},#{updateDate})
+    </insert>
+
     <update id="updateEnable" parameterType="FileUploader" flushCache="true" statementType="PREPARED">
         UPDATE app_file_upload SET enabled=#{enabled},updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate} WHERE id IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   

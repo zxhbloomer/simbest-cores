@@ -81,11 +81,18 @@
         SELECT count(*) FROM app_process_task k WHERE k.currentUserId = #{currentUserId}
     </select>    
      
-    <insert id="create" parameterType="ProcessTask" useGeneratedKeys="true" keyProperty="id" > 
+    <insert id="create" parameterType="ProcessTask" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
         INSERT INTO app_process_task (typeId,headerId,receiptId,stepId,stepCode,title,previousOrgId,previousOrgName,createOrgId,createOrgName,currentOrgId,currentOrgName,currentUserId,currentUserCode,currentUserName,createUserId,createUserCode,createUserName,createDate,previousUserId,previousUserCode,previousUserName,previousDate,generateDate ) 
         VALUES (#{typeId},#{headerId},#{receiptId},#{stepId},#{stepCode},#{title},#{previousOrgId},#{previousOrgName},#{createOrgId},#{createOrgName},#{currentOrgId},#{currentOrgName},#{currentUserId},#{currentUserCode},#{currentUserName},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{previousUserId},#{previousUserCode},#{previousUserName},#{previousDate},#{generateDate} )
     </insert>
-    
+    <insert id="create" parameterType="ProcessTask" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            select app_process_task_seq.nextval as id from dual
+        </selectKey>
+        INSERT INTO app_process_task (id,typeId,headerId,receiptId,stepId,stepCode,title,previousOrgId,previousOrgName,createOrgId,createOrgName,currentOrgId,currentOrgName,currentUserId,currentUserCode,currentUserName,createUserId,createUserCode,createUserName,createDate,previousUserId,previousUserCode,previousUserName,previousDate,generateDate )
+        VALUES (#{id},#{typeId},#{headerId},#{receiptId},#{stepId},#{stepCode},#{title},#{previousOrgId},#{previousOrgName},#{createOrgId},#{createOrgName},#{currentOrgId},#{currentOrgName},#{currentUserId},#{currentUserCode},#{currentUserName},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{previousUserId},#{previousUserCode},#{previousUserName},#{previousDate},#{generateDate} )
+    </insert>
+
     <delete id="delete" parameterType="ProcessTask" flushCache="true" statementType="PREPARED" timeout="20">
      	DELETE FROM app_process_task WHERE typeId = #{typeId} AND headerId=#{headerId} AND receiptId=#{receiptId} 
      	<if test="stepId != null">

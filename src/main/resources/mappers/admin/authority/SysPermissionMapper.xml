@@ -68,9 +68,19 @@
 	<delete id="deleteSysUserPermissionByUserId" parameterType='Integer' flushCache="true" statementType="PREPARED" timeout="20">
         delete from sys_user_permission where user_id=#{userId}
     </delete>   	
-	<insert id="createSysUserPermission" useGeneratedKeys="true" keyProperty="id" >         
+	<insert id="createSysUserPermission" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
     	insert IGNORE into sys_user_permission(user_id,permission_id) values (#{userId},#{permissionId})
 	</insert>
+    <insert id="createSysUserPermission" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        MERGE INTO sys_user_permission dest
+          USING (SELECT #{user_id} user_id, #{permission_id} permission_id FROM dual) src
+          ON (
+              (dest.user_id = src.user_id AND dest.permission_id = src.permission_id)
+          )
+          WHEN NOT MATCHED THEN
+            INSERT (user_id,permission_id)
+            VALUES (#{user_id},#{permission_id})
+    </insert>
 	<!-- 基于用户-资源直接授权时使用  End-->  
 			
     <select id='getByRole' parameterType='Integer' resultMap="simplePermissionResult">
@@ -103,18 +113,30 @@
     </select>
     <!-- 关联查询方式，适用于集合列表实体对象  End -->
     
-	<insert id="create" parameterType="SysPermission" useGeneratedKeys="true" keyProperty="id" >         
+	<insert id="create" parameterType="SysPermission" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
     	insert into sys_permission(createDate,updateDate,description,name,url,type,parent_id) values (#{createDate},#{updateDate},#{description},#{name},#{url},#{type},#{parent.id})
 	</insert>
-	
-	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20">
+    <insert id="create" parameterType="SysPermission" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+            select sys_permission_seq.nextval as id from dual
+        </selectKey>
+        insert into sys_permission(id,createDate,updateDate,description,name,url,type,parent_id) values (#{id},#{createDate},#{updateDate},#{description},#{name},#{url},#{type},#{parent.id})
+    </insert>
+
+	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20" databaseId="mysql">
         insert into sys_permission(createDate,description,name,url,type,parent_id) values
         <foreach collection="list" index="index" item="item" separator=",">   
 	        (#{item.createDate},#{item.description},#{item.name},#{item.url},#{item.type},#{item.parent.id})    
 	    </foreach> 
-    </insert> 	
-   
-	<update id="update" parameterType="SysPermission" flushCache="true" statementType="PREPARED" timeout="20">
+    </insert>
+    <insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20" databaseId="oracle">
+        insert into sys_permission(id,createDate,description,name,url,type,parent_id) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (sys_permission_seq.nextval,#{item.createDate},#{item.description},#{item.name},#{item.url},#{item.type},#{item.parent.id})
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="SysPermission" flushCache="true" statementType="PREPARED" timeout="20">
         update sys_permission set updateDate=#{updateDate},icon=#{icon},description=#{description},name=#{name},url=#{url},type=#{type},parent_id=#{parent.id} where id=#{id}
     </update>   
     

@@ -63,8 +63,15 @@
         ORDER BY h.headerId ASC,s.stepId ASC
     </select>
      
-	<insert id="create" parameterType="ProcessStep" useGeneratedKeys="true" keyProperty="stepId" > 
+	<insert id="create" parameterType="ProcessStep" useGeneratedKeys="true" keyProperty="stepId" databaseId="mysql">
         insert into app_process_step (stepCode,typeId,stepType,stepDesc,passId,failId,stopId,ltop,lleft,sversion,headerId ) 
         values (#{stepCode},#{typeId},#{stepType},#{stepDesc},#{passId},#{failId},#{stopId},#{ltop},#{lleft},#{sversion},#{header.headerId})
+    </insert>
+    <insert id="create" parameterType="ProcessStep" useGeneratedKeys="false" keyProperty="stepId" databaseId="oracle">
+        <selectKey resultType="Integer" keyProperty="stepId" order="BEFORE">
+            select app_process_step_seq.nextval as id from dual
+        </selectKey>
+        insert into app_process_step (stepId,stepCode,typeId,stepType,stepDesc,passId,failId,stopId,ltop,lleft,sversion,headerId )
+        values (#{stepId},#{stepCode},#{typeId},#{stepType},#{stepDesc},#{passId},#{failId},#{stopId},#{ltop},#{lleft},#{sversion},#{header.headerId})
     </insert>
 </mapper>

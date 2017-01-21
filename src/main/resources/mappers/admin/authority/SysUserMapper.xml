@@ -186,8 +186,8 @@
 		<if test="loginName!=null and loginName!=''">  
             and u.loginName = #{loginName}
         </if>
-		<if test="username!=null and username!=''">  
-            and u.username = #{username}
+		<if test="username!=null and username!=''">
+            and u.username like concat('%',#{username},'%')
         </if>
 		<if test="enabled != null">
             and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
@@ -256,7 +256,7 @@
             and u.loginName = #{loginName}
         </if>
 		<if test="username!=null and username!=''">  
-            and u.username = #{username}
+            and u.username like concat('%',#{username},'%')
         </if>
 		<if test="enabled != null">
             and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
@@ -327,7 +327,7 @@
             and u.loginName = #{loginName}
         </if>
 		<if test="username!=null and username!=''">  
-            and u.username = #{username}
+            and u.username like concat('%',#{username},'%')
         </if>
 		<if test="enabled != null">
             and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
@@ -393,7 +393,7 @@
             and u.loginName = #{loginName}
         </if>
 		<if test="username!=null and username!=''">  
-            and u.username = #{username}
+            and u.username like concat('%',#{username},'%')
         </if>
 		<if test="enabled != null">
             and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->

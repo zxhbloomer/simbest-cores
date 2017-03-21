@@ -1,5 +1,6 @@
 package com.simbest.cores.app.service;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.simbest.cores.app.model.FileUploader;
@@ -19,4 +20,9 @@ public interface IFileUploaderService extends ILogicService<FileUploader,Long>{
 	 * 仅删除数据库记录
 	 */
 	int deleteRecord(FileUploader o);
+	
+	/**
+	 * 仅删除数据库记录
+	 */
+	int deleteById(@Param("id") Long id);
 }

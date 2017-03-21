@@ -151,4 +151,13 @@ public class FileUploaderService extends LogicService<FileUploader,Long> impleme
 			return ret;
 		}
 	}
+
+	/**
+	 * 仅删除数据库记录
+	 */
+	@Override
+	public int deleteById(Long id) {
+		// TODO Auto-generated method stub
+		return mapper.deleteById(id);
+	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.simbest.cores.utils.Constants;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,13 @@ public class SysOrgAdvanceService extends GenericAdvanceService<SysOrg,Integer> 
 	@Cacheable
 	public List<SysOrg> getChildrenOrg(Integer id) {
 		return sysOrgService.getChildrenOrg(id);
+	}
+	
+	@Override
+	@Cacheable
+	public List<SysOrg> getNextChildrenOrg(Integer id) {
+		// TODO Auto-generated method stub
+		return sysOrgService.getNextChildrenOrg(id);
 	}
 
 	@Override
@@ -122,4 +130,6 @@ public class SysOrgAdvanceService extends GenericAdvanceService<SysOrg,Integer> 
         Collections.sort(parentSysOrgs);
         return parentSysOrgs;
     }
+
+
 }

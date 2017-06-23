@@ -70,6 +70,22 @@ public class SysOrgService extends SystemService<SysOrg,Integer> implements ISys
 		}
 		return result;
 	}
+	
+	/**
+	 * 获取下一级子部门（不包括传入部门，不包括子部门的子部门）
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public List<SysOrg> getNextChildrenOrg(Integer id) {
+		List<SysOrg> result = Lists.newArrayList();
+		SysOrg parent = mapper.getById(id);
+		if(parent != null){
+			List<SysOrg> children = getByParent(parent.getId());
+			result.addAll(children);
+		}
+		return result;
+	}
 
 	/**
 	 * 通过子部门获取父亲部门（不包括子部门）

@@ -27,6 +27,12 @@ public interface ISysOrgService extends IGenericService<SysOrg,Integer>{
 	 * @return
 	 */
 	List<SysOrg> getChildrenOrg(Integer id);
+	/**
+	 * 获取下一级子部门（不包括传入部门，不包括子部门的子部门）
+	 * @param id
+	 * @return
+	 */
+	List<SysOrg> getNextChildrenOrg(Integer id);
 	
 	LinkedList<SysOrg> getParentByChild(Integer id);
 	

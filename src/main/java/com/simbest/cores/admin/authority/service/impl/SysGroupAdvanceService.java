@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 @Service(value = "sysGroupAdvanceService")
-public class SysGroupAdvanceService extends GenericAdvanceService<SysGroup, String> implements ISysGroupAdvanceService {
+public class SysGroupAdvanceService extends GenericAdvanceService<SysGroup, Integer> implements ISysGroupAdvanceService {
 
     private ISysGroupService sysGroupService;
 
@@ -32,33 +32,33 @@ public class SysGroupAdvanceService extends GenericAdvanceService<SysGroup, Stri
     @Autowired
     public SysGroupAdvanceService(
             ISysGroupService sysGroupService,
-            @Qualifier(value = "sysGroupCache") IGenericCache<SysGroup, String> sysGroupCache) {
+            @Qualifier(value = "sysGroupCache") IGenericCache<SysGroup, Integer> sysGroupCache) {
         super(sysGroupService, sysGroupCache);
         this.sysGroupService = sysGroupService;
     }
 
     @Override
-    public int deleteSysUserGroupByGroupId(String roleId) {
+    public int deleteSysUserGroupByGroupId(Integer roleId) {
         return sysGroupService.deleteSysUserGroupByGroupId(roleId);
     }
 
     @Override
-    public int deleteSysUserGroupByUserId(String userId) {
+    public int deleteSysUserGroupByUserId(Integer userId) {
         return sysGroupService.deleteSysUserGroupByUserId(userId);
     }
 
     @Override
-    public int createSysUserGroup(String userId, String roleId) {
+    public int createSysUserGroup(Integer userId, Integer roleId) {
         return sysGroupService.createSysUserGroup(userId, roleId);
     }
 
     @Override
-    public List<SysGroup> getByUser(String userId) {
+    public List<SysGroup> getByUser(Integer userId) {
         return sysGroupService.getByUser(userId);
     }
 
     @Override
-    public List<String> getGroupUser(String groupid) {
+    public List<String> getGroupUser(Integer groupid) {
         return sysGroupService.getGroupUser(groupid);
     }
 

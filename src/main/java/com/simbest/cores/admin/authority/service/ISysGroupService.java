@@ -6,15 +6,15 @@ import com.simbest.cores.service.IGenericService;
 import java.util.List;
 
 
-public interface ISysGroupService extends IGenericService<SysGroup, String> {
+public interface ISysGroupService extends IGenericService<SysGroup, Integer> {
 
-    int deleteSysUserGroupByGroupId(String groupId);
+    int deleteSysUserGroupByGroupId(Integer groupId);
 
-    int deleteSysUserGroupByUserId(String userId);
+    int deleteSysUserGroupByUserId(Integer userId);
 
-    int createSysUserGroup(String userId, String groupId);
+    int createSysUserGroup(Integer userId, Integer groupId);
 
-    List<SysGroup> getByUser(String userId);
+    List<SysGroup> getByUser(Integer userId);
 
-    List<String> getGroupUser(String groupid);
+    List<String> getGroupUser(Integer groupid);
 }

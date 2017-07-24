@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Service(value = "sysGroupService")
-public class SysGroupService extends GenericMapperService<SysGroup, String> implements ISysGroupService {
+public class SysGroupService extends GenericMapperService<SysGroup, Integer> implements ISysGroupService {
 
     private SysGroupMapper mapper;
 
@@ -25,27 +25,27 @@ public class SysGroupService extends GenericMapperService<SysGroup, String> impl
     }
 
     @Override
-    public int createSysUserGroup(String userId, String groupId) {
+    public int createSysUserGroup(Integer userId, Integer groupId) {
         return mapper.createSysUserGroup(userId, groupId);
     }
 
     @Override
-    public int deleteSysUserGroupByGroupId(String groupId) {
+    public int deleteSysUserGroupByGroupId(Integer groupId) {
         return mapper.deleteSysUserGroupByGroupId(groupId);
     }
 
     @Override
-    public int deleteSysUserGroupByUserId(String userId) {
+    public int deleteSysUserGroupByUserId(Integer userId) {
         return mapper.deleteSysUserGroupByUserId(userId);
     }
 
     @Override
-    public List<SysGroup> getByUser(String userId) {
+    public List<SysGroup> getByUser(Integer userId) {
         return mapper.getByUser(userId);
     }
 
     @Override
-    public List<String> getGroupUser(String groupid) {
+    public List<String> getGroupUser(Integer groupid) {
         return mapper.getGroupUser(groupid);
     }
 }

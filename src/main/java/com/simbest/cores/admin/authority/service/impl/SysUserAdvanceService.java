@@ -461,6 +461,30 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         }
         return data;
     }
+    
+    /**
+     * 五. 根据组织、上级组织、所属公司、职位、用户信息，群组递归查找父亲组织及相应职务人员
+     * @param orgId
+     * @param parentId
+     * @param ownerId
+     * @param position
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<DynamicUserTreeNode> searchDynamicParentUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId, String loginName, String uniqueCode,Integer group_id) {
+        log.debug(String.format("Invoke searchDynamicUserTree with orgId: %s, parentId: %s, ownerId: %s, position: %s, userId: %s, loginName: %s, uniqueCode: %s", orgId,parentId,ownerId,position, userId, loginName,uniqueCode));
+        List<DynamicUserTreeNode> data = null;
+        if(data == null){
+            if(Boolean.valueOf(config.getValue("app.enable.cqengine"))) {
+                data = loadDynamicParentUserTreeByCQEngine(orgId,parentId,ownerId,position,userId,loginName,uniqueCode,group_id);
+            }else{
+                data = loadDynamicParentUserTreeByDatabase(orgId,parentId,ownerId,position,userId,loginName,uniqueCode,group_id);
+            }
+            searchDynamicUserTreeDataHolder.put(orgId+Constants.UNDERLINE+parentId+Constants.UNDERLINE+ownerId+Constants.UNDERLINE+position+Constants.UNDERLINE+userId+Constants.UNDERLINE+loginName+Constants.UNDERLINE+uniqueCode, data);
+        }
+        return data;
+    }
 
     /**
      * 5.1
@@ -478,6 +502,56 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         }else if(StringUtils.isNotEmpty(uniqueCode)){
             SysUser sysUser = loadByCustom("uniqueCode", uniqueCode);
             userList.add(sysUser);
+        }else {
+            SysUser params = new SysUser();
+            SysOrg sysOrg = new SysOrg();
+            if(null != orgId)
+                sysOrg.setId(orgId);
+            SysOrg parent = new SysOrg(parentId);
+            sysOrg.setParent(parent);
+            params.setSysOrg(sysOrg);
+            params.setOwnerOrgId(ownerId);
+            params.setPosition(position);
+            userList = getAll(params);
+        }
+
+        for (SysUser user : userList) {
+            unduplicatedOrgSet.addAll(sysOrgAdvanceService.getHierarchyOrgs(user.getSysOrg().getId()));
+        }
+        wrapDynamicUser(resultList, userList);
+        wrapDynamicOrg(resultList, unduplicatedOrgSet);
+        return resultList;
+    }
+    
+    /**
+     * 5.1 带群组
+     */
+    private List<DynamicUserTreeNode> loadDynamicParentUserTreeByDatabase(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId, String loginName, String uniqueCode,Integer group_id){
+        List<DynamicUserTreeNode> resultList = Lists.newArrayList();
+        Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
+        Collection<SysUser> userList = Lists.newArrayList();
+        if(null != userId){
+            SysUser sysUser = loadByKey(userId);
+            userList.add(sysUser);
+        }else if(StringUtils.isNotEmpty(loginName)){
+            SysUser sysUser = loadByUnique(loginName);
+            userList.add(sysUser);
+        }else if(StringUtils.isNotEmpty(uniqueCode)){
+            SysUser sysUser = loadByCustom("uniqueCode", uniqueCode);
+            userList.add(sysUser);
+        }else if(group_id!=null){
+            SysUser params = new SysUser();
+            SysOrg sysOrg = new SysOrg();
+            if(null != orgId)
+                sysOrg.setId(orgId);
+            SysOrg parent = new SysOrg(parentId);
+            sysOrg.setParent(parent);
+            params.setSysOrg(sysOrg);
+            params.setOwnerOrgId(ownerId);
+            params.setPosition(position);
+            params.setGroupid(group_id);
+            userList = getUserListByOrgGroup(params);
+//            userList = getAll(params);
         }else {
             SysUser params = new SysUser();
             SysOrg sysOrg = new SysOrg();
@@ -533,6 +607,40 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         return resultList;
     }
 
+    /**
+     * 5.2 带群组
+     */
+    private List<DynamicUserTreeNode> loadDynamicParentUserTreeByCQEngine(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId, String loginName, String uniqueCode,Integer group_id){
+        List<DynamicUserTreeNode> resultList = Lists.newArrayList();
+        Set<SysOrg> unduplicatedOrgSet = Sets.newHashSet();
+        Collection<SysUserIndex> userList;
+        if(null != userId){
+            userList = sysUserSearch.searchQuery(userId);
+        }else {
+            userList = sysUserSearch.searchQuery(loginName, uniqueCode, orgId, parentId, ownerId, position);
+        }
+        for (SysUserIndex user : userList) {
+            DynamicUserTreeNode userNode = new DynamicUserTreeNode();
+            userNode.setType("user");
+            userNode.setChild(false);
+            userNode.setId(user.getSysUser().getId());
+            userNode.setPid(user.getSysUser().getSysOrg().getId());
+            userNode.setTitle(user.getSysUser().getUsername());
+            //查询组织相对与跟组织所在的层级，跟组织为0,用户相对与本身的组织又加一层级
+            SysOrg sysOrg = sysOrgAdvanceService.loadByKey(user.getSysUser().getSysOrg().getId());
+            int i = 0;
+            i = topTraverse(i,sysOrg);
+            i = i +1;
+            userNode.setLevel(i);
+            
+            
+            unduplicatedOrgSet.addAll(user.getHierarchyOrgs());
+            resultList.add(userNode);
+        }
+        wrapDynamicOrg(resultList, unduplicatedOrgSet);
+        return resultList;
+    }
+    
     /**
      * 六. 根据所在组织、职位查找儿子递归组织及相应职务人员
      * @param orgId
@@ -1009,6 +1117,14 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         choseDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys());
         searchDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys());
     }
+
+	@Override
+	public List<SysUser> getUserListByOrgGroup(SysUser sysUser) {
+		// TODO Auto-generated method stub
+		return sysUserService.getUserListByOrgGroup(sysUser);
+	}
+
+
 
 
 	

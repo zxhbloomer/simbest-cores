@@ -211,5 +211,11 @@ public class SysUserService extends LogicService<SysUser,Integer> implements ISy
 		return mapper.forceDelete(userId);
 	}
 
+	@Override
+	public List<SysUser> getUserListByOrgGroup(SysUser sysUser) {
+		// TODO Auto-generated method stub
+		return mapper.getUserListByOrgGroup(sysUser);
+	}
+
 
 }

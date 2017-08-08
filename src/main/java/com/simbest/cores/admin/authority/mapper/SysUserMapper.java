@@ -28,4 +28,7 @@ public interface SysUserMapper extends ILogicMapper<SysUser,Integer>{
 	int createOrUpdateViaAdmin(SysUser u);
 	
 	int forceDelete(Integer userId);
+	
+	List<SysUser> getUserListByOrgGroup(SysUser sysUser);
+
 }

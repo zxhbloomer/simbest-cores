@@ -79,10 +79,23 @@ public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,I
     List<DynamicUserTreeNode> searchDynamicParentUserTree(Integer orgId, Integer parentId, Integer ownerId, String position, Integer userId, String loginName, String uniqueCode);
 
     /**
+     * 五. 根据组织、上级组织、所属公司、职位、用户信息，群组，递归查找父亲组织及相应职务人员
+     * @param orgId
+     * @param parentId
+     * @param ownerId
+     * @param position
+     * @param userId
+     * @return
+     */
+    List<DynamicUserTreeNode> searchDynamicParentUserTree(Integer selectOrgId,
+    		Integer parentId, Integer ownerId, String position, Integer userId,
+    		String loginName, String uniqueCode, Integer group_id);
+    /**
      * 六. 根据所在组织、职位查找儿子递归组织及相应职务人员
      * @param orgId
      * @param position
      * @return
      */
     List<DynamicUserTreeNode> searchDynamicChildUserTree(Integer orgId, String position);
+    
 }

@@ -320,6 +320,66 @@
         </if>
     </select>
     <!-- 关联查询方式，适用于集合列表实体对象  End --> 
+	
+	<select id="getUserListByOrgGroup" resultMap="simpleUserResult" databaseId="mysql">
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o,sys_group g,sys_user_group ug where 
+        u.removed=0 AND o.id=u.org_id and u.id = ug.user_id and ug.group_id = g.id and g.id = #{groupid}
+		<if test="enabled != null">
+            and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
+        </if>  
+		<if test="userType != null">
+            and u.userType = #{userType}
+        </if>
+        <if test="position != null and position !=''">
+            and u.position = #{position}
+        </if>
+        <if test="ownerOrgId != null and ownerOrgId !=''">
+            and u.ownerOrgId = #{ownerOrgId}
+        </if>
+        <if test="sysOrg != null and sysOrg.id != null">
+            and u.org_id = #{sysOrg.id}
+        </if>
+        <if test="sysOrg != null and sysOrg.parent != null and sysOrg.parent.id != null">
+            and o.parent_id = #{sysOrg.parent.id}
+        </if>
+        <if test="orderByClause != null and orderByClause !=''" >
+            ORDER BY ${orderByClause}
+        </if>
+        <if test="orderByClause == null or orderByClause ==''" >
+            ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
+        </if>
+    </select>
+    
+    <select id="getUserListByOrgGroup" resultMap="simpleUserResult" databaseId="oracle">
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o,sys_group g,sys_user_group ug where 
+        u.removed=0 AND o.id=u.org_id and u.id = ug.user_id and ug.group_id = g.id and g.id = #{groupid}
+		<if test="enabled != null">
+            and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->
+        </if>  
+		<if test="userType != null">
+            and u.userType = #{userType}
+        </if>
+        <if test="position != null and position !=''">
+            and u.position = #{position}
+        </if>
+        <if test="ownerOrgId != null and ownerOrgId !=''">
+            and u.ownerOrgId = #{ownerOrgId}
+        </if>
+        <if test="sysOrg != null and sysOrg.id != null">
+            and u.org_id = #{sysOrg.id}
+        </if>
+        <if test="sysOrg != null and sysOrg.parent != null and sysOrg.parent.id != null">
+            and o.parent_id = #{sysOrg.parent.id}
+        </if>
+        <if test="orderByClause != null and orderByClause !=''" >
+            ORDER BY ${orderByClause}
+        </if>
+        <if test="orderByClause == null or orderByClause ==''" >
+            ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+        </if>
+    </select>
+
+
 
 	<select id="queryAnyway" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where o.id=u.org_id

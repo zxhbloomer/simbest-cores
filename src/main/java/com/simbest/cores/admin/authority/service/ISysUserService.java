@@ -88,4 +88,7 @@ public interface ISysUserService extends ILogicService<SysUser,Integer>{
 	 * @return
 	 */
 	int forceDelete(Integer userId);
+	
+	List<SysUser> getUserListByOrgGroup(SysUser sysUser);
+
 }

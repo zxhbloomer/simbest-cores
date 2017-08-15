@@ -24,21 +24,27 @@ public class ProcessCodeHolder extends GenericModel<ProcessCodeHolder> {
     @SequenceGenerator(name="sys_process_code_holder_seq", sequenceName="sys_process_code_holder_seq")
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_process_code_holder_seq")
     @ApiModelProperty(value="主键Id")
+    @Column(name="id")
     private Long id;
 
     @ApiModelProperty(value="流程前缀")
+    @Column(name="prefix")
     private String prefix; //流程前缀
 
     @ApiModelProperty(value="流程日期")
+    @Column(name="processDate")
     private String processDate; //流程日期
 
     @ApiModelProperty(value="计数编码")
+    @Column(name="countCode")
     private Integer countCode; //计数编码
 
     @ApiModelProperty(value="计数位数")
+    @Column(name="countLength")
     private Integer countLength; //计数位数
 
     public ProcessCodeHolder() {
+    	super();
     }
 
     public ProcessCodeHolder(String prefix, String processDate, Integer countCode, Integer countLength) {

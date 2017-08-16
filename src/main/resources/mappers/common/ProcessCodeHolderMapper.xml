@@ -44,7 +44,7 @@
         values (#{id},#{prefix},#{processDate},#{countCode},#{countLength})
     </insert>
 
-    <update id="update" parameterType="ProcessCodeHolder" useGeneratedKeys="true" keyProperty="id" >
+    <update id="update" parameterType="ProcessCodeHolder" flushCache="true" statementType="PREPARED" timeout="20" >
         UPDATE sys_process_code_holder SET prefix=#{prefix},processDate=#{processDate},countCode=#{countCode},countLength=#{countLength}
         WHERE id=#{id}
     </update>

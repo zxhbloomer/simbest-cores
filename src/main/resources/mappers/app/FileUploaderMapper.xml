@@ -82,7 +82,7 @@
         ON DUPLICATE KEY UPDATE updateDate=#{createDate},description=#{description},finalName=#{finalName},filePath=#{filePath},fileSize=#{fileSize},attr1=#{attr1},attr2=#{attr2},attr3=#{attr3},removed=0,enabled=1
     </insert>
     <insert id="create" parameterType="FileUploader" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
-        <selectKey resultType="Integer" keyProperty="id" order="BEFORE">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
             select app_file_upload_seq.nextval as id from dual
         </selectKey>
         MERGE INTO app_file_upload dest

@@ -91,7 +91,7 @@
               (dest.attr1 = src.attr1 AND dest.receiptId = src.receiptId AND dest.fileClass = src.fileClass)
           )
           WHEN MATCHED THEN
-              UPDATE SET updateDate=#{createDate},description=#{description},finalName=#{finalName},filePath=#{filePath},fileSize=#{fileSize},attr1=#{attr1},attr2=#{attr2},attr3=#{attr3},removed=0,enabled=1
+              UPDATE SET updateDate=#{createDate},description=#{description},finalName=#{finalName},filePath=#{filePath},fileSize=#{fileSize},attr2=#{attr2},attr3=#{attr3},removed=0,enabled=1
           WHEN NOT MATCHED THEN
             INSERT (id,description,processTypeId,processHeaderId,receiptCode,receiptId,fileClass,finalName,filePath,fileSize,orgId,attr1,attr2,attr3,createUserId,createUserCode,createUserName,createDate,updateUserId,updateUserCode,updateUserName,updateDate)
             VALUES (#{id},#{description},#{processTypeId},#{processHeaderId},#{receiptCode},#{receiptId},#{fileClass},#{finalName},#{filePath},#{fileSize},#{orgId},#{attr1},#{attr2},#{attr3},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{updateUserId},#{updateUserCode},#{updateUserName},#{updateDate})

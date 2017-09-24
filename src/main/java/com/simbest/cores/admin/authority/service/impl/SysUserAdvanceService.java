@@ -1071,12 +1071,15 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 			int ret = 0;
 			Map<String,Object> params = Maps.newHashMap();
 			params.put("phone", phone);
-			params.put("userType", Integer.valueOf(config.getValue("app.usertype.backend")));
-			Collection<SysUser> users = sysUserService.queryAnyway(params);
-			if(users.isEmpty()){ //用户没有关联过俱乐部
-				map.put("message", "手机号未与俱乐部关联!");
+            params.put("userType", Integer.valueOf(config.getValue("app.usertype.backend"))); //确定绑定用户类型
+			Collection<SysUser> users = sysUserService.getAll(params);
+			if(users.isEmpty()){
+				map.put("message", "此手机号未在系统维护!");
 				map.put("responseid", 0);
-			}else{
+			}else if(users.size() > 1){
+                map.put("message", "此手机号存在多个账号!");
+                map.put("responseid", 0);
+            }else{
 				SysUser backendUser = users.iterator().next();
 				BeanUtils.copyProperties(weChatUser, backendUser, new String[]{"id", "phone", "accesstoken", "groupid", "sysOrg"});
 				backendUser.setPhone(phone);

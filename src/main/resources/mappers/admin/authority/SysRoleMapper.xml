@@ -47,9 +47,15 @@
 		</collection> -->
     </resultMap>        	 
 	<select id="getAll" resultMap="simpleRoleResult">
-        select * from sys_role WHERE id!=1
+        select * from sys_role r WHERE id!=1
 		<if test="name != null and name !=''">
-            and name = #{name}
+            and r.name = #{name}
+        </if>
+        <if test="type != null and type !=''">
+            and r.type = #{type}
+        </if>
+        <if test="description != null and description !=''">
+            and r.description like concat('%',#{description},'%')
         </if>
         order by description desc
     </select> 

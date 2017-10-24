@@ -75,10 +75,10 @@
      	SELECT c.*,p.id AS pid,p.orgName AS porgName,p.orgCode AS porgCode,p.orgLevel AS porgLevel FROM sys_org c LEFT JOIN sys_org p ON c.parent_id=p.id
      	<where>
 	     	<if test="orgName != null and orgName !=''">
-	            AND c.orgName = #{orgName}
+                AND c.orgName like concat('%',#{orgName},'%')
 	        </if>
 	        <if test="orgCode != null and orgCode !=''">
-	            AND c.orgCode = #{orgCode}
+                AND c.orgCode like concat('%',#{orgCode},'%')
 	        </if>
             <if test="orgLevel != null and orgLevel !=''">
                 AND c.orgLevel = #{orgLevel}

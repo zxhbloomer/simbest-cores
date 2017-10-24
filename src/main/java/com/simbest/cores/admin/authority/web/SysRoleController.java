@@ -83,7 +83,7 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
             produces="application/json",consumes="application/json")
 	public Map<String, Object> query(@RequestBody SysRole o) throws Exception {
 		Map<String, Object> result = Maps.newHashMap();		
-		Collection<SysRole> list = sysRoleAdvanceService.getValues();
+		Collection<SysRole> list = sysRoleAdvanceService.getAll(o);
 		Map<String, Object> dataMap = super.wrapQueryResult((List<SysRole>) list);
 		result.put("data", dataMap);
 		result.put("message", "");

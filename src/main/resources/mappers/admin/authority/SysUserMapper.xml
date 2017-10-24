@@ -237,6 +237,9 @@
         <if test="ownerOrgId != null and ownerOrgId !=''">
             and u.ownerOrgId = #{ownerOrgId}
         </if>
+        <if test="officePhone  != null and officePhone  !=''">
+            and u.officePhone  = #{officePhone}
+        </if>
         <if test="sysOrg != null and sysOrg.id != null">
             and u.org_id = #{sysOrg.id}
         </if>

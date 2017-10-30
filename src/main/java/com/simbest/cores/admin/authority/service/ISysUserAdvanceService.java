@@ -97,5 +97,10 @@ public interface ISysUserAdvanceService extends IGenericAdvanceService<SysUser,I
      * @return
      */
     List<DynamicUserTreeNode> searchDynamicChildUserTree(Integer orgId, String position);
+
+    /**
+     * 清空按条件筛选的缓存数据
+     */
+    public void clearCacheHolder();
     
 }

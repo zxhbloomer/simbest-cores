@@ -237,6 +237,7 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 					}
 				}
 			}
+            sysRoleAdvanceService.clearCacheHolder();
 			map.put("responseid", 1);
 			map.put("message", "保存角色权限成功!");
 		} catch (Exception e) {

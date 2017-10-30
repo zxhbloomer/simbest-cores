@@ -445,6 +445,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 					}
 				}
 			}
+            sysUserAdvanceService.clearCacheHolder();
 			map.put("responseid", 1);
 			map.put("message", "保存用户角色成功!");
 		} catch (Exception e) {
@@ -492,6 +493,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 				sysPermissionAdvanceService.createSysUserPermission(userId, Integer.parseInt(permission));
 			}
 		}
+        sysUserAdvanceService.clearCacheHolder();
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("message", "保存用户权限成功!");
 		result.put("responseid", 1);

@@ -1113,7 +1113,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
     /**
      * 清空按条件筛选的缓存数据
      */
-    private void clearCacheHolder(){
+    public void clearCacheHolder(){
         usersTreeDataHolder.delete(usersTreeDataHolder.keys());
         usersRoleTreeDataHolder.delete(usersRoleTreeDataHolder.keys());
         permissionsTreeDataHolder.delete(permissionsTreeDataHolder.keys());

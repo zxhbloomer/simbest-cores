@@ -3,8 +3,9 @@
   'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
   
 <mapper namespace='com.simbest.cores.admin.authority.mapper.SysUserMapper'>
-	<!-- 定义缓存 -->
+	<!-- 定义缓存
 	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+	-->
 	<!-- 
 		Mybatis Bug: 实体同时进行One-to-One和One-to-Many时，无法通过Lazy loading同时获取实体本身主键ID、关联One实体和关联Many实体 
 		因此，在查询单个实体，不使用延迟加载One（SysOrg），而加载Many（SysRole）；在查询多个实体时使用延迟加载One（SysOrg），不需要Many（SysRole）

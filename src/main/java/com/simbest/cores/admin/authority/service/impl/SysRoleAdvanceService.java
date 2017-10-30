@@ -148,6 +148,8 @@ public class SysRoleAdvanceService extends GenericAdvanceService<SysRole,Integer
      * 清空按条件筛选的缓存数据
      */
     public void clearCacheHolder(){
-        rolePermissionsTreeDataHolder.delete(rolePermissionsTreeDataHolder.keys());
+        if(rolePermissionsTreeDataHolder.keys().size() > 0) {
+            rolePermissionsTreeDataHolder.delete(rolePermissionsTreeDataHolder.keys().toArray());
+        }
     }
 }

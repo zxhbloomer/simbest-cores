@@ -3,9 +3,9 @@
   'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
   
 <mapper namespace='com.simbest.cores.admin.authority.mapper.SysOrgMapper'>
-	<!-- 定义缓存 -->
+	<!-- 定义缓存
 	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
-	
+	-->
 	<!-- LazyLoading 方式启用延迟加载，适用于单个详细实体对象  Start
   	<resultMap id="sysOrgResult" type="SysOrg">
         <id column="id" property="id" />

@@ -421,6 +421,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	public Map<String, Object> createUserRole(@ApiParam(required=true, value="角色Id")@RequestParam("roleId") Integer roleId,
                                               @ApiParam(required=true, value="用户Id数组")@RequestParam("userIds") String userIds) {
 		SecurityUtils.getSubject().checkRole("Administrator");
+        sysUserAdvanceService.clearCacheHolder();
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			if (roleId == null) {				
@@ -445,7 +446,6 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 					}
 				}
 			}
-            sysUserAdvanceService.clearCacheHolder();
 			map.put("responseid", 1);
 			map.put("message", "保存用户角色成功!");
 		} catch (Exception e) {
@@ -482,6 +482,7 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 	public Map<String, Object> createSysUserPermission(@ApiParam(required=true, value="用户Id")@RequestParam("id") Integer userId,
                                                        @ApiParam(required=true, value="权限Id数组")@RequestParam("permissionIds") String permissionIds) throws Exception {
 		SecurityUtils.getSubject().checkRole("Administrator");
+        sysUserAdvanceService.clearCacheHolder();
 		String[] permissionStrings = permissionIds.split(Constants.SPACE);
 		if (userId != null && permissionStrings != null && permissionStrings.length > 0) {
 			sysPermissionAdvanceService.deleteSysUserPermissionByUserId(userId);
@@ -493,7 +494,6 @@ public class SysUserController extends BaseController<SysUser, Integer>{
 				sysPermissionAdvanceService.createSysUserPermission(userId, Integer.parseInt(permission));
 			}
 		}
-        sysUserAdvanceService.clearCacheHolder();
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("message", "保存用户权限成功!");
 		result.put("responseid", 1);

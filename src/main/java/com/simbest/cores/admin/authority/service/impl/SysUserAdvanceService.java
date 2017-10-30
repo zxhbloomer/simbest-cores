@@ -232,7 +232,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
 	@Override
 	public Map<String, Object> getUsersRoleTreeData(Integer roleId, Integer userType) {
 		log.debug("Invoke getUsersRoleTreeData with userType:"+userType+" roleId:"+roleId);
-		Map<String, Object> data = usersRoleTreeDataHolder.get(roleId+Constants.UNDERLINE+userType);
+        Map<String, Object> data = usersRoleTreeDataHolder.get(roleId+Constants.UNDERLINE+userType);
 		if(data == null){
 			data = getUsersRoleTree(roleId,userType);
 			usersRoleTreeDataHolder.put(roleId+Constants.UNDERLINE+userType, data);
@@ -1114,11 +1114,21 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
      * 清空按条件筛选的缓存数据
      */
     public void clearCacheHolder(){
-        usersTreeDataHolder.delete(usersTreeDataHolder.keys());
-        usersRoleTreeDataHolder.delete(usersRoleTreeDataHolder.keys());
-        permissionsTreeDataHolder.delete(permissionsTreeDataHolder.keys());
-        choseDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys());
-        searchDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys());
+        if(usersTreeDataHolder.keys().size() > 0 ) {
+            usersTreeDataHolder.delete(usersTreeDataHolder.keys().toArray());
+        }
+        if(usersRoleTreeDataHolder.keys().size() > 0) {
+            usersRoleTreeDataHolder.delete(usersRoleTreeDataHolder.keys().toArray());
+        }
+        if(permissionsTreeDataHolder.keys().size() > 0) {
+            permissionsTreeDataHolder.delete(permissionsTreeDataHolder.keys().toArray());
+        }
+        if(choseDynamicUserTreeDataHolder.keys().size() > 0) {
+            choseDynamicUserTreeDataHolder.delete(choseDynamicUserTreeDataHolder.keys().toArray());
+        }
+        if(searchDynamicUserTreeDataHolder.keys().size() > 0) {
+            searchDynamicUserTreeDataHolder.delete(searchDynamicUserTreeDataHolder.keys().toArray());
+        }
     }
 
 	@Override

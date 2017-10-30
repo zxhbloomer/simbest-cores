@@ -221,6 +221,7 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 				map.put("responseid", 0);
 				map.put("message", "请选择有效角色!");
 			} else {
+                sysRoleAdvanceService.clearCacheHolder();
 				if(StringUtils.isEmpty(permissionIds)){
 					sysRoleAdvanceService.deleteSysRolePermissionByRoleId(roleId); // 根据roleId删除该角色下面的所有权限
 				}else{
@@ -237,7 +238,6 @@ public class SysRoleController extends BaseController<SysRole, Integer>{
 					}
 				}
 			}
-            sysRoleAdvanceService.clearCacheHolder();
 			map.put("responseid", 1);
 			map.put("message", "保存角色权限成功!");
 		} catch (Exception e) {

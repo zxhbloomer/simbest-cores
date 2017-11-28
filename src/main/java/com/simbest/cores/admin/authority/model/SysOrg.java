@@ -88,8 +88,13 @@ public class SysOrg extends SystemModel<SysOrg> {
 	@ExcelVOAttribute(name = "备注描述", column = "F")	
 	@Column(nullable = true)
     @ApiModelProperty(value="备注描述")
-	private String remark; 
-	
+	private String remark;
+
+    @Column(name = "removed", nullable = false, columnDefinition = "int default 0")
+    @ProcessProperty
+    @ApiModelProperty(value="是否逻辑删除")
+    protected Boolean removed;
+
 	public SysOrg() {
 		super();
 	}
@@ -261,6 +266,14 @@ public class SysOrg extends SystemModel<SysOrg> {
 
     public void setOrgCategory(Integer orgCategory) {
         this.orgCategory = orgCategory;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(Boolean removed) {
+        this.removed = removed;
     }
 
     @Override

@@ -512,6 +512,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             params.setSysOrg(sysOrg);
             params.setOwnerOrgId(ownerId);
             params.setPosition(position);
+            params.setEnabled(true);
             userList = getAll(params);
         }
 
@@ -550,6 +551,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             params.setOwnerOrgId(ownerId);
             params.setPosition(position);
             params.setGroupid(group_id);
+            params.setEnabled(true);
             userList = getUserListByOrgGroup(params);
 //            userList = getAll(params);
         }else {
@@ -562,6 +564,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             params.setSysOrg(sysOrg);
             params.setOwnerOrgId(ownerId);
             params.setPosition(position);
+            params.setEnabled(true);
             userList = getAll(params);
         }
 
@@ -696,6 +699,7 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
             sysOrg.setId(orgId);
         params.setPosition(position);
         params.setSysOrg(sysOrg);
+        params.setEnabled(true);
         return getAll(params);
     }
     /** 6.1 End **/

@@ -177,10 +177,10 @@
 	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
 	</select>	
 	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult" databaseId="mysql">
-        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.enabled=1 AND u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
     </select>    
 	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult" databaseId="oracle">
-        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.enabled=1 AND u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
     </select>   	
 	<select id="getAll" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id

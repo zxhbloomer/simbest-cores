@@ -49,10 +49,10 @@
 	<select id="getAll" resultMap="simpleRoleResult">
         select * from sys_role r WHERE id!=1
 		<if test="name != null and name !=''">
-            and r.name = #{name}
+            and r.name like concat('%',#{name},'%')
         </if>
         <if test="type != null and type !=''">
-            and r.type = #{type}
+            and r.type like concat('%',#{type},'%')
         </if>
         <if test="description != null and description !=''">
             and r.description like concat('%',#{description},'%')

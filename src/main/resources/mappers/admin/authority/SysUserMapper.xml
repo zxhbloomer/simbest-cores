@@ -233,7 +233,7 @@
             and u.alipayCode = #{alipayCode}
         </if> 
         <if test="position != null and position !=''">
-            and u.position like concat('%',#{position},'%')
+            and u.position = #{position}
         </if>
         <if test="ownerOrgId != null and ownerOrgId !=''">
             and u.ownerOrgId = #{ownerOrgId}
@@ -305,7 +305,7 @@
             and u.alipayCode = #{alipayCode}
         </if> 
         <if test="position != null and position !=''">
-            and u.position like concat('%',#{position},'%')
+            and u.position = #{position}
         </if>
         <if test="ownerOrgId != null and ownerOrgId !=''">
             and u.ownerOrgId = #{ownerOrgId}

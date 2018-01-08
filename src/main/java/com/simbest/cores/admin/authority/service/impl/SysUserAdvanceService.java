@@ -495,13 +495,19 @@ public class SysUserAdvanceService extends LogicAdvanceService<SysUser,Integer> 
         Collection<SysUser> userList = Lists.newArrayList();
         if(null != userId){
             SysUser sysUser = loadByKey(userId);
-            userList.add(sysUser);
+            if(sysUser!=null){
+            	userList.add(sysUser);
+            }
         }else if(StringUtils.isNotEmpty(loginName)){
             SysUser sysUser = loadByUnique(loginName);
-            userList.add(sysUser);
+            if(sysUser!=null){
+            	userList.add(sysUser);
+            }
         }else if(StringUtils.isNotEmpty(uniqueCode)){
             SysUser sysUser = loadByCustom("uniqueCode", uniqueCode);
-            userList.add(sysUser);
+            if(sysUser!=null){
+            	userList.add(sysUser);
+            }
         }else {
             SysUser params = new SysUser();
             SysOrg sysOrg = new SysOrg();

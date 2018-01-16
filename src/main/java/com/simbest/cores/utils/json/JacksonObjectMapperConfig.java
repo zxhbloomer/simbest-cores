@@ -41,7 +41,7 @@ public class JacksonObjectMapperConfig extends ObjectMapper {
 		
 		//SimpleModule module = new SimpleModule();
         SimpleModule module = new SimpleModule("HTML XSS Serializer",
-                new Version(1, 0, 0, "FINAL", "com.yihaomen", "ep-jsonmodule"));
+                new Version(1, 0, 0, "FINAL", "com.simbest", "ep-jsonmodule"));
         module.addSerializer(new JsonHtmlXssSerializer(String.class));
         module.addDeserializer(Date.class, new CustomJsonDateDeseralizer());
         // Add more here ...

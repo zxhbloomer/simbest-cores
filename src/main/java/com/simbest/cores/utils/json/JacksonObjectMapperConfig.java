@@ -3,13 +3,20 @@
  */
 package com.simbest.cores.utils.json;
 
+import java.io.IOException;
 import java.util.Date;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * @author lishuyi
@@ -32,11 +39,30 @@ public class JacksonObjectMapperConfig extends ObjectMapper {
 		
 		//this.setSerializationInclusion(Include.NON_EMPTY); //对象转字符串时，只转化非空字段 zjs 需要占位
 		
-		SimpleModule module = new SimpleModule();
+		//SimpleModule module = new SimpleModule();
+        SimpleModule module = new SimpleModule("HTML XSS Serializer",
+                new Version(1, 0, 0, "FINAL", "com.yihaomen", "ep-jsonmodule"));
+        module.addSerializer(new JsonHtmlXssSerializer(String.class));
         module.addDeserializer(Date.class, new CustomJsonDateDeseralizer());
         // Add more here ...
         registerModule(module);
-		
 	}
 
+    class JsonHtmlXssSerializer extends JsonSerializer<String> {
+        public JsonHtmlXssSerializer(Class<String> string) {
+            super();
+        }
+
+        public Class<String> handledType() {
+            return String.class;
+        }
+
+        public void serialize(String value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+                throws IOException, JsonProcessingException {
+            if (value != null) {
+                String encodedValue = HtmlUtils.htmlEscape(value.toString());
+                jsonGenerator.writeString(encodedValue);
+            }
+        }
+    }
 }

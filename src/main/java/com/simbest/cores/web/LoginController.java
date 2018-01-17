@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,14 +85,20 @@ public class LoginController {
 		}
 	}
 
-	@RequestMapping(value="submit",method = RequestMethod.POST)
+	@RequestMapping(value="/submit",method = RequestMethod.POST)
 	@ResponseBody
     @ApiOperation(value = "登陆", httpMethod = "POST", notes = "登陆", response = JsonResponse.class,
             produces="application/json",consumes="application/x-www-form-urlencoded")
-	public JsonResponse login(@ApiParam(required=true, value="用户名")String username,
+	public JsonResponse login(HttpServletRequest request,@ApiParam(required=true, value="用户名")String username,
                               @ApiParam(required=true, value="密码")String password) throws Exception {
-		UsernamePasswordToken token = new UsernamePasswordToken(username, password.toCharArray());
 		JsonResponse res = new JsonResponse();		
+		String exceptionClassName = (String)request.getAttribute("shiroLoginFailure");
+		if(exceptionClassName!=null && "jCaptcha.error".equals(exceptionClassName)){
+			res.setResponseid(0);
+			res.setMessage("验证码不正确！");
+			return res;
+		}
+		UsernamePasswordToken token = new UsernamePasswordToken(username, password.toCharArray());
 		try{
 			SecurityUtils.getSubject().login(token);
 			res.setResponseid(1);

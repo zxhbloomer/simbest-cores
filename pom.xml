@@ -39,11 +39,7 @@
     </developers>
 	
 	<dependencies>
-		<dependency>
-			<groupId>com.jhlabs</groupId>
-			<artifactId>imaging</artifactId>
-			<version>01012005</version>
-		</dependency>
+		
 	</dependencies>
 	
 	<build>

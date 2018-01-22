@@ -37,7 +37,11 @@
             </roles>
         </developer>
     </developers>
-
+	
+	<dependencies>
+		
+	</dependencies>
+	
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>

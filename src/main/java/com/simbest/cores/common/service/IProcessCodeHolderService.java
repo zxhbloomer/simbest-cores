@@ -6,4 +6,6 @@ import com.simbest.cores.service.IGenericService;
 public interface IProcessCodeHolderService extends IGenericService<ProcessCodeHolder, Long> {
 
     String getNextCode(String prefix);
+    
+    Integer getSequenceCode(String prefix);
 }

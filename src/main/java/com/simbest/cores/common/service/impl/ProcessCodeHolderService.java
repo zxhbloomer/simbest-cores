@@ -81,6 +81,10 @@ public class ProcessCodeHolderService extends GenericMapperService<ProcessCodeHo
         ProcessCodeHolder next = getNext(prefix, DateUtil.getToday(DateUtil.datePattern2));
         return prefix + Constants.LINE + DateUtil.getToday(DateUtil.datePattern2) + Constants.LINE + AppCodeGenerator.addLeftZeroForNum(countLength, next.getCountCode());
     }
+    public Integer getSequenceCode(String prefix) {
+        ProcessCodeHolder next = getNext(prefix, null);
+        return next.getCountCode();
+    }
 
     private boolean lessThanMaxLength(Integer countLength, Integer countCode) {
         Integer max = 1;

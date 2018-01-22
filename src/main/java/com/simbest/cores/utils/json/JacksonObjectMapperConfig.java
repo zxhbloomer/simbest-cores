@@ -61,6 +61,7 @@ public class JacksonObjectMapperConfig extends ObjectMapper {
                 throws IOException, JsonProcessingException {
             if (value != null) {
                 String encodedValue = HtmlUtils.htmlEscape(value.toString());
+                encodedValue=encodedValue.replaceAll("&quot;", "\"");
                 jsonGenerator.writeString(encodedValue);
             }
         }

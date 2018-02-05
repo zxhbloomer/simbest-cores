@@ -1,6 +1,8 @@
 package com.simbest.cores.web;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.dao.DataAccessException;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -100,7 +103,25 @@ public class LoginController {
 		}
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password.toCharArray());
 		try{
-			SecurityUtils.getSubject().login(token);
+//			SecurityUtils.getSubject().login(token);
+            //解决Shiro Security的Session_Fixation问题
+            //参考 http://blog.csdn.net/cloud_ll/article/details/43604547
+            Subject subject = SecurityUtils.getSubject();
+            //获取session数据
+            Session session = subject.getSession();
+            final LinkedHashMap<Object, Object> attributes = new LinkedHashMap<Object, Object>();
+            final Collection<Object> keys = session.getAttributeKeys();
+            for (Object key : keys) {
+                final Object value = session.getAttribute(key);
+                if (value != null)
+                { attributes.put(key, value); }
+            }
+            session.stop();
+            subject.login(token);
+            // 登录成功后复制session数据
+            session = subject.getSession();
+            for (final Object key : attributes.keySet())
+            { session.setAttribute(key, attributes.get(key)); }
 			res.setResponseid(1);
             saveLoginLog();
 		}catch(UnknownAccountException e){

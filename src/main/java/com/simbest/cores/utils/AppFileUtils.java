@@ -484,7 +484,10 @@ public class AppFileUtils {
             log.debug("----Info: url is:" + urlStr);
             URL url = new URL(urlStr);
             log.debug("----Info url is:" + url.getPath());
-            File imageFile = File.createTempFile(getFileBaseName(fileUrl), ".jpg");
+            String tempFileName = getFileBaseName(fileUrl);
+            if(StringUtils.length(tempFileName) <= 3)
+                tempFileName  = tempFileName + AppCodeGenerator.nextDateTimeCode();
+            File imageFile = File.createTempFile(tempFileName, ".jpg");
             log.debug("----Info imageFile path is:" + imageFile.getPath());
             FileUtils.copyURLToFile(url, imageFile);
             return uploadCompressImage(imageFile, quality, storePath);

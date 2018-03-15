@@ -184,6 +184,9 @@
     </select>   	
 	<select id="getAll" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id
+		<if test="id!=null">  
+            and u.id = #{id}
+        </if>
 		<if test="loginName!=null and loginName!=''">  
             and u.loginName = #{loginName}
         </if>
@@ -256,6 +259,9 @@
     </select>
 	<select id="getAll" resultMap="simpleUserResult" databaseId="oracle">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id
+		<if test="id!=null">  
+            and u.id = #{id}
+        </if>
 		<if test="loginName!=null and loginName!=''">  
             and u.loginName = #{loginName}
         </if>

@@ -584,6 +584,7 @@
 	    <set>
 	      <if test="loginName != null and loginName != ''">loginName=#{loginName},</if>
 	      <if test="userCode != null and userCode != ''">userCode=#{userCode},</if>
+		  <if test="uniqueCode != null and uniqueCode != ''">uniqueCode=#{uniqueCode},</if>
 	      <if test="username != null and username != ''">username=#{username},</if>
 	      <if test="phone != null and phone != ''">phone=#{phone},</if>
 	      <if test="email != null and email != ''">email=#{email},</if>

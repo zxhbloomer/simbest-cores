@@ -63,6 +63,8 @@ public class JacksonObjectMapperConfig extends ObjectMapper {
                 String encodedValue = HtmlUtils.htmlEscape(value.toString());
                 encodedValue=encodedValue.replaceAll("&quot;", "\"");
                 encodedValue=encodedValue.replaceAll("&amp;", "&");
+                encodedValue=encodedValue.replaceAll("&quot;", "“");
+                encodedValue=encodedValue.replaceAll("&quot;", "”");
                 jsonGenerator.writeString(encodedValue);
             }
         }

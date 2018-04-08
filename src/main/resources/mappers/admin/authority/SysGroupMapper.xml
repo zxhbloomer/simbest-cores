@@ -75,7 +75,7 @@
 
     <!--根据组id和用户id删除关联信息-->
     <delete id="deleteSysUserGroup"  flushCache="true" statementType="PREPARED" timeout="20">
-        DELETE FROM sys_user_group WHERE where group_id=#{groupId} and user_id=#{userId}
+        DELETE FROM sys_user_group WHERE group_id=#{groupId} and user_id=#{userId}
     </delete>
 
 </mapper>

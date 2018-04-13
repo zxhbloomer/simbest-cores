@@ -46,7 +46,7 @@
 	        <result column="updateDate" property="updateDate" />
 		</collection> -->
     </resultMap>        	 
-	<select id="getAll" resultMap="simpleRoleResult">
+	<select id="getAll" resultMap="simpleRoleResult" databaseId="mysql">
         select * from sys_role r WHERE id!=1
 		<if test="name != null and name !=''">
             and r.name like concat('%',#{name},'%')
@@ -58,8 +58,22 @@
             and r.description like concat('%',#{description},'%')
         </if>
         order by description desc
-    </select> 
-	<!-- 关联查询方式，适用于集合列表实体对象  End -->
+    </select>
+
+    <select id="getAll" resultMap="simpleRoleResult" databaseId="oracle">
+        select * from sys_role r WHERE id!=1
+        <if test="name != null and name !=''">
+            and r.name like concat(concat('%',#{name}),'%')
+        </if>
+        <if test="type != null and type !=''">
+            and r.type like concat(concat('%',#{type}),'%')
+        </if>
+        <if test="description != null and description !=''">
+            and r.description like concat(concat('%',#{description}),'%')
+        </if>
+        order by description desc
+    </select>
+    <!-- 关联查询方式，适用于集合列表实体对象  End -->
 	    
     <insert id="create" parameterType="SysRole" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
     	insert into sys_role(createDate,updateDate,description,name,type) values (#{createDate},#{updateDate},#{description},#{name},#{type})

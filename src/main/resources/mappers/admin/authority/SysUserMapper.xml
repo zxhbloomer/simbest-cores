@@ -266,7 +266,7 @@
             and u.loginName = #{loginName}
         </if>
 		<if test="username!=null and username!=''">  
-            and u.username like concat('%',#{username},'%')
+            and u.username like concat(concat('%',#{username}),'%')
         </if>
 		<if test="enabled != null">
             and u.enabled = #{enabled} <!-- 查询被禁用或启用，但未被删除的用户 -->

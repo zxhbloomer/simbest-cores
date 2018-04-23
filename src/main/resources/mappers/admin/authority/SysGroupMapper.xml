@@ -32,6 +32,9 @@
             <if test="name != null and name !=''">
                 and name = #{name}
             </if>
+			<if test="type!= null and type !=''">
+                and type = #{type}
+            </if>
         </where>
     </select>
     <!-- 关联查询方式，适用于集合列表实体对象  End -->

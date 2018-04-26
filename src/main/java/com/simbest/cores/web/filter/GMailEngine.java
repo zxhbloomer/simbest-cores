@@ -81,7 +81,7 @@ public class GMailEngine extends ListImageCaptchaEngine {
         WordToImage word2image = new DeformedComposedWordToImage(font,
                 background, randomPaster, backDef, textDef, postDef);
 
-        addFactory(new GimpyFactory(dictionnaryWords, word2image));
+        addFactory(new MyGimpyFactory(dictionnaryWords, word2image));
     }
 
 }

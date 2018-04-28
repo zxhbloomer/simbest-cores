@@ -33,10 +33,10 @@ import java.util.List;
  * 另外，字符集设置为utf8mb4等同于使用uft16，即varchar长度不能超过191个
  */
 @Entity
-@Table(name="sys_user", uniqueConstraints={@UniqueConstraint(columnNames={"phone", "userType", "removed"}),@UniqueConstraint(columnNames={"email", "userType", "removed"})
-,@UniqueConstraint(columnNames={"qqCode", "userType", "removed"}),@UniqueConstraint(columnNames={"weChatCode", "userType", "removed"})
-,@UniqueConstraint(columnNames={"weiboCode", "userType", "removed"}),@UniqueConstraint(columnNames={"alipayCode", "userType", "removed"})})
-
+//@Table(name="sys_user", uniqueConstraints={@UniqueConstraint(columnNames={"phone", "userType", "removed"}),@UniqueConstraint(columnNames={"email", "userType", "removed"})
+//,@UniqueConstraint(columnNames={"qqCode", "userType", "removed"}),@UniqueConstraint(columnNames={"weChatCode", "userType", "removed"})
+//,@UniqueConstraint(columnNames={"weiboCode", "userType", "removed"}),@UniqueConstraint(columnNames={"alipayCode", "userType", "removed"})})
+@Table(name="sys_user")
 @ReferenceTables(joinTables={ @ReferenceTable(table="sys_user_role", value="用户与角色"),
 		@ReferenceTable(table="sys_user_permission", value="用户与权限")})
 @ApiModel

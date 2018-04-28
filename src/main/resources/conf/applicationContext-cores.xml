@@ -133,6 +133,9 @@
 		<constructor-arg index="1"
 			value="com.simbest.cores.app.mapper.ProcessAuditLogMapper" />
 	</bean>
+    <bean id="sysOrgCopyService" class="com.simbest.cores.service.impl.GenericSQLService">
+        <constructor-arg index="0" value="com.simbest.cores.admin.authority.mapper.SysOrgCopyMapper"/>
+    </bean>
 	<!-- Generic Service End -->
 
 

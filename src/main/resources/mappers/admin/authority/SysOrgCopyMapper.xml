@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+  'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+  
+<mapper namespace='com.simbest.cores.admin.authority.mapper.SysOrgCopyMapper'>
+	<!-- 定义缓存 -->
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+		 
+    <!-- 关联查询方式，适用于集合列表实体对象  Start -->
+	<resultMap id="simpleOrgResult" type="SysOrgCopy">
+        <id column="id" property="id" />
+        <result column="description" property="description" />
+        <result column="orgName" property="orgName" />
+        <result column="orgCode" property="orgCode" />   
+        <result column="createDate" property="createDate" />
+        <result column="updateDate" property="updateDate" />
+        <result column="pid" property="parentId" />
+		<result column="porgName" property="parentName" />
+		<result column="orgLevel" property="orgLevel" />
+		<result column="orgType" property="orgType" />
+		<result column="orderBy" property="orderBy" />
+		<result column="shortName" property="shortName" />
+		<result column="remark" property="remark" />
+		<result column="parent_id" property="parent_id" />
+    </resultMap>
+
+	<select id='getAll' resultMap="simpleOrgResult">
+     	SELECT * FROM sys_org_copy
+        <if test="orderByClause != null" >
+	      order by ${orderByClause}
+	    </if>    
+	</select>
+  	
+	<insert id="batchCreate" parameterType="java.util.List" flushCache="true" statementType="PREPARED" timeout="20">
+        insert into sys_org_copy (createDate,updateDate,description,orgName,orgCode,parent_id,orgLevel,orgType,orderBy,shortName,remark) values 
+        <foreach collection="list" index="index" item="item" separator=",">   
+	        (#{item.createDate},#{item.updateDate},#{item.description},#{item.orgName},#{item.orgCode},#{item.parent_id},#{item.orgLevel},#{item.orgType},#{item.orderBy},#{item.shortName},#{item.remark})    
+	    </foreach> 
+    </insert> 
+</mapper>

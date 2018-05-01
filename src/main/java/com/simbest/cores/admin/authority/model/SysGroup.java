@@ -33,7 +33,7 @@ public class SysGroup extends GenericModel<SysGroup> {
     @ApiModelProperty(value="组类型")
     private String type;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     @ApiModelProperty(value="组织描述")
     private String description;
 

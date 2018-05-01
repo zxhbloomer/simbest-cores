@@ -145,12 +145,6 @@
 		<constructor-arg index="0" ref="taskTriggerDefinitionService" />
 		<property name="clazz" value="com.simbest.cores.admin.task.model.TaskTriggerDefinition" />
 	</bean>
-	<!--
-	<bean id="sysUserCache" class="com.simbest.cores.cache.impl.GenericCache">
-		<constructor-arg index="0" ref="sysUserService" />
-		<property name="clazz" value="com.simbest.cores.admin.authority.model.SysUser" />
-	</bean>
-	-->
 	<bean id="sysPermissionCache" class="com.simbest.cores.cache.impl.GenericCache">
 		<constructor-arg index="0" ref="sysPermissionService" />
 		<property name="clazz" value="com.simbest.cores.admin.authority.model.SysPermission" />
@@ -183,6 +177,16 @@
 		<constructor-arg index="0" ref="processAuditService" />
 		<property name="clazz" value="com.simbest.cores.app.model.ProcessAudit" />
 	</bean>
+    <bean id="sysOrgCopyCache" class="com.simbest.cores.cache.impl.GenericCache">
+        <constructor-arg index="0" ref="sysOrgCopyService" />
+        <property name="clazz" value="com.simbest.cores.admin.authority.model.SysOrgCopy" />
+    </bean>
 	<!-- Generic Cache Component End -->
 
+    <!-- Generic Advance Service Start -->
+    <bean id="sysOrgCopyAdvanceService" class="com.simbest.cores.service.impl.GenericAdvanceService">
+        <constructor-arg index="0" ref="sysOrgCopyService" />
+        <constructor-arg index="1" ref="sysOrgCopyCache" />
+    </bean>
+    <!-- Generic Advance Service End -->
 </beans>

@@ -73,13 +73,13 @@
 	</insert>
     <insert id="createSysUserPermission" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
         MERGE INTO sys_user_permission dest
-          USING (SELECT #{user_id} user_id, #{permission_id} permission_id FROM dual) src
+          USING (SELECT #{userId} AS user_id, #{permissionId} AS permission_id FROM dual) src
           ON (
               (dest.user_id = src.user_id AND dest.permission_id = src.permission_id)
           )
           WHEN NOT MATCHED THEN
             INSERT (user_id,permission_id)
-            VALUES (#{user_id},#{permission_id})
+            VALUES (#{userId},#{permissionId})
     </insert>
 	<!-- 基于用户-资源直接授权时使用  End-->  
 			

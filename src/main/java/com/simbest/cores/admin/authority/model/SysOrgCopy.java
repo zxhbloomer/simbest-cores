@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * 用途：
@@ -36,45 +35,36 @@ public class SysOrgCopy extends SystemModel<SysOrgCopy> {
     @ApiModelProperty(value="主键Id")
     private Integer id;
 
-    @ExcelVOAttribute(name = "组织全路径", column = "D")
-    @Column(name = "description", length = 200)
-    private String description;
-
     @ExcelVOAttribute(name = "组织编码", column = "A")
-    @NotNullColumn(value="组织编码")
-    @Column(name = "orgCode", length = 20, unique = true)
-    @Unique
-    private String orgCode;
+    @Column(name = "orgCode", length = 20)
+    private String orgCode;  //非常重要，目前TIM导出的20位组织编码有重复，因此该字段不能在SysOrg中作为orgCode的唯一键，将该字段放到shortName中保存
 
-    @ExcelVOAttribute(name = "组织名称", column = "C")
+    @ExcelVOAttribute(name = "TIM组织ID", column = "B")
+    @NotNullColumn(value="TIM组织ID")
+    @Column(name = "timOrgId", length = 20, unique = true)
+    @Unique
+    private String timOrgId;
+
+    @ExcelVOAttribute(name = "TIM父组织ID", column = "C")
+    @NotNullColumn(value="TIM组织ID")
+    @Column(name = "timOrgParentId", length = 20)
+    private String timOrgParentId;
+
+    @ExcelVOAttribute(name = "组织名称", column = "D")
     @NotNullColumn(value="组织名称")
     @Column(name = "orgName", nullable = false, length = 100)
     private String orgName;
 
-    @ExcelVOAttribute(name = "父组织编码", column = "B")
-    private String parent_id;
+    @ExcelVOAttribute(name = "组织全路径", column = "E")
+    @Column(name = "description", length = 200)
+    private String description;
 
-    @Transient
-    private String parentName;
-
-    @NotNullColumn(value="组织级别")
-    @Column(nullable = true)
-    private Integer orgLevel;
-
-    @NotNullColumn(value="组织类型")
-    @Column(nullable = true)
-    private Integer orgType;
-
-    @ExcelVOAttribute(name = "显示顺序", column = "E")
+    @ExcelVOAttribute(name = "显示顺序", column = "F")
     @NotNullColumn(value="显示顺序")
     @Column(nullable = true)
     private Integer orderBy;
 
-    @NotNullColumn(value="简称")
-    @Column(nullable = true)
-    private String shortName;
-
-    @ExcelVOAttribute(name = "备注描述", column = "F")
+    @ExcelVOAttribute(name = "备注描述", column = "G")
     @NotNullColumn(value="备注")
     @Column(nullable = true)
     private String remark;
@@ -88,151 +78,67 @@ public class SysOrgCopy extends SystemModel<SysOrgCopy> {
         this.id = id;
     }
 
-    /**
-     * @return the id
-     */
     public Integer getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(Integer id) {
         this.id = id;
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the orgName
-     */
-    public String getOrgName() {
-        return orgName;
-    }
-
-    /**
-     * @param orgName the orgName to set
-     */
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    /**
-     * @return the orgCode
-     */
     public String getOrgCode() {
         return orgCode;
     }
 
-    /**
-     * @param orgCode the orgCode to set
-     */
     public void setOrgCode(String orgCode) {
         this.orgCode = orgCode;
     }
 
-    public String getParentName() {
-        return parentName;
+    public String getTimOrgId() {
+        return timOrgId;
     }
 
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
+    public void setTimOrgId(String timOrgId) {
+        this.timOrgId = timOrgId;
     }
 
-    /**
-     * @return the orgLevel
-     */
-    public Integer getOrgLevel() {
-        return orgLevel;
+    public String getTimOrgParentId() {
+        return timOrgParentId;
     }
 
-    /**
-     * @param orgLevel the orgLevel to set
-     */
-    public void setOrgLevel(Integer orgLevel) {
-        this.orgLevel = orgLevel;
+    public void setTimOrgParentId(String timOrgParentId) {
+        this.timOrgParentId = timOrgParentId;
     }
 
-    /**
-     * @return the orgType
-     */
-    public Integer getOrgType() {
-        return orgType;
+    public String getOrgName() {
+        return orgName;
     }
 
-    /**
-     * @param orgType the orgType to set
-     */
-    public void setOrgType(Integer orgType) {
-        this.orgType = orgType;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
-    /**
-     * @return the orderBy
-     */
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Integer getOrderBy() {
         return orderBy;
     }
 
-    /**
-     * @param orderBy the orderBy to set
-     */
     public void setOrderBy(Integer orderBy) {
         this.orderBy = orderBy;
     }
 
-    /**
-     * @return the shortName
-     */
-    public String getShortName() {
-        return shortName;
-    }
-
-    /**
-     * @param shortName the shortName to set
-     */
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
-    /**
-     * @return the remark
-     */
     public String getRemark() {
         return remark;
     }
 
-    /**
-     * @param remark the remark to set
-     */
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    /**
-     * @return the parent_id
-     */
-    public String getParent_id() {
-        return parent_id;
-    }
-
-    /**
-     * @param parent_id the parent_id to set
-     */
-    public void setParent_id(String parent_id) {
-        this.parent_id = parent_id;
     }
 }

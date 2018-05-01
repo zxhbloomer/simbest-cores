@@ -49,28 +49,29 @@ public class SysUser extends LogicModel<SysUser> {
     @GeneratedValue(strategy=GenerationType.AUTO, generator="sys_user_seq")
     @ApiModelProperty(value="主键Id")
 	private Integer id;
-	
+
+    @ExcelVOAttribute(name = "登录标识", column = "A")
 	@NotNullColumn(value="登录标识")
-    @Column(nullable = true, length = 100)
+    @Column(nullable = false, length = 100)
     @Unique //Redis 缓存唯一标识
     @ApiModelProperty(value="登录标识")
 	private String loginName;
 	
-	@ExcelVOAttribute(name = "用户姓名", column = "A")
+	@ExcelVOAttribute(name = "用户姓名", column = "B")
 	@NotNullColumn(value="用户姓名")
 	@Column(name="username", length=50)
     @ApiModelProperty(value="用户姓名")
 	private String username;
 	
-	@ExcelVOAttribute(name = "用户编号", column = "B")
+	@ExcelVOAttribute(name = "用户编号", column = "C")
 	@NotNullColumn(value="用户编号")
-	@Column(name="userCode", length=100, nullable=true, unique=true)
+	@Column(name="userCode", length=100, unique=true)
     @ApiModelProperty(value="用户编号")
 	private String userCode;
 
-    @ExcelVOAttribute(name = "用户唯一编码", column = "J")
+    @ExcelVOAttribute(name = "用户唯一编码", column = "L")
     @NotNullColumn(value="用户编码")
-    @Column(name="uniqueCode", length=255, nullable=true, unique=true)
+    @Column(name="uniqueCode", length=255, unique=true)
     @ApiModelProperty(value="用户唯一编码")
     private String uniqueCode;
 
@@ -82,29 +83,29 @@ public class SysUser extends LogicModel<SysUser> {
 	private String salt;
 
 
-    @ExcelVOAttribute(name = "组织编号", column = "C")
+    @ExcelVOAttribute(name = "组织编号", column = "D")
     @Transient
     @ApiModelProperty(value="组织编号")
     private String orgCode;
 
-    @ExcelVOAttribute(name = "显示顺序", column = "D")
+    @ExcelVOAttribute(name = "显示顺序", column = "E")
     @Column(nullable = true)
     @ApiModelProperty(value="显示顺序")
     private Integer orderBy;
 
-    @ExcelVOAttribute(name = "邮箱地址", column = "E")
+    @ExcelVOAttribute(name = "邮箱地址", column = "F")
     @NotNullColumn(value="邮箱地址")
     @Column(name="email", length=80)
     @ApiModelProperty(value="邮箱地址")
     private String email;
 
-	@ExcelVOAttribute(name = "手机号码", column = "F")
+	@ExcelVOAttribute(name = "手机号码", column = "G")
 	@NotNullColumn(value="手机号码")
 	@Column(name="phone", length=20)
     @ApiModelProperty(value="手机号码")
 	private String phone;
 	
-	@ExcelVOAttribute(name = "职位", column = "G")
+	@ExcelVOAttribute(name = "职位", column = "H")
 	@Column(name="position")
     @ApiModelProperty(value="职位")
 	private String position;
@@ -115,12 +116,12 @@ public class SysUser extends LogicModel<SysUser> {
     private Date birthDate;
 
     // 性别(1是男性，2是女性，0是未知)
-    @ExcelVOAttribute(name = "性别", column = "H")
+    @ExcelVOAttribute(name = "性别", column = "I")
     @Column(nullable=true)
     @ApiModelProperty(value="1男2女")
     private Integer sex;
 
-    @ExcelVOAttribute(name = "生日", column = "I")
+    @ExcelVOAttribute(name = "生日", column = "J")
     @Transient
     private String birthDateStr;
 		
@@ -196,6 +197,7 @@ public class SysUser extends LogicModel<SysUser> {
     private Integer userType;
 	
 	//用户级别(扩展)
+    @ExcelVOAttribute(name = "用户级别POSITIONLEVEL", column = "K")
 	@Column(name="userLevel", nullable=true)
     @ApiModelProperty(value="用户级别(")
     private Integer userLevel;

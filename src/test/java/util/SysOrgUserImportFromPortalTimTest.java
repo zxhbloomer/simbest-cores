@@ -10,12 +10,12 @@ import com.simbest.cores.admin.authority.model.SysUser;
 import com.simbest.cores.admin.authority.service.ISysOrgAdvanceService;
 import com.simbest.cores.admin.authority.service.ISysUserService;
 import com.simbest.cores.exceptions.Exceptions;
-import com.simbest.cores.service.IGenericAdvanceService;
 import com.simbest.cores.service.IGenericService;
 import com.simbest.cores.test.AbstractComponentTester;
 import com.simbest.cores.utils.DateUtil;
 import com.simbest.cores.utils.office.ExcelUtil2;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +36,6 @@ import java.util.List;
  */
 @WebAppConfiguration
 public class SysOrgUserImportFromPortalTimTest extends AbstractComponentTester{
-	
-	@Autowired
-	@Qualifier("sysOrgCopyAdvanceService")
-	private IGenericAdvanceService<SysOrgCopy, Integer> sysOrgCopyAdvanceService;
 
     @Autowired
     @Qualifier("sysOrgCopyService")
@@ -64,7 +60,7 @@ public class SysOrgUserImportFromPortalTimTest extends AbstractComponentTester{
         System.out.println("Finish create template files.");
     }
 
-    //@Test
+    @Test
 	public void importSysOrgCopy() throws FileNotFoundException{
 		File importFile = new File("C:\\Users\\lenovo\\Desktop\\TIM人员及组织信息/组织0501new.xls");
 		FileInputStream fis = new FileInputStream(importFile);
@@ -178,7 +174,7 @@ public class SysOrgUserImportFromPortalTimTest extends AbstractComponentTester{
     }
 
     @Test
-	public void importSysUser() throws FileNotFoundException{
+	public void importSysUser() throws FileNotFoundException {
 		List<SysUser> unSuccessImport = Lists.newArrayList();
 		List<SysUser> successImport = Lists.newArrayList();
 		File importFile = new File("C:\\Users\\lenovo\\Desktop\\TIM人员及组织信息\\人员0501new.xls");
@@ -187,7 +183,12 @@ public class SysOrgUserImportFromPortalTimTest extends AbstractComponentTester{
 		List<SysUser> list = util.importExcel("导入数据", fis);
 		for(SysUser c:list){
 			c.setCreateDate(DateUtil.getCurrent());
-			c.setUpdateDate(c.getCreateDate());		
+			c.setUpdateDate(c.getCreateDate());
+			if(StringUtils.isNotEmpty(c.getPosition())) {
+                String[] ps1 = StringUtils.split(c.getPosition(), ";");
+                String[] ps2 = StringUtils.split(ps1[0], "-");
+                c.setPosition(ps2[ps2.length - 1]);
+            }
 			SysOrg sysOrg = sysOrgAdvanceService.loadByUnique(c.getOrgCode());
 			if(sysOrg == null){
 				unSuccessImport.add(c);

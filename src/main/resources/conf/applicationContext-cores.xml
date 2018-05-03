@@ -183,10 +183,11 @@
     </bean>
 	<!-- Generic Cache Component End -->
 
-    <!-- Generic Advance Service Start -->
+    <!-- Generic Advance Service Start
     <bean id="sysOrgCopyAdvanceService" class="com.simbest.cores.service.impl.GenericAdvanceService">
         <constructor-arg index="0" ref="sysOrgCopyService" />
         <constructor-arg index="1" ref="sysOrgCopyCache" />
     </bean>
+    -->
     <!-- Generic Advance Service End -->
 </beans>

@@ -3,12 +3,15 @@ package com.simbest.cores.web.filter;
 import com.octo.captcha.component.image.backgroundgenerator.BackgroundGenerator;
 import com.octo.captcha.component.image.backgroundgenerator.UniColorBackgroundGenerator;
 import com.octo.captcha.component.image.color.RandomListColorGenerator;
+import com.octo.captcha.component.image.color.SingleColorGenerator;
 import com.octo.captcha.component.image.deformation.ImageDeformation;
 import com.octo.captcha.component.image.deformation.ImageDeformationByFilters;
 import com.octo.captcha.component.image.fontgenerator.FontGenerator;
 import com.octo.captcha.component.image.fontgenerator.RandomFontGenerator;
 import com.octo.captcha.component.image.textpaster.DecoratedRandomTextPaster;
 import com.octo.captcha.component.image.textpaster.TextPaster;
+import com.octo.captcha.component.image.textpaster.textdecorator.BaffleTextDecorator;
+import com.octo.captcha.component.image.textpaster.textdecorator.LineTextDecorator;
 import com.octo.captcha.component.image.textpaster.textdecorator.TextDecorator;
 import com.octo.captcha.component.image.wordtoimage.DeformedComposedWordToImage;
 import com.octo.captcha.component.image.wordtoimage.WordToImage;
@@ -63,7 +66,8 @@ public class GMailEngine extends ListImageCaptchaEngine {
         TextPaster randomPaster = new DecoratedRandomTextPaster(minWordLength,
                 maxWordLength, new RandomListColorGenerator(new Color[]{
                 new Color(23, 170, 27), new Color(220, 34, 11),
-                new Color(23, 67, 172)}), new TextDecorator[]{});
+                new Color(23, 67, 172)}), new TextDecorator[]{new LineTextDecorator(new Integer(1),
+                		new SingleColorGenerator(Color.BLUE), AlphaComposite.SRC_OVER)});
         BackgroundGenerator background = new UniColorBackgroundGenerator(
                 imageWidth, imageHeight, Color.white);
         FontGenerator font = new RandomFontGenerator(fontSize, fontSize,

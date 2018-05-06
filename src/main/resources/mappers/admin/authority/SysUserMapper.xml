@@ -73,6 +73,7 @@
 			<id property="id" column="orgId"/>
 			<result column="orgCode" property="orgCode" />
         	<result column="orgName" property="orgName" />
+            <result column="orgLevel" property="orgLevel" />
 			<result column="description" property="description" />
 		</association>		
         <collection property="roleList" javaType="ArrayList" column="id" ofType="SysRole" select="com.simbest.cores.admin.authority.mapper.SysRoleMapper.getByUser"/>
@@ -80,22 +81,22 @@
     </resultMap>
     <!-- 只查询未被删除的业务应用的用户信息-->
 	<select id='getById' parameterType='Integer' resultMap="fullUserResult">
-		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.id = #{id}
+		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.orgLevel,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.id = #{id}
 	</select>	
 	<select id='getByUnique' parameterType='String' resultMap="fullUserResult">
-		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.loginName = #{loginName}     	
+		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.orgLevel,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.loginName = #{loginName}
 	</select> 
 	<select id='getByUserCode' parameterType='String' resultMap="fullUserResult">
-     	SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.userCode = #{userCode}
+     	SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.orgLevel,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.userCode = #{userCode}
 	</select> 
 	<select id='getByUnionid' parameterType="SysUser" resultMap="fullUserResult">
-		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.unionid = #{unionid} AND u.mpNum=#{mpNum}	
+		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.orgLevel,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.unionid = #{unionid} AND u.mpNum=#{mpNum}
 	</select> 
 	<select id='getByOpenid' parameterType='String' resultMap="fullUserResult">
-		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.openid = #{openid}  	
+		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.orgLevel,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.openid = #{openid}
 	</select> 
 	<select id='getByAccesstoken' parameterType='String' resultMap="fullUserResult">
-		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.accesstoken = #{accesstoken}  	
+		SELECT u.*,o.id AS orgId,o.orgName,o.orgCode,o.orgLevel,o.description FROM sys_user u INNER JOIN sys_org o ON o.id=u.org_id WHERE u.accesstoken = #{accesstoken}
 	</select> 
 	<select id='getLast' resultMap="simpleUserResult">
      	SELECT * FROM sys_user ORDER BY id DESC LIMIT 1
@@ -167,21 +168,22 @@
 			<result column="orgCode" property="orgCode" />
 			<result column="orgName" property="orgName" />
             <result column="orgLevel" property="orgLevel" />
+            <result column="description" property="description" />
 		</association>
     </resultMap>    
     
     <!-- 只查询未被删除的业务应用的用户信息， 禁用/启用的用户可以查询，系统用户不可查询 -->
     <select id='getByRole' parameterType='Integer' resultMap="simpleUserResult" databaseId="mysql">
-	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
+	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel,o.description from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
 	</select>
 	<select id='getByRole' parameterType='Integer' resultMap="simpleUserResult" databaseId="oracle">
-	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+	     SELECT u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel,o.description from sys_user u, sys_user_role ur,sys_org o WHERE u.removed=0 AND u.id=ur.user_id and o.id=u.org_id and ur.role_id = #{roleId} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
 	</select>	
 	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult" databaseId="mysql">
-        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.enabled=1 AND u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel,o.description from sys_user u,sys_org o where u.enabled=1 AND u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY ISNULL(u.userLevel) ASC, u.userLevel ASC, ISNULL(u.orderBy) ASC, u.orderBy ASC, loginName ASC
     </select>    
 	<select id="getByOrg" parameterType="Integer" resultMap="simpleUserResult" databaseId="oracle">
-        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel from sys_user u,sys_org o where u.enabled=1 AND u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
+        select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel,o.description from sys_user u,sys_org o where u.enabled=1 AND u.removed=0 AND o.id=u.org_id and o.id = #{orgId} and u.userType = #{userType} ORDER BY NVL(u.userLevel,0) ASC, u.userLevel ASC, NVL(u.orderBy,0) ASC, u.orderBy ASC, loginName ASC
     </select>   	
 	<select id="getAll" resultMap="simpleUserResult" databaseId="mysql">
         select u.*,o.id as orgId,o.orgName,o.orgCode,o.orgLevel,o.description from sys_user u,sys_org o where u.removed=0 AND o.id=u.org_id

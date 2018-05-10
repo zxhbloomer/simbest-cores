@@ -77,4 +77,12 @@
     <update id="update" parameterType="java.util.Map" flushCache="true" statementType="PREPARED" timeout="20">
      	UPDATE app_process_audit_log SET receiptId=#{previousReceiptId} WHERE typeId = #{processTypeId} AND headerId=#{processHeaderId} AND receiptId=#{currentReceiptId}
     </update>
+
+    <!-- 流程完结归档后执行的变更操作-->
+    <delete id="deleteCreationLog" parameterType="ProcessAuditLog" flushCache="true" statementType="PREPARED" timeout="20">
+        DELETE FROM app_process_audit_log WHERE id=#{id}
+    </delete>
+    <update id="updateLogOpnion" parameterType="java.util.Map" flushCache="true" statementType="PREPARED" timeout="20">
+        UPDATE app_process_audit_log SET result=#{result},resultDesc=#{resultDesc},opinion=#{opinion} WHERE id=#{id}
+    </update>
 </mapper>

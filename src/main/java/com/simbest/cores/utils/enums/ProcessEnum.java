@@ -24,9 +24,11 @@ public enum ProcessEnum implements GenericEnum{
 	pass("同意"), fail("退回"), refuse("终止"), continued("转协助办理"),
 
 	created("已提交"), 
-	updated("已修改");
-	
-	private String value;
+	updated("已修改"),
+
+    completed("已归档");
+
+    private String value;
 
 	private ProcessEnum(String value) {
 		this.value = value;

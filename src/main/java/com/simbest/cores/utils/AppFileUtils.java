@@ -301,33 +301,38 @@ public class AppFileUtils {
     /**
      * 将应用系统Context路径下的文件上传至云存储，或者直接将Context路径下的文件转换为Http访问路径
      *
-     * @param targetFile 应用系统Context路径下的文件
+     * @param localFile  应用系统临时目录的文件
      * @param storePath  云存储或应用Context路径下的相对路径，以/开头，并且以/结束
      * @return 返回存储路径
      */
-    public String uploadFromLocal(File targetFile, String storePath) {
+    public String uploadFromLocal(File localFile, String storePath) {
         String savePath = null;
         FileInputStream fis = null;
         try {
             switch (location) {
                 case Cloud:
-                    storePath += targetFile.getName();
+                    storePath += localFile.getName();
                     ObjectMetadata meta = new ObjectMetadata();
-                    meta.setContentLength(targetFile.length());
-                    meta.setContentType(getContentType(targetFile.getAbsolutePath()));
-                    fis = new FileInputStream(targetFile);
+                    meta.setContentLength(localFile.length());
+                    meta.setContentType(getContentType(localFile.getAbsolutePath()));
+                    fis = new FileInputStream(localFile);
                     bosClient.putObject(bucket, storePath, fis, meta);
                     savePath = bosClient.generatePresignedUrl(bucket, storePath, -1).toString() + "&responseContentDisposition=attachment";
                     int index = savePath.indexOf("?authorization");
                     savePath = savePath.substring(0, index);
                     break;
                 case Disk:
+                    //存储时，存放应用磁盘Context路径
+                    File targetFile = new File(getFileLocation() + storePath + localFile.getName());
+                    if (!targetFile.getCanonicalPath().equals(localFile.getCanonicalPath()))
+                        FileUtils.copyFile(localFile, targetFile);
+                    //访问时，访问应用URL路径
                     //直接将Context路径下的文件转换为Http访问路径
                     String baseUrl = getBaseUrl();
                     savePath = baseUrl + storePath + targetFile.getName();
                     break;
                 case FastDFS:
-                    String fileId = fastdfsClient.upload(targetFile,targetFile.getName());
+                    String fileId = fastdfsClient.upload(localFile, localFile.getName());
                     savePath = fileId;
                     log.debug(fileId);
                     break;

@@ -1,9 +1,10 @@
-package com.simbest.cores.app.mapper;
+package com.simbest.cores.app.service;
 
 import com.simbest.cores.app.model.ProcessAuditLog;
-import com.simbest.cores.mapper.IGenericMapper;
+import com.simbest.cores.service.IGenericService;
 
-public interface ProcessAuditLogMapper extends IGenericMapper<ProcessAuditLog,Long> {
+public interface IProcessAuditLogService extends IGenericService<ProcessAuditLog, Long> {
+
     /**
      * 删除第一条起草日志
      *

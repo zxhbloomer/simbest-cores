@@ -20,4 +20,6 @@ public interface ProcessStatusMapper extends ILogicMapper<ProcessStatus,Long> {
 	Integer checkProcessRunning(@Param(value = "processTypeId") Integer processTypeId,
 			@Param(value = "processHeaderId") Integer processHeaderId,
 			@Param(value = "processStepVersion") Integer processStepVersion);
+
+    int updateOnCompleted(ProcessStatus status);
 }

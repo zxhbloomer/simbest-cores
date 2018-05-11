@@ -14,4 +14,6 @@ public interface IProcessStatusService extends ILogicService<ProcessStatus, Long
     List<ProcessStatus> getJoin();
 	
 	boolean checkProcessRunning(Integer processTypeId, Integer processHeaderId, Integer processStepVersion);
+
+    int updateOnCompleted(ProcessStatus status);
 }

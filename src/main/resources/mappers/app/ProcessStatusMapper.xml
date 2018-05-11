@@ -97,10 +97,9 @@
 	</select>
 	
 	<insert id="create" parameterType="ProcessStatus" useGeneratedKeys="true" keyProperty="id" databaseId="mysql">
-        INSERT INTO app_process_status (receiptId,title,code,processTypeId,processHeaderId,processStepId,processStepCode,processStepType,processStepVersion,subjects,subjectType,orgId,orgName,createUserId,createUserCode,createUserName,createDate) 
-        VALUES (#{receiptId},#{title},#{code},#{processTypeId},#{processHeaderId},#{processStepId},#{processStepCode},#{processStepType},#{processStepVersion},#{subjects},#{subjectType},#{orgId},#{orgName},#{createUserId},#{createUserCode},#{createUserName},#{createDate})
+        INSERT INTO app_process_status (receiptId,title,code,processTypeId,processHeaderId,processStepId,processStepCode,processStepType,processStepVersion,subjects,subjectType,orgId,orgName,createUserId,createUserCode,createUserName,createDate,updateDate)
+        VALUES (#{receiptId},#{title},#{code},#{processTypeId},#{processHeaderId},#{processStepId},#{processStepCode},#{processStepType},#{processStepVersion},#{subjects},#{subjectType},#{orgId},#{orgName},#{createUserId},#{createUserCode},#{createUserName},#{createDate},#{updateDate})
     	ON DUPLICATE KEY UPDATE title=#{title},updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate},processStepId=#{processStepId},processStepCode=#{processStepCode},processStepType=#{processStepType},processStepVersion=#{processStepVersion},subjects=#{subjects},subjectType=#{subjectType}
-    	,createUserId=#{createUserId},createUserCode=#{createUserCode},createUserName=#{createUserName},createDate=#{createDate}
     </insert>
     <insert id="create" parameterType="ProcessStatus" useGeneratedKeys="false" keyProperty="id" databaseId="oracle">
         <selectKey resultType="Long" keyProperty="id" order="BEFORE">
@@ -134,5 +133,12 @@
     <select id='checkProcessRunning' parameterType="ProcessStatus" resultType="Integer">
      	SELECT COUNT(*) FROM app_process_status i WHERE i.processTypeId = #{processTypeId} AND i.processHeaderId = #{processHeaderId} AND i.processStepVersion = #{processStepVersion} AND (processStepType='first' OR processStepType='autoChange' OR processStepType='continually' OR processStepType='special')
 	</select>
+
+    <update id="updateOnCompleted" parameterType="java.util.Map" flushCache="true" statementType="PREPARED" timeout="20">
+        UPDATE app_process_status SET createUserId=#{createUserId},createUserCode=#{createUserCode},createUserName=#{createUserName},createDate=#{createDate}
+          ,updateUserId=#{updateUserId},updateUserCode=#{updateUserCode},updateUserName=#{updateUserName},updateDate=#{updateDate}
+          ,subjects=#{subjects},subjectType=#{subjectType}
+        WHERE id=#{id}
+    </update>
 </mapper>    
      

@@ -67,4 +67,9 @@ public class ProcessStatusService extends LogicService<ProcessStatus,Long> imple
 		int count = mapper.checkProcessRunning(processTypeId, processHeaderId, processStepVersion);
 		return count>0 ? true:false;
 	}
+
+    @Override
+    public int updateOnCompleted(ProcessStatus status) {
+        return mapper.updateOnCompleted(status);
+    }
 }

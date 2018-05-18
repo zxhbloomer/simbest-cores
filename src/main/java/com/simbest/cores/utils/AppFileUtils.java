@@ -140,7 +140,7 @@ public class AppFileUtils {
             conn.connect();
             if (conn.getContentLengthLong() != 0) {
                 //存储时，存放应用磁盘Context路径
-                String savePath = getFileLocation() + storePath + fileName + getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
+                String savePath = getFileLocation() + storePath + fileName;
                 targetFile = new File(savePath);
                 FileUtils.copyURLToFile(url, targetFile);
                 conn.disconnect();
@@ -202,7 +202,7 @@ public class AppFileUtils {
             conn.connect();
             switch (location) {
                 case Cloud:
-                    storePath += fileName + getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
+                    storePath += fileName;
                     ObjectMetadata meta = new ObjectMetadata();
                     meta.setContentLength(conn.getContentLengthLong());
                     meta.setContentType(conn.getContentType());
@@ -213,11 +213,27 @@ public class AppFileUtils {
                     break;
                 case Disk:
                     //存储时，存放应用磁盘Context路径
-                    savePath = getFileLocation() + storePath + fileName + getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
-                    FileUtils.copyURLToFile(url, new File(savePath));
+                    savePath = getFileLocation() + storePath + fileName;
+                    log.debug("----savePath:" + savePath);
+                    File tmpFile1 = new File(savePath);
+                    FileUtils.touch(tmpFile1); //覆盖文件
+                    FileUtils.copyURLToFile(url, tmpFile1);
+                    log.debug(String.format("Temp File %s is exist %s, and size is %s, store at %s", tmpFile1.getName(), tmpFile1.exists(), tmpFile1.length(), tmpFile1.getAbsolutePath()));
                     //访问时，访问应用URL路径
                     String baseUrl = getBaseUrl();
-                    savePath = baseUrl + storePath + fileName + getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
+                    savePath = baseUrl + storePath + fileName;
+                    break;
+                case FastDFS:
+                    savePath = getFileLocation() + storePath + fileName;
+                    log.debug("----savePath:" + savePath);
+                    File tmpFile = new File(savePath);
+                    FileUtils.touch(tmpFile); //覆盖文件
+                    FileUtils.copyURLToFile(url, tmpFile);
+                    log.debug(String.format("Temp File %s is exist %s, and size is %s, store at %s", tmpFile.getName(), tmpFile.exists(), tmpFile.length(), tmpFile.getAbsolutePath()));
+                    String fileId = fastdfsClient.upload(tmpFile, fileName);
+                    savePath = fileId;
+                    log.debug(fileId);
+                    tmpFile.deleteOnExit();
                     break;
                 default:
                     break;
@@ -486,16 +502,37 @@ public class AppFileUtils {
             //先将远程URL资源保存为本地图片
             log.debug("----Info fileUrl is: " + fileUrl);
             String urlStr = FilenameUtils.getFullPath(fileUrl) + Encodes.urlEncode(getFileName(fileUrl));
-            log.debug("----Info: url is:" + urlStr);
+            log.debug("----Info: urlStr is:" + urlStr);
             URL url = new URL(urlStr);
             log.debug("----Info url is:" + url.getPath());
             String tempFileName = getFileBaseName(fileUrl);
             if(StringUtils.length(tempFileName) <= 3)
-                tempFileName  = tempFileName + AppCodeGenerator.nextDateTimeCode();
+                tempFileName  = AppCodeGenerator.nextDateTimeCode() + tempFileName;
             File imageFile = File.createTempFile(tempFileName, ".jpg");
             log.debug("----Info imageFile path is:" + imageFile.getPath());
             FileUtils.copyURLToFile(url, imageFile);
             return uploadCompressImage(imageFile, quality, storePath);
+        } catch (IOException e) {
+            Exceptions.printException(e);
+        }
+        return null;
+    }
+
+    public String uploadImageFromUrl(String fileUrl, String storePath) {
+        try {
+            //先将远程URL资源保存为本地图片
+            log.debug("----Info fileUrl is: " + fileUrl);
+            String urlStr = FilenameUtils.getFullPath(fileUrl) + Encodes.urlEncode(getFileName(fileUrl));
+            log.debug("----Info: urlStr is:" + urlStr);
+            URL url = new URL(urlStr);
+            log.debug("----Info url is:" + url.getPath());
+            String tempFileName = getFileBaseName(fileUrl);
+            log.debug("----tempFileName is:" + tempFileName);
+            if(StringUtils.length(tempFileName) <= 3)
+                tempFileName  = AppCodeGenerator.nextDateTimeCode() + tempFileName;
+            tempFileName = tempFileName + ".jpg";
+            log.debug("----tempFileName is:" + tempFileName);
+            return uploadFromUrl(fileUrl, tempFileName, storePath);
         } catch (IOException e) {
             Exceptions.printException(e);
         }
@@ -595,30 +632,6 @@ public class AppFileUtils {
      */
     public static String getFileExtByName(String pathToName) {
         return FilenameUtils.getExtension(pathToName);
-    }
-
-    /**
-     * 根据内容类型返回文件后缀
-     *
-     * @param contentType 内容类型
-     * @return 返回存储路径
-     */
-    public static String getFileExtByContentType(String contentType) {
-        String fileEndWitsh = "";
-        if ("image/jpeg".equals(contentType))
-            fileEndWitsh = ".jpg";
-        else if ("image/png".equals(contentType))
-            fileEndWitsh = ".png";
-        else if ("audio/mpeg".equals(contentType))
-            fileEndWitsh = ".mp3";
-        else if ("audio/amr".equals(contentType))
-            fileEndWitsh = ".amr";
-        else if ("video/mp4".equals(contentType))
-            fileEndWitsh = ".mp4";
-        else if ("video/mpeg4".equals(contentType))
-            fileEndWitsh = ".mp4";
-        log.debug("----Info fileEndWitsh is :" + fileEndWitsh);
-        return fileEndWitsh;
     }
 
     /**

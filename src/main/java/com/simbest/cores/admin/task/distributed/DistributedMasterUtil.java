@@ -72,16 +72,16 @@ public class DistributedMasterUtil {
                 //TODO 获得锁后要做的事
                 String masterIp = jedis.get("clusert_master_ip");
                 String masterPort = jedis.get("clusert_master_port");
-                String myIp = getServerIP();
+                Integer myIp = getServerIP();
                 String myPort = getServerPort();
                 if (StringUtils.isEmpty(masterIp) || StringUtils.isEmpty(masterPort)) {       //1.没有Master
-                    jedis.set("clusert_master_ip", myIp);   //设置我为Master
+                    jedis.set("clusert_master_ip", String.valueOf(myIp));   //设置我为Master
                     jedis.set("clusert_master_port", myPort);
                     log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                 } else {
                     boolean masterIsAvailable = heartTest(masterIp, Integer.valueOf(masterPort));
                     if (!masterIsAvailable) {              //2.Master不可用
-                        jedis.set("clusert_master_ip", myIp);   //设置我为Master
+                        jedis.set("clusert_master_ip", String.valueOf(myIp));   //设置我为Master
                         jedis.set("clusert_master_port", myPort);
                         log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                     } else {
@@ -117,16 +117,21 @@ public class DistributedMasterUtil {
         return ret;
     }
 
-    public static String getServerIP() {
-        List<Inet4Address> inet4;
-        try {
-            inet4 = getInet4Addresses();
-            return !inet4.isEmpty()
-                    ? inet4.get(0).getHostAddress()
-                    : "";
-        } catch (SocketException e) {
-        }
-        return "";
+//    public static String getServerIP() {
+//        List<Inet4Address> inet4;
+//        try {
+//            inet4 = getInet4Addresses();
+//            return !inet4.isEmpty()
+//                    ? inet4.get(0).getHostAddress()
+//                    : "";
+//        } catch (SocketException e) {
+//        }
+//        return "";
+//    }
+
+    public static Integer getServerIP(){
+        String port = System.getProperty("reyo.localPort");
+        return StringUtils.isEmpty(port) ? 0 : Integer.parseInt(port);
     }
 
     /**

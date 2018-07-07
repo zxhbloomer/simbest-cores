@@ -85,7 +85,7 @@ public class BCE {
             conn.setDoInput(true);
             conn.setRequestMethod(Constants.HTTPGET);
             conn.connect();
-            storePath += fileName+AppFileUtils.getFileExtByContentType(conn.getHeaderField(Constants.CONTENT_TYPE));
+            storePath += fileName;
             ObjectMetadata meta = new ObjectMetadata();
             meta.setContentLength(conn.getContentLengthLong());
             meta.setContentType(conn.getContentType());

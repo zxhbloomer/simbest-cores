@@ -74,7 +74,7 @@ public class LoginController {
 	 * 显示login页面进行登陆
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     @ApiOperation(value = "登陆页", httpMethod = "GET", notes = "登陆页", response = String.class,
             consumes="application/x-www-form-urlencoded")
 	public String openLoginView() {		

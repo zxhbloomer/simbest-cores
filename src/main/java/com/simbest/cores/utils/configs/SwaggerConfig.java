@@ -18,9 +18,9 @@ import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 // *
 // * http://blog.csdn.net/fengspg/article/details/43705537
 // */
-@Configuration
-@EnableWebMvc
-@EnableSwagger
+//@Configuration
+//@EnableWebMvc
+//@EnableSwagger
 public class SwaggerConfig {
 	private SpringSwaggerConfig springSwaggerConfig;
 

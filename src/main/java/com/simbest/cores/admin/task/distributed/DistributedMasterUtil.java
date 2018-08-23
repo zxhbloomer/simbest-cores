@@ -72,17 +72,17 @@ public class DistributedMasterUtil {
                 //TODO 获得锁后要做的事
                 String masterIp = jedis.get("clusert_master_ip");
                 String masterPort = jedis.get("clusert_master_port");
-                Integer myIp = getServerIP();
-                String myPort = getServerPort();
+                String myIp = getServerIP();
+                Integer myPort = getServerPort();
                 if (StringUtils.isEmpty(masterIp) || StringUtils.isEmpty(masterPort)) {       //1.没有Master
-                    jedis.set("clusert_master_ip", String.valueOf(myIp));   //设置我为Master
-                    jedis.set("clusert_master_port", myPort);
+                    jedis.set("clusert_master_ip", myIp);   //设置我为Master
+                    jedis.set("clusert_master_port", String.valueOf(myPort));
                     log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                 } else {
                     boolean masterIsAvailable = heartTest(masterIp, Integer.valueOf(masterPort));
                     if (!masterIsAvailable) {              //2.Master不可用
-                        jedis.set("clusert_master_ip", String.valueOf(myIp));   //设置我为Master
-                        jedis.set("clusert_master_port", myPort);
+                        jedis.set("clusert_master_ip", myIp);   //设置我为Master
+                        jedis.set("clusert_master_port", String.valueOf(myPort));
                         log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                     } else {
                         log.trace(String.format("Master is already at IP: %s on port %s ...", masterIp, masterPort));
@@ -117,22 +117,26 @@ public class DistributedMasterUtil {
         return ret;
     }
 
-//    public static String getServerIP() {
-//        List<Inet4Address> inet4;
-//        try {
-//            inet4 = getInet4Addresses();
-//            return !inet4.isEmpty()
-//                    ? inet4.get(0).getHostAddress()
-//                    : "";
-//        } catch (SocketException e) {
-//        }
-//        return "";
-//    }
 
-    public static Integer getServerIP(){
-        String port = System.getProperty("reyo.localPort");
-        return StringUtils.isEmpty(port) ? 0 : Integer.parseInt(port);
+    public static String getServerIP() {
+        List<Inet4Address> inet4;
+        try {
+            inet4 = getInet4Addresses();
+            return !inet4.isEmpty()
+                    ? inet4.get(0).getHostAddress()
+                    : "";
+        } catch (SocketException e) {
+        }
+        return "";
     }
+
+    /**
+     * http://www.cnblogs.com/interdrp/p/3730878.html
+     */
+//    public static Integer getServerIP(){
+//        String port = System.getProperty("reyo.localPort");
+//        return StringUtils.isEmpty(port) ? 0 : Integer.parseInt(port);
+//    }
 
     /**
      * 获取服务器ip和端口信息
@@ -140,7 +144,7 @@ public class DistributedMasterUtil {
      *
      * @return
      */
-    public String getServerPort() {
+    public Integer getServerPort() {
         try {
             MBeanServer server = null;
             if (MBeanServerFactory.findMBeanServer(null).size() > 0) {
@@ -154,13 +158,13 @@ public class DistributedMasterUtil {
                 String protocol = server.getAttribute(name, "protocol").toString();
                 String port = server.getAttribute(name, "port").toString();
                 if (protocol.equals("HTTP/1.1")) {
-                    return port;
+                    return Integer.valueOf(port);
                 }
             }
         } catch (Exception e) {
             Exceptions.printException(e);
         }
-        return "";
+        return 0;
     }
 
     /**

@@ -58,7 +58,7 @@ public class DistributedMasterUtil {
         log.trace("Host port: "+getServerPort());
         log.trace("Master port: "+jedis.get("clusert_master_port"));
         log.trace("Check result: "+ (getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().equals(jedis.get("clusert_master_port"))));
-        return getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().equals(jedis.get("clusert_master_port"));
+        return getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().toString().equals(jedis.get("clusert_master_port"));
     }
 
     /**
@@ -118,17 +118,17 @@ public class DistributedMasterUtil {
     }
 
 
-    public static String getServerIP() {
-        List<Inet4Address> inet4;
-        try {
-            inet4 = getInet4Addresses();
-            return !inet4.isEmpty()
-                    ? inet4.get(0).getHostAddress()
-                    : "";
-        } catch (SocketException e) {
-        }
-        return "";
-    }
+//    public static String getServerIP() {
+//        List<Inet4Address> inet4;
+//        try {
+//            inet4 = getInet4Addresses();
+//            return !inet4.isEmpty()
+//                    ? inet4.get(0).getHostAddress()
+//                    : "";
+//        } catch (SocketException e) {
+//        }
+//        return "";
+//    }
 
     /**
      * http://www.cnblogs.com/interdrp/p/3730878.html
@@ -137,6 +137,10 @@ public class DistributedMasterUtil {
 //        String port = System.getProperty("reyo.localPort");
 //        return StringUtils.isEmpty(port) ? 0 : Integer.parseInt(port);
 //    }
+    public static String getServerIP(){
+        String ip = System.getProperty("reyo.localIp");
+        return ip;
+    }
 
     /**
      * 获取服务器ip和端口信息

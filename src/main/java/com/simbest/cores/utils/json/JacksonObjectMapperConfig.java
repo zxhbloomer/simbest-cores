@@ -66,6 +66,11 @@ public class JacksonObjectMapperConfig extends ObjectMapper {
                 encodedValue=encodedValue.replaceAll("&ldquo;", "“");
                 encodedValue=encodedValue.replaceAll("&rdquo;", "”");
                 encodedValue=encodedValue.replaceAll("&mdash;", "—");
+                encodedValue=encodedValue.replaceAll("&times;", "×");
+                encodedValue=encodedValue.replaceAll("&lt;", "<");
+                encodedValue=encodedValue.replaceAll("&gt;", ">");
+                encodedValue=encodedValue.replaceAll("&le;", "<=");
+                encodedValue=encodedValue.replaceAll("&ge;", ">=");
                 jsonGenerator.writeString(encodedValue);
             }
         }

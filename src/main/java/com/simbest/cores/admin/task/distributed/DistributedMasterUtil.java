@@ -57,8 +57,8 @@ public class DistributedMasterUtil {
         log.trace("Master ip: "+jedis.get("clusert_master_ip"));
         log.trace("Host port: "+getServerPort());
         log.trace("Master port: "+jedis.get("clusert_master_port"));
-        log.trace("Check result: "+ (getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().equals(jedis.get("clusert_master_port"))));
-        return getServerIP().equals(jedis.get("clusert_master_ip")) && getServerPort().toString().equals(jedis.get("clusert_master_port"));
+        log.trace("Check result: "+ (jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString())));
+        return jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString());
     }
 
     /**

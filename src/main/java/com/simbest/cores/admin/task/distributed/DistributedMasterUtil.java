@@ -48,17 +48,24 @@ public class DistributedMasterUtil {
 
     @PostConstruct
     public void init() {
+        config.setTestOnBorrow(true);
+        config.setTestOnReturn(true);
         jedisPool = new JedisPool(config, factory.getHostName(), factory.getPort(), factory.getTimeout(), factory.getPassword());
         jedis = jedisPool.getResource();
     }
 
     public boolean checkMasterIsMe() {
-        log.trace("Host ip: "+getServerIP());
-        log.trace("Master ip: "+jedis.get("clusert_master_ip"));
-        log.trace("Host port: "+getServerPort());
-        log.trace("Master port: "+jedis.get("clusert_master_port"));
-        log.trace("Check result: "+ (jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString())));
-        return jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString());
+        try {
+            log.trace("Check result: "+ (jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString())));
+            return jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString());
+        } catch (Exception e){
+            log.error("Host ip: "+getServerIP());
+            log.error("Master ip: "+jedis.get("clusert_master_ip"));
+            log.error("Host port: "+getServerPort());
+            log.error("Master port: "+jedis.get("clusert_master_port"));
+            return false;
+        }
+
     }
 
     /**
@@ -73,16 +80,16 @@ public class DistributedMasterUtil {
                 String masterIp = jedis.get("clusert_master_ip");
                 String masterPort = jedis.get("clusert_master_port");
                 String myIp = getServerIP();
-                Integer myPort = getServerPort();
+                String myPort = getServerPort();
                 if (StringUtils.isEmpty(masterIp) || StringUtils.isEmpty(masterPort)) {       //1.没有Master
                     jedis.set("clusert_master_ip", myIp);   //设置我为Master
-                    jedis.set("clusert_master_port", String.valueOf(myPort));
+                    jedis.set("clusert_master_port", myPort);
                     log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                 } else {
-                    boolean masterIsAvailable = heartTest(masterIp, Integer.valueOf(masterPort));
+                    boolean masterIsAvailable = heartTest(masterIp, masterPort);
                     if (!masterIsAvailable) {              //2.Master不可用
                         jedis.set("clusert_master_ip", myIp);   //设置我为Master
-                        jedis.set("clusert_master_port", String.valueOf(myPort));
+                        jedis.set("clusert_master_port", myPort);
                         log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                     } else {
                         log.trace(String.format("Master is already at IP: %s on port %s ...", masterIp, masterPort));
@@ -148,7 +155,7 @@ public class DistributedMasterUtil {
      *
      * @return
      */
-    public Integer getServerPort() {
+    public String getServerPort() {
         try {
             MBeanServer server = null;
             if (MBeanServerFactory.findMBeanServer(null).size() > 0) {
@@ -162,13 +169,13 @@ public class DistributedMasterUtil {
                 String protocol = server.getAttribute(name, "protocol").toString();
                 String port = server.getAttribute(name, "port").toString();
                 if (protocol.equals("HTTP/1.1")) {
-                    return Integer.valueOf(port);
+                    return port;
                 }
             }
         } catch (Exception e) {
             Exceptions.printException(e);
         }
-        return 0;
+        return "0";
     }
 
     /**
@@ -181,11 +188,11 @@ public class DistributedMasterUtil {
      * @param port
      * @return
      */
-    public boolean heartTest(String host, int port) {
+    public boolean heartTest(String host, String port) {
         Socket socket = null;
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), 5000);
+            socket.connect(new InetSocketAddress(host, Integer.valueOf(port)), 5000);
             return true;
         } catch (Exception ex) {
             return false;

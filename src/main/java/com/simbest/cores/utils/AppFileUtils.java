@@ -293,12 +293,12 @@ public class AppFileUtils {
                     savePath = baseUrl + storePath + fileName;
                     break;
                 case FastDFS:
-                    File tmpFile = File.createTempFile("tmp", "."+getFileExtByName(fileName));
-                    file.transferTo(tmpFile);
-                    String fileId = fastdfsClient.upload(tmpFile,fileName);
-                    savePath = fileId;
-                    log.debug(fileId);
-                    tmpFile.deleteOnExit();
+                	   File tmpFile = File.createTempFile("tmp", "."+getFileExtByName(fileName));
+                	   file.transferTo(tmpFile);
+                	   String fileId = fastdfsClient.upload(tmpFile,fileName);
+                	   savePath = fileId;
+                	   log.debug(fileId);
+                	   tmpFile.deleteOnExit();
                     break;
                 default:
                     break;

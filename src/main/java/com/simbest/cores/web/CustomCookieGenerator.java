@@ -25,7 +25,8 @@ public class CustomCookieGenerator {
 	
 	static{
 		generator = new CookieGenerator();
-		generator.setCookieMaxAge(CookieGenerator.DEFAULT_COOKIE_MAX_AGE);
+		//generator.setCookieMaxAge(CookieGenerator.DEFAULT_COOKIE_MAX_AGE);
+		generator.setCookieMaxAge(99999);
 	}
 	
 	public void createCookieName(HttpServletResponse response, String cookieName, String cookieValue){
@@ -35,6 +36,9 @@ public class CustomCookieGenerator {
             generator.setCookieHttpOnly(true);
             generator.setCookieSecure(true);
 			generator.addCookie(response, cookieValue);		
+			System.out.println("cookieName！+++"+cookieName);
+			System.out.println("cookieValue+++"+cookieValue);
+			System.out.println("response+++"+response);
 		}
 	}
 }

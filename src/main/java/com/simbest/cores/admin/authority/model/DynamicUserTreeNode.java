@@ -26,6 +26,8 @@ public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	private Integer id;
     @ApiModelProperty(value="组织或用户名称")
 	private String title;
+    @ApiModelProperty(value="组织或用户名称")
+    private String text;//前端框架使用
     @ApiModelProperty(value="组织父级Id")
 	private Integer pid;
     @ApiModelProperty(value="用户级别")
@@ -99,6 +101,9 @@ public class DynamicUserTreeNode extends BaseObject<DynamicUserTreeNode> {
 	}
 	public void setLevel(Integer level) {
 		this.level = level;
+	}
+	public String getText() {
+		return type;
 	}
 	
 	

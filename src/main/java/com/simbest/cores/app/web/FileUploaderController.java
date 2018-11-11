@@ -410,6 +410,28 @@ public class FileUploaderController extends LogicController<FileUploader, Long>{
 	        if (outputStream != null) {  
 	        	outputStream.close();  
 	        }  
+	        try {
+				if(file!=null){
+					
+			        switch (location) {
+		            case Cloud:
+		            	/*删除临时文件*/
+		            	file.delete();
+		                break;
+		            case Disk:
+		            	/*本地下载直接取的源文件，不能删除*/
+		                break;
+		            case FastDFS:
+		            	/*删除临时文件*/
+		            	file.delete();
+		                break;
+		            default:
+		                break;
+		        }
+				}
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
 	    } 	
 	}
 }

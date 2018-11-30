@@ -57,12 +57,19 @@ public class DistributedMasterUtil {
     public boolean checkMasterIsMe() {
         try {
             log.trace("Check result: "+ (jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString())));
-            return jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString());
+            boolean result = jedis.get("clusert_master_ip").toString().equals(getServerIP().toString()) && jedis.get("clusert_master_port").toString().equals(getServerPort().toString());
+            if(!result){
+                log.error("Host ip: "+getServerIP().toString());
+                log.error("Master ip: "+jedis.get("clusert_master_ip").toString());
+                log.error("Host port: "+getServerPort().toString());
+                log.error("Master port: "+jedis.get("clusert_master_port").toString());
+            }
+            return result;
         } catch (Exception e){
-            log.error("Host ip: "+getServerIP());
-            log.error("Master ip: "+jedis.get("clusert_master_ip"));
-            log.error("Host port: "+getServerPort());
-            log.error("Master port: "+jedis.get("clusert_master_port"));
+            log.error("Host ip: "+getServerIP().toString());
+            log.error("Master ip: "+jedis.get("clusert_master_ip").toString());
+            log.error("Host port: "+getServerPort().toString());
+            log.error("Master port: "+jedis.get("clusert_master_port").toString());
             return false;
         }
 

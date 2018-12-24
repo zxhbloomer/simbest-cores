@@ -59,10 +59,10 @@ public class DistributedMasterUtil {
             log.trace("Check result: "+ (jedis.get("clusert_master_ip").equals(getServerIP()) && jedis.get("clusert_master_port").equals(getServerPort().toString())));
             boolean result = jedis.get("clusert_master_ip").toString().equals(getServerIP().toString()) && jedis.get("clusert_master_port").toString().equals(getServerPort().toString());
             if(!result){
-                log.error("Host ip: "+getServerIP().toString());
-                log.error("Master ip: "+jedis.get("clusert_master_ip").toString());
-                log.error("Host port: "+getServerPort().toString());
-                log.error("Master port: "+jedis.get("clusert_master_port").toString());
+                log.warn("Host ip: "+getServerIP().toString());
+                log.warn("Master ip: "+jedis.get("clusert_master_ip").toString());
+                log.warn("Host port: "+getServerPort().toString());
+                log.warn("Master port: "+jedis.get("clusert_master_port").toString());
             }
             return result;
         } catch (Exception e){
